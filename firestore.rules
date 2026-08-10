@@ -4,5 +4,8 @@ service cloud.firestore {
     match /keresek/{docId} {
       allow read, write: if true;
     }
+    match /jelszavak/{docId} {
+      allow read, write: if true;
+    }
   }
 }
