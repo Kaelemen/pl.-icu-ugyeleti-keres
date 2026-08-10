@@ -1,0 +1,378 @@
+{
+  "ev": 2026,
+  "honap": 8,
+  "megjegyzes": "Az orvosi kérések Word dokumentumból kinyerve (2026 augusztus). Havonta újra kell töltetni.",
+  "kivansagok": {
+    "Kelemen József": {
+      "szabadsag": [],
+      "nem": [],
+      "szeret": []
+    },
+    "Katona József": {
+      "szabadsag": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "nem": [],
+      "szeret": [
+        19,
+        26
+      ]
+    },
+    "Berek Sarolta": {
+      "szabadsag": [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "nem": [
+        1,
+        2,
+        6
+      ],
+      "szeret": [
+        4,
+        16
+      ]
+    },
+    "Gulya Réka": {
+      "szabadsag": [],
+      "nem": [],
+      "szeret": [
+        2,
+        3,
+        17,
+        20,
+        21,
+        22,
+        23
+      ]
+    },
+    "Róbert Beáta": {
+      "szabadsag": [
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23
+      ],
+      "nem": [
+        8,
+        9,
+        14,
+        15,
+        16,
+        28,
+        29,
+        30
+      ],
+      "szeret": [
+        1,
+        2,
+        13
+      ]
+    },
+    "Balogh László": {
+      "szabadsag": [],
+      "nem": [],
+      "szeret": [
+        7,
+        12,
+        13,
+        24,
+        25,
+        26,
+        27
+      ]
+    },
+    "Berkes Tíbor": {
+      "szabadsag": [],
+      "nem": [],
+      "szeret": [
+        6,
+        8
+      ]
+    },
+    "Hajnal Csilla": {
+      "szabadsag": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "nem": [],
+      "szeret": [
+        1,
+        20,
+        21,
+        29
+      ]
+    },
+    "Kajner Krisztina": {
+      "szabadsag": [],
+      "nem": [],
+      "szeret": [
+        8,
+        10,
+        12,
+        17,
+        20,
+        22
+      ]
+    },
+    "Korompai Máté": {
+      "szabadsag": [],
+      "nem": [],
+      "szeret": [
+        2,
+        4,
+        11,
+        13,
+        16,
+        18,
+        20,
+        21,
+        22,
+        23,
+        25
+      ]
+    },
+    "Kovácsevics József": {
+      "szabadsag": [],
+      "nem": [
+        1,
+        2,
+        14,
+        15,
+        16
+      ],
+      "szeret": []
+    },
+    "Pintér Enikő": {
+      "szabadsag": [
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "nem": [],
+      "szeret": [
+        5,
+        8,
+        12
+      ]
+    },
+    "Sorbán József": {
+      "szabadsag": [
+        9,
+        10
+      ],
+      "nem": [
+        8
+      ],
+      "szeret": []
+    },
+    "Szász Kornélia": {
+      "szabadsag": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "nem": [],
+      "szeret": [
+        16,
+        30
+      ]
+    },
+    "Sztermen Márton": {
+      "szabadsag": [],
+      "nem": [],
+      "szeret": []
+    },
+    "Zöldréti Anikó": {
+      "szabadsag": [
+        1,
+        2
+      ],
+      "nem": [
+        22
+      ],
+      "szeret": []
+    },
+    "Daku Zsuzsa": {
+      "szabadsag": [
+        20,
+        21,
+        22,
+        23
+      ],
+      "nem": [
+        1,
+        2,
+        28,
+        29,
+        30
+      ],
+      "szeret": []
+    },
+    "Karczub János": {
+      "szabadsag": [],
+      "nem": [
+        21,
+        22,
+        23
+      ],
+      "szeret": [
+        1,
+        2,
+        8,
+        9,
+        15,
+        16,
+        29,
+        30
+      ]
+    },
+    "Lambertus Iván": {
+      "szabadsag": [],
+      "nem": [
+        1,
+        2,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        29,
+        30
+      ],
+      "szeret": [
+        5,
+        18,
+        20,
+        21,
+        23,
+        25,
+        28,
+        31
+      ]
+    },
+    "Rákóczi Réka": {
+      "szabadsag": [],
+      "nem": [
+        1,
+        2,
+        15,
+        16,
+        17,
+        22,
+        23
+      ],
+      "szeret": [
+        12
+      ]
+    },
+    "Enyedi Marcián": {
+      "szabadsag": [],
+      "nem": [
+        29
+      ],
+      "szeret": []
+    }
+  },
+  "reszmunkaido_periodusok": {
+    "Gulya Réka": {
+      "tipus": "csak_ettol_a_naptol",
+      "kezdo_nap": 16,
+      "megjegyzes": "Félállás, csoportosított beosztás - hónap 2. fele",
+      "erinti": [
+        "jelenlet"
+      ]
+    },
+    "Sorbán József": {
+      "tipus": "csak_eddig_a_napig",
+      "utolso_nap": 15,
+      "erinti": [
+        "ugyelet",
+        "jelenlet"
+      ],
+      "megjegyzes": "Havi 32 óra, a hónap első felében jön (napi óraszám: 32/21 munkanap)"
+    }
+  },
+  "kert_ugyeletszam": {
+    "Gulya Réka": 3,
+    "Róbert Beáta": 5,
+    "Balogh László": 2,
+    "Berkes Tíbor": 2,
+    "Hajnal Csilla": 1,
+    "Kajner Krisztina": 3,
+    "Korompai Máté": 4,
+    "Sorbán József": 3,
+    "Szász Kornélia": 2,
+    "Sztermen Márton": 2,
+    "Zöldréti Anikó": 4,
+    "Karczub János": 8,
+    "Lambertus Iván": 4
+  },
+  "kulsos_gyakorlaton": [
+    "Daku Zsuzsa",
+    "Karczub János"
+  ]
+}

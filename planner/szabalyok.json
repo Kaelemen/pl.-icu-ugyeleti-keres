@@ -1,0 +1,308 @@
+{
+  "_megjegyzes": "ICU ügyeleti beosztás szabály-adatbázis. Ezt olvassa be a generate_schedule.py minden futtatáskor. A dolgozók és az általános/személyi szabályok tartósak (hónapról hónapra érvényesek); a havonta változó kéréseket (szabadság/nem szeretne/szeretne) külön fájl tartalmazza (kivansagok_2026_08.json).",
+  "dolgozok": [
+    {
+      "nev": "Kelemen József",
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Katona József",
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Berek Sarolta",
+      "kategoria": "A",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "napi_munkaido": 4.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Gulya Réka",
+      "kategoria": "I",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "napi_munkaido": 4.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Róbert Beáta",
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Balogh László",
+      "kategoria": "I",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "napi_munkaido": 3.2,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Berkes Tíbor",
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Hajnal Csilla",
+      "kategoria": "A",
+      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
+      "napi_munkaido": 2.3,
+      "havi_oraszam": 72,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Kajner Krisztina",
+      "kategoria": "I",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "napi_munkaido": 4.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Korompai Máté",
+      "kategoria": "A",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "napi_munkaido": 5.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Kovácsevics József",
+      "kategoria": "A",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Pintér Enikő",
+      "kategoria": "A",
+      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
+      "napi_munkaido": 4.6,
+      "havi_oraszam": 144,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Sorbán József",
+      "kategoria": "I",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "napi_munkaido": 1.52,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Szász Kornélia",
+      "kategoria": "I",
+      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
+      "napi_munkaido": 2.3,
+      "havi_oraszam": 72,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Sztermen Márton",
+      "kategoria": "A",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "napi_munkaido": 1.84,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Zöldréti Anikó",
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Szakorvos"
+    },
+    {
+      "nev": "Daku Zsuzsa",
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Rezidens"
+    },
+    {
+      "nev": "Karczub János",
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Rezidens"
+    },
+    {
+      "nev": "Lambertus Iván",
+      "kategoria": "A",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Rezidens"
+    },
+    {
+      "nev": "Rákóczi Réka",
+      "kategoria": "A",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Rezidens"
+    },
+    {
+      "nev": "Enyedi Marcián",
+      "kategoria": "A",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8.0,
+      "havi_oraszam": null,
+      "tipus": "Rezidens"
+    }
+  ],
+  "altalanos_szabalyok": {
+    "min_pihenonap_ket_ugyelet_kozott": 2,
+    "szombaton_nincs_stroke": true,
+    "min_szakorvos_naponta_ugyeletben": 1,
+    "o1_o2_szukseges_hetkoznap": true,
+    "o1_alapertelmezett_szemely": "Kelemen József",
+    "o2_alapertelmezett_szemely": "Gulya Réka",
+    "o1_kotelezo": true,
+    "o2_elmaradhat_ha_kell": true,
+    "muto_minimum_letszam": 6,
+    "muto_padlo_letszam": 6,
+    "muto_kizart_szerepek": [
+      "ITO_ugyeletes",
+      "O1",
+      "O2",
+      "Mr"
+    ],
+    "o_helyettesites_sorrend": [
+      "masnapi_intenziv_ugyeletes",
+      "barki_elerheto_legkevesebb_o_beosztassal"
+    ],
+    "o1_o2_tiltott_szemelyek": [
+      "Pintér Enikő",
+      "Hajnal Csilla",
+      "Kovácsevics József"
+    ],
+    "reszmunkaido_napi_oraszam_havi_kapacitas_kemeny_korlat": true,
+    "_megjegyzes_kapacitas": "Csak a 'Részmunkaidő - napi óraszám' szerződéstípusnál kemény korlát: a KÖTELEZŐ (nem ügyeleti) órák összege egy hónapban nem lépheti túl a napi_munkaido × munkanapok szorzatot ('kapacitás') 7 óránál nagyobb mértékben. A célérték a kapacitás elérése vagy enyhe túllépése - inkább legyen kicsit több, mint kevesebb. Az ügyeleti (16 vagy hétvégén 24 óra/ügyelet) rész nem számít bele ebbe a korlátba. A hétvégi ügyelet teljes 24 órája az ügyeleti részbe megy, nincs külön 8 órás nappali hozzáadás. Szabadságos hétköznapokra a napi munkakeret (napi_munkaido) is elszámolódik a nappali/kötelező órákba.",
+    "reszmunkaido_napi_oraszam_tulepes_turesahatar_ora": 7,
+    "reszmunkaido_napi_oraszam_csak_jelolt_napokon": true
+  },
+  "szemelyi_megkotesek": [
+    {
+      "nev": "Berek Sarolta",
+      "tipus": "tiltott_napok_hetente",
+      "napok": [
+        "hetfo",
+        "kedd"
+      ],
+      "megjegyzes": "MR-altatás miatt nem ügyelhet hétfőn és kedden"
+    },
+    {
+      "nev": "Berek Sarolta",
+      "tipus": "heti_fix_esemeny",
+      "nap": "kedd",
+      "kod": "Mr",
+      "megjegyzes": "Minden kedden MR-ben altat - a nyomtatási nézetben 'Mr' kóddal jelenik meg, és kiesik a Műtő minimum-számításból"
+    },
+    {
+      "nev": "Korompai Máté",
+      "tipus": "tiltott_kezdes_hetente",
+      "napok": [
+        "hetfo",
+        "szerda"
+      ],
+      "megjegyzes": "Nem vihet hétfői/szerdai kezdésű ügyeletet (kedden/csütörtökön lépne le)"
+    },
+    {
+      "nev": "Zöldréti Anikó",
+      "tipus": "tiltott_napok_hetente",
+      "napok": [
+        "kedd"
+      ],
+      "megjegyzes": "Nem vihet keddi ügyeletet (szerdán lépne le, de szerdán nincs bent)"
+    },
+    {
+      "nev": "Zöldréti Anikó",
+      "tipus": "nem_dolgozik_hetente",
+      "napok": [
+        "szerda"
+      ],
+      "megjegyzes": "Szerdán nincs bent - sem ügyelet, sem O1/O2, sem rendes munkanap"
+    },
+    {
+      "nev": "Hajnal Csilla",
+      "tipus": "csak_jelolt_napokon_dolgozik",
+      "megjegyzes": "Kizárólag a Kívánságok lapon 'Szeretne'-ként jelölt napokon osztható be bármire (ügyelet, O1/O2, rendes nap)"
+    },
+    {
+      "nev": "Kajner Krisztina",
+      "tipus": "csak_jelolt_napokon_dolgozik",
+      "megjegyzes": "Ua. mint Hajnal Csilla"
+    },
+    {
+      "nev": "Berkes Tíbor",
+      "tipus": "csak_jelolt_napokon_dolgozik",
+      "megjegyzes": "Ua. mint Hajnal Csilla"
+    },
+    {
+      "nev": "Gulya Réka",
+      "tipus": "reszmunkaido_periodus_havonta",
+      "megjegyzes": "Félállás, csoportosított beosztásban - hónapról hónapra változó dátumtartomány, amit minden hónapban meg kell adni (2026 augusztusban: aug.16-31)."
+    },
+    {
+      "nev": "Kovácsevics József",
+      "tipus": "nem_lehet_osztalyos",
+      "megjegyzes": "Nem osztható be O1/O2 osztályos szerepre"
+    },
+    {
+      "nev": "Pintér Enikő",
+      "tipus": "csak_jelolt_napokon_dolgozik",
+      "megjegyzes": "Kizárólag a Kívánságok lapon 'Szeretne'-ként jelölt napokon osztható be bármire"
+    },
+    {
+      "nev": "Korompai Máté",
+      "tipus": "rendes_nap_csak_hetente",
+      "napok": [
+        "kedd",
+        "csutortok"
+      ],
+      "megjegyzes": "Rendes ('m') munkanapja kizárólag kedd és csütörtök; más hétköznapon csak ügyeletben lehet jelen, egyébként nincs bent"
+    }
+  ],
+  "orakeret_szamitas": {
+    "Teljes állás": {
+      "elszamolas": "napi",
+      "napi_munkaido_ora": 8,
+      "leiras": "Egy 24 órás ügyelet: 8 óra kötelező munkaidő az ügyelet napjára (8-16, mindenkinél egységesen 8 óra), 16 óra ügyeleti idő (16-másnap 8, ez NEM számít bele a havi kötelező munkaidő-keretbe). Ha a lelépő nap hétköznap (hétfő-péntek), arra a napra a dolgozó SAJÁT napi munkaidő-kerete (napi_munkaido mező) számít el kötelező munkaidőként (igazolt távollét jogcímén) - nem egy fix 8 óra."
+    },
+    "Részmunkaidő - napi óraszám": {
+      "elszamolas": "napi",
+      "leiras": "Egy 24 órás ügyelet: 8 óra kötelező munkaidő az ügyelet napjára (8-16, mindenkinél egységesen 8 óra), 16 óra ügyeleti idő (16-másnap 8, ez NEM számít bele a havi kötelező munkaidő-keretbe). Ha a lelépő nap hétköznap (hétfő-péntek), arra a napra a dolgozó SAJÁT napi munkaidő-kerete (napi_munkaido mező) számít el kötelező munkaidőként (igazolt távollét jogcímén) - nem egy fix 8 óra. Alapból kizárólag a Kívánságok lapon 'Szeretne'-ként jelölt napjain lehet jelen (bármilyen szerepben: rendes nap, ügyelet, O1/O2) - a havi kéréseiket ők maguk adják meg, ebből válogat a generátor. Kivétel, ha valakinek fix heti mintája van megadva (rendes_nap_csak_hetente típusú megkötés, pl. Korompai Máté: kedd-csütörtök). Ha valakinek egyetlen 'jó nap' sincs megadva egy adott hónapban, az nem jelenti azt, hogy nem osztható be - egyszerűen nincs konkrét kérése, bármelyik nap jó neki, és a generátor a szabad kapacitása teljesítéséhez szükséges napokon oszthatja be (a többi szabály - pihenőnap, szakorvos-minimum, stb. - továbbra is érvényes rá)."
+    },
+    "Részmunkaidő - havi órakeret": {
+      "elszamolas": "havi",
+      "ugyelet_ora": 24,
+      "leiras": "Nincs napi bontás, nincs kötelező/ügyeleti szétválasztás. Egy 24 órás ügyelet egyben 24 órával csökkenti a dolgozó havi_oraszam mezőben megadott havi keretét. A kiosztott ügyeletek (24 óra/ügyelet) ezt a kvótát soha nem léphetik túl - ez kemény korlát a beosztás-generálásnál."
+    }
+  },
+  "orakeret_konstansok": {
+    "napi_kotelezo_ora": 8,
+    "napi_ugyeleti_ora": 16,
+    "napi_lelepo_kotelezo_ora": 8,
+    "havi_teljes_ugyelet_ora": 24
+  }
+}
