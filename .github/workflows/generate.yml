@@ -1,6 +1,6 @@
 name: Beosztás generálása
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       kivansagok_json:
