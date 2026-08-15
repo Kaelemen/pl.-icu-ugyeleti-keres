@@ -15,11 +15,14 @@ BASE = f"https://firestore.googleapis.com/v1/projects/{PROJECT_ID}/databases/(de
 
 today = datetime.date.today()
 holnap = today + datetime.timedelta(days=1)
-if holnap.day != 1:
+kenyszeritett_teszt = os.environ.get("FORCE_TEST") == "1"
+if holnap.day != 1 and not kenyszeritett_teszt:
     print(f"Ma ({today}) nem a hónap utolsó napja, nincs teendő.")
     sys.exit(0)
 
 ev, honap = today.year, today.month
+if kenyszeritett_teszt and os.environ.get("FORCE_HONAP"):
+    ev, honap = int(os.environ["FORCE_EV"]), int(os.environ["FORCE_HONAP"])
 print(f"Ma a hónap utolsó napja - archiválás és nullázás: {ev}.{honap:02d}")
 
 
@@ -89,7 +92,10 @@ wb.save(kimenet)
 print(f"Mentve: {kimenet}")
 
 for name, d in honap_dokok:
+    if os.environ.get("DRY_RUN") == "1":
+        print(f"(PRÓBAFUTTATÁS - nincs törlés) {d.get('nev','?')}")
+        continue
     r = requests.delete(f"https://firestore.googleapis.com/v1/{name}", params={"key": API_KEY}, timeout=30)
     print(f"Törölve ({d.get('nev','?')}): {r.status_code}")
 
-print("Kész - a hónap kérései archiválva és törölve.")
+print("Kész - a hónap kérései archiválva" + (" (próbafuttatás, törlés nélkül)." if os.environ.get("DRY_RUN") == "1" else " és törölve."))

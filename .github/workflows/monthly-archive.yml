@@ -5,7 +5,26 @@ name: Havi kérés-archiválás és nullázás
     # minden nap 22:00 UTC-kor lefut, de a script maga eldönti, hogy ma a hónap
     # utolsó napja-e - csak akkor csinál bármit is
     - cron: '0 22 * * *'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      force_test:
+        description: 'Kényszerített teszt-futtatás (a dátum-ellenőrzés megkerülésével)'
+        required: false
+        default: 'false'
+        type: boolean
+      force_ev:
+        description: 'Teszthez: melyik évet archiválja (csak force_test esetén számít)'
+        required: false
+        type: string
+      force_honap:
+        description: 'Teszthez: melyik hónapot archiválja (csak force_test esetén számít)'
+        required: false
+        type: string
+      dry_run:
+        description: 'Próbafuttatás - archivál, de nem töröl semmit a Firestore-ból'
+        required: false
+        default: true
+        type: boolean
 
 jobs:
   archive_and_reset:
@@ -24,6 +43,11 @@ jobs:
 
       - name: Archiválás és nullázás (csak ha ma a hónap utolsó napja)
         working-directory: planner
+        env:
+          FORCE_TEST: ${{ github.event.inputs.force_test == 'true' && '1' || '0' }}
+          FORCE_EV: ${{ github.event.inputs.force_ev }}
+          FORCE_HONAP: ${{ github.event.inputs.force_honap }}
+          DRY_RUN: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'false') && '1' || '0' }}
         run: python3 archivalas_es_nullazas.py
 
       - name: Archívum commitolása a repóba
