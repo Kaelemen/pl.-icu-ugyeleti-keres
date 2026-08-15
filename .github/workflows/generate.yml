@@ -60,10 +60,32 @@ jobs:
         working-directory: planner
         run: python3 generate_4_variants.py "$KIV_FAJL" ICU_ugyeleti_beosztas.xlsx ICU_ugyeleti_beosztas_kimenet
 
+      - name: LibreOffice telepítése (a képletek újraszámolásához)
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq libreoffice-calc
+
+      - name: Képletek újraszámolása
+        working-directory: planner
+        run: |
+          for f in ICU_ugyeleti_beosztas_kimenet*.xlsx; do
+            soffice --headless --convert-to xlsx --outdir recalced "$f"
+            cp "recalced/$f" "$f"
+          done
+
+      - name: Csak a nyomtatható lap kigyűjtése, egy közös fájlba
+        working-directory: planner
+        run: |
+          shopt -s nullglob
+          variansok=(ICU_ugyeleti_beosztas_kimenet_valtozat*.xlsx)
+          if [ ${#variansok[@]} -gt 0 ]; then
+            python3 osszevont_nyomtathato.py ICU_beosztas_nyomtathato.xlsx "${variansok[@]}"
+          else
+            python3 osszevont_nyomtathato.py ICU_beosztas_nyomtathato.xlsx ICU_ugyeleti_beosztas_kimenet.xlsx
+          fi
+
       - name: Eredmény feltöltése letölthetőként
         uses: actions/upload-artifact@v4
         with:
           name: icu-beosztas-eredmeny
           path: |
-            planner/ICU_ugyeleti_beosztas_kimenet*.xlsx
+            planner/ICU_beosztas_nyomtathato.xlsx
           retention-days: 30
