@@ -125,9 +125,11 @@ for szab in SZAB["szemelyi_megkotesek"]:
 # Minden "Részmunkaidő - napi óraszám" dolgozó alapból csak a saját jelölt ("Szeretne")
 # napjain lehet jelen (bármilyen szerepben) - kivéve, akinek konkrét heti mintája van
 # (pl. Korompai Máté: rendes_nap_csak_hetente).
+CSAK_JELOLT_NAPOKON_KAPACITAS_MIATT = set()  # ide csak a részmunkaidő-napi-óraszám miatt automatikusan bekerültek
 for _d in SZAB["dolgozok"]:
     if _d["szerzodes_tipus"] == "Részmunkaidő - napi óraszám" and _d["nev"] not in RENDES_NAP_CSAK_HETENTE:
         CSAK_JELOLT_NAPOKON.add(_d["nev"])
+        CSAK_JELOLT_NAPOKON_KAPACITAS_MIATT.add(_d["nev"])
 
 # Részmunkaidő-periódusok beolvasása ELŐBB kell, mint a "csak jelölt napokon" szigorítás,
 # hogy tudjuk: kinek van strukturális időszak-korlátja (pl. Gulya: csak a hónap 2. felében
@@ -143,14 +145,17 @@ for name, v in KIV.get("reszmunkaido_periodusok", {}).items():
         RESZMUNKAIDO_TOL[name] = {"utolso_nap": v["utolso_nap"], "erinti": erinti}
 
 # "csak jelölt napokon dolgozik": minden más nap (ami nincs szabin/szeretve/nemben) -> Nem szeretne.
-# Kivéve: (a) ha valakinek egyáltalán nincs megadva egyetlen "jó nap" sem - az nem azt jelenti,
-# hogy soha nem osztható be, hanem hogy nincs konkrét kérése (bármelyik nap jó neki); (b) ha
-# valakinek strukturális időszak-korlátja van a jelenlétére nézve (pl. Gulya) - annál a "jó
-# napok" lista csak ügyelet-preferencia, nem szűkíti tovább a jelenlétét az időszakon belül.
+# Kivéve: (a) ha valakinek EGYÁLTALÁN NINCS "jó napja" megadva, ÉS ez a megkötése kizárólag a
+# részmunkaidő-napi-óraszám kapacitása miatt jött létre automatikusan - akkor nem korlátozzuk,
+# hogy a havi kötelező órája teljesíthető legyen. Akinek ez SZEMÉLYI (állandó) szabálya - mint
+# Berkes Tíbornak -, annál a hiányzó "jó nap" azt jelenti, hogy ebben a hónapban nincs bent,
+# NEM azt, hogy szabadon beosztható; (b) ha valakinek strukturális időszak-korlátja van a
+# jelenlétére nézve (pl. Gulya) - annál a "jó napok" lista csak ügyelet-preferencia, nem
+# szűkíti tovább a jelenlétét az időszakon belül.
 EREDETI_KIFEJEZETT_NEM = {name: set(kivansagok[name]["nem"]) for name in CSAK_JELOLT_NAPOKON}
 for name in CSAK_JELOLT_NAPOKON:
     p = kivansagok[name]
-    if not p["szeret"]:
+    if not p["szeret"] and name in CSAK_JELOLT_NAPOKON_KAPACITAS_MIATT:
         continue
     info = RESZMUNKAIDO_TOL.get(name)
     if info and "jelenlet" in info.get("erinti", ()):
@@ -575,6 +580,7 @@ for (name, day_date), value in prefs.items():
 ws_staff = wb["Dolgozók"]
 STAFF_START = 4
 kert = KIV.get("kert_ugyeletszam", {})
+NYOLC_ORA_NAPPAL = KIV.get("nyolc_ora_nappal", {})  # nev -> [napok], amikor 8 órás rendes napot tud vállalni
 for i, name in enumerate(staff_order_all):
     ws_staff.cell(row=STAFF_START + i, column=4, value=kert.get(name))
 
@@ -691,10 +697,13 @@ for d in range(num_days):
 
 # Pótlólagos "m" napok hozzáadása azoknak, akiknél a megadott "jó napok" nem elegek a
 # havi kötelező óraszám eléréséhez - a jelölt napjaik előnyt élveznek (azokat a fő ciklus
-# már beírta), de ha ez nem elég, bevonunk plusz, kifejezetten nem tiltott hétköznapokat
-# is, amíg el nem éri a kapacitást (vagy el nem fogynak a lehetséges napok). Akinek fix
-# heti mintája van (pl. Korompai: csak kedd-csütörtök), azt ez nem érinti - az egy más
-# típusú, szándékosan korlátozott szabály.
+# már beírta), de ha ez nem elég, bevonunk plusz napokat is, amíg el nem éri a kapacitást
+# (vagy el nem fogynak a lehetséges napok). Ha valaki megadta, mely napokon tud 8 órás
+# rendes napot vállalni ("nyolc_ora_nappal"), KIZÁRÓLAG azok közül választhatunk - nem
+# találomra bármelyik napról, hiszen ő kifejezetten megmondta, mely napok jók neki. Ha ezt
+# nem adta meg, a régi, szabad kereséssel dolgozunk. Akinek fix heti mintája van (pl.
+# Korompai: csak kedd-csütörtök), azt ez nem érinti - az egy más típusú, szándékosan
+# korlátozott szabály.
 for name in RESZ_NAPI_ORASZAMOS:
     if name in RENDES_NAP_CSAK_HETENTE:
         continue
@@ -705,7 +714,12 @@ for name in RESZ_NAPI_ORASZAMOS:
                         napi_rate * szabadsag_hetkoznap_count[name])
     if current_nappali >= kapacitas:
         continue
-    for d in sorted(range(num_days), key=lambda x: raw_present_count_by_day.get(x, 999)):
+    megadott_8ora_napok = NYOLC_ORA_NAPPAL.get(name)
+    if megadott_8ora_napok is not None:
+        jelolt_napok = [d for d in range(num_days) if (d + 1) in megadott_8ora_napok]
+    else:
+        jelolt_napok = list(range(num_days))
+    for d in sorted(jelolt_napok, key=lambda x: raw_present_count_by_day.get(x, 999)):
         if current_nappali >= kapacitas:
             break
         day_date = first_day + datetime.timedelta(days=d)
@@ -728,6 +742,37 @@ for name in RESZ_NAPI_ORASZAMOS:
         muto_cell = ws_print.cell(row=muto_row, column=col)
         if muto_cell.value is not None:
             muto_cell.value += 1
+
+# Túllépés-vágás: ha valakinek (jellemzően nagyon alacsony napi órakeretű, sok "jó napot"
+# jelölő résmunkaidős kollégának) a jelölt napjai önmagukban messze meghaladják a kapacitását
+# + a 7 órás tűréshatárt, a fölösleges "m" napokat vissza kell venni - ugyanaz a max. 7 órás
+# túllépési szabály vonatkozik erre is, mint az ügyeletekre. A legkevésbé műtő-kritikus
+# (legtöbb egyéb jelenléttel rendelkező) napokat vesszük vissza először.
+for name in RESZ_NAPI_ORASZAMOS:
+    if name in RENDES_NAP_CSAK_HETENTE:
+        continue
+    napi_rate = RESZ_NAPI_ORASZAMOS[name]
+    kapacitas = RESZ_NAPI_KAPACITAS[name]
+    current_nappali = (NAPI_KOTELEZO_ORA * (aktiv_nap_count[name] - hetvegi_ugyelet_count[name]) +
+                        napi_rate * lelepo_hetkoznap_count[name] +
+                        napi_rate * szabadsag_hetkoznap_count[name])
+    if current_nappali <= kapacitas + TULLEPES_TURESHATAR:
+        continue
+    m_napok = [d for d in range(num_days)
+               if ws_print.cell(row=row_of[name], column=2 + d).value == "m"]
+    m_napok.sort(key=lambda x: -raw_present_count_by_day.get(x, 0))
+    for d in m_napok:
+        if current_nappali <= kapacitas + TULLEPES_TURESHATAR:
+            break
+        col = 2 + d
+        ws_print.cell(row=row_of[name], column=col).value = None
+        m_count[name] -= 1
+        aktiv_nap_count[name] -= 1
+        current_nappali -= NAPI_KOTELEZO_ORA
+        raw_present_count_by_day[d] = raw_present_count_by_day.get(d, 1) - 1
+        muto_cell = ws_print.cell(row=muto_row, column=col)
+        if muto_cell.value is not None:
+            muto_cell.value -= 1
 
 # Rezidens-visszahívás: aki külsős gyakorlaton van, azt csak akkor hívjuk vissza "m"-nek,
 # ha a műtői minimum (6 fő) máshogy nem teljesülne - méltányosan elosztva a visszahívásokat
@@ -798,6 +843,68 @@ for d in range(num_days):
     muto_cell = ws_print.cell(row=muto_row, column=col)
     if muto_cell.value is not None:
         muto_cell.value -= 1
+
+# Gulya-prioritás utólagos érvényesítése: Gulya Réka (O2 alapértelmezett) mindig elsőként
+# választandó O2-re, ha aznap jelen van - de a "8 órában alkalmas" napok pótlása (ami az
+# O1/O2 kiosztás UTÁN fut) miatt előfordulhat, hogy csak most derül ki, hogy aznap jelen
+# lesz. Ha valaki más lett O2 helyette, most átvesszük tőle a szerepet.
+if O2_ALAP:
+    for d in range(num_days):
+        day_date = first_day + datetime.timedelta(days=d)
+        if day_date.weekday() >= 5:
+            continue
+        jelenlegi_o2 = o1_o2.get(d, {}).get("O2")
+        if jelenlegi_o2 == O2_ALAP:
+            continue  # már ő az O2
+        col_gulya = 2 + d
+        gulya_cell = ws_print.cell(row=row_of[O2_ALAP], column=col_gulya)
+        gulya_kod = gulya_cell.value or ""
+        gulya_jelen = bool(gulya_kod) and gulya_kod != "el"
+        gulya_intenziv = schedule[d].get("Intenzív") == O2_ALAP
+        if not gulya_jelen or gulya_intenziv:
+            continue
+        o1_today = o1_o2.get(d, {}).get("O1")
+        if O2_ALAP == o1_today:
+            continue  # ő már O1 aznap, nem lehet egyszerre O2 is
+        # a jelenlegi O2-est visszaállítjuk: ha volt más szerepe is (pl. "St/O2"), azt megtartja;
+        # ha kizárólag O2-ként volt jelen, akkor a rendes "m" jelenlétét kapja vissza (nem tűnhet
+        # el a beosztásból csak azért, mert Gulya átvette az O2 szerepet)
+        if jelenlegi_o2:
+            col_regi = col_gulya
+            regi_cell = ws_print.cell(row=row_of[jelenlegi_o2], column=col_regi)
+            regi_kod = regi_cell.value or ""
+            reszek = regi_kod.split("/")
+            reszek = [r for r in reszek if r != "O2"]
+            if reszek:
+                uj_regi_kod = "/".join(reszek)
+            elif keret_of(jelenlegi_o2) == "Napi":
+                uj_regi_kod = "m"  # visszakapja a rendes jelenlétét, nem tűnik el
+            else:
+                uj_regi_kod = None
+            regi_cell.value = uj_regi_kod
+            o_assigned_count[jelenlegi_o2] -= 1
+        # Gulyát beírjuk O2-nek (a meglévő kódjához fűzve, ha van - pl. "m" -> "O2", vagy "St" -> "St/O2")
+        if gulya_kod in ("", "m"):
+            gulya_cell.value = "O2"
+        else:
+            gulya_cell.value = f"{gulya_kod}/O2"
+        o1_o2.setdefault(d, {"O1": o1_today, "O2": None})["O2"] = O2_ALAP
+        o_assigned_count[O2_ALAP] += 1
+
+# Ha egy napon a műtői jelenlét csak egy osztályossal (O1 VAGY O2, de nem mindkettő) jön ki,
+# az önmagában -1-gyel rontja a Műtő-sor kijelzett értékét - büntetve, hogy nem sikerült
+# mindkét osztályost beosztani, függetlenül a nyers létszámtól.
+for d in range(num_days):
+    day_date = first_day + datetime.timedelta(days=d)
+    if day_date.weekday() >= 5:
+        continue
+    o_ma = o1_o2.get(d, {"O1": None, "O2": None})
+    csak_egy_osztalyos = (1 if o_ma.get("O1") else 0) + (1 if o_ma.get("O2") else 0) == 1
+    if csak_egy_osztalyos:
+        col = 2 + d
+        muto_cell = ws_print.cell(row=muto_row, column=col)
+        if muto_cell.value is not None:
+            muto_cell.value -= 1
 
 for name in staff_order:
     duty_count = assigned_count.get(name, 0)
