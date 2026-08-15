@@ -29,6 +29,8 @@ name: Havi kérés-archiválás és nullázás
 jobs:
   archive_and_reset:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,5 +57,9 @@ jobs:
           git config user.name "Deploy Bot"
           git config user.email "deploy@example.com"
           git add planner/archivum/ || true
-          git diff --cached --quiet || git commit -m "Havi archívum: $(date +%Y-%m)"
-          git push || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Havi archívum: $(date +%Y-%m)"
+            git push
+          else
+            echo "Nincs új archívum-fájl, nincs mit commitolni."
+          fi
