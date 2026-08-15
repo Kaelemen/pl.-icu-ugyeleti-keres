@@ -1,0 +1,35 @@
+name: Havi kérés-archiválás és nullázás
+
+"on":
+  schedule:
+    # minden nap 22:00 UTC-kor lefut, de a script maga eldönti, hogy ma a hónap
+    # utolsó napja-e - csak akkor csinál bármit is
+    - cron: '0 22 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  archive_and_reset:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python beállítása
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Függőségek telepítése
+        run: pip install openpyxl requests
+
+      - name: Archiválás és nullázás (csak ha ma a hónap utolsó napja)
+        working-directory: planner
+        run: python3 archivalas_es_nullazas.py
+
+      - name: Archívum commitolása a repóba
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          git add planner/archivum/ || true
+          git diff --cached --quiet || git commit -m "Havi archívum: $(date +%Y-%m)"
+          git push || true
