@@ -1,0 +1,3 @@
+kivansagok_json input hossza: 1889
+--- KIV_FAJL: kivansagok_2026_08.json ---
+kivansagok_input.json NEM létezik - a fallback fájlt fogja használni: kivansagok_2026_08.json
