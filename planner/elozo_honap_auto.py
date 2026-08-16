@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-"""Beolvassa a megosztott Google Drive mappa legutóbb módosított Excel-fájlját (az
-előző hónap véglegesített beosztása), és megkeresi, ki volt ügyeletben annak utolsó
-napján - ők lépnek le az új hónap 1-jén. Az eredményt egy JSON fájlba írja, amit a
-fő generáló script beolvas és beépít a "elozo_honap_lelepok" mezőbe.
+"""Beolvassa a megosztott Google Drive mappában lévő éves beosztás-táblázatot (Google
+Sheets, hónaponként külön füllel: jan, febr, márc, ápr, máj, jún, júl, aug, szept, okt,
+nov, dec), és az ELŐZŐ hónap füléről megkeresi, ki volt ügyeletben annak utolsó napján
+- ők lépnek le az új hónap 1-jén. Az eredményt egy JSON fájlba írja, amit a fő generáló
+script beolvas és beépít a "elozo_honap_lelepok" mezőbe.
 
-Csak OLVASÁSI jogosultságot igényel (drive.readonly) - a szolgáltatásfiók csak a
-vele megosztott mappát látja, semmi mást a Drive-on."""
+Csak OLVASÁSI jogosultságot igényel (drive.readonly) - a szolgáltatásfiók csak a vele
+megosztott mappát/fájlt látja, semmi mást a Drive-on."""
 import os
 import io
 import json
-import sys
 import datetime
 import openpyxl
 from google.oauth2 import service_account
@@ -19,9 +19,14 @@ from googleapiclient.http import MediaIoBaseDownload
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 FOLDER_ID = os.environ.get("GDRIVE_FOLDER_ID", "").strip()
 SA_JSON = os.environ.get("GDRIVE_SERVICE_ACCOUNT_JSON", "").strip()
+# a generálandó év/hónap - ezekből számoljuk ki, melyik fület kell megnézni (előző hónap)
+CEL_EV = int(os.environ.get("CEL_EV", "0") or 0)
+CEL_HONAP = int(os.environ.get("CEL_HONAP", "0") or 0)
 KIMENET = "elozo_honap_auto.json"
 
 DUTY_KODOK = {"I", "A", "St"}
+HONAP_FUL_NEVEK = ["", "jan", "febr", "márc", "ápr", "máj", "jún",
+                   "júl", "aug", "szept", "okt", "nov", "dec"]
 
 
 def van_ugyeletkod(cellertek):
@@ -30,11 +35,26 @@ def van_ugyeletkod(cellertek):
     return any(resz in DUTY_KODOK for resz in str(cellertek).split("/"))
 
 
+def talald_meg_napszam_sort(ws, max_sor=15, max_oszlop=40):
+    """Megkeresi azt a sort, ahol egymást követő napszámok (1,2,3...) vannak - ez a
+    fejléc-sor, amitől lefelé kezdődnek a dolgozók adatai."""
+    for r in range(1, max_sor + 1):
+        ertekek = [ws.cell(row=r, column=c).value for c in range(2, max_oszlop + 1)]
+        szamok = [v for v in ertekek if isinstance(v, (int, float))]
+        if len(szamok) >= 20 and szamok[0] == 1:
+            return r
+    return None
+
+
 def main():
-    if not FOLDER_ID or not SA_JSON:
-        print("Nincs beállítva GDRIVE_FOLDER_ID vagy GDRIVE_SERVICE_ACCOUNT_JSON - kihagyva.")
+    if not FOLDER_ID or not SA_JSON or not CEL_HONAP:
+        print("Hiányzó beállítás (mappa/kulcs/hónap) - kihagyva.")
         json.dump({"elozo_honap_lelepok": []}, open(KIMENET, "w", encoding="utf-8"))
         return
+
+    elozo_honap = CEL_HONAP - 1 if CEL_HONAP > 1 else 12
+    fulnev = HONAP_FUL_NEVEK[elozo_honap]
+    print(f"Célhónap: {CEL_EV}.{CEL_HONAP:02d} - az előző hónap fülét keressük: '{fulnev}'")
 
     try:
         info = json.loads(SA_JSON)
@@ -48,17 +68,24 @@ def main():
             fields="files(id, name, modifiedTime, mimeType)",
         ).execute()
         fajlok = results.get("files", [])
-        # csak a valódi Excel (xlsx) fájlokat nézzük, a legutóbb módosítottat használjuk
-        xlsx_fajlok = [f for f in fajlok if f["name"].lower().endswith(".xlsx")]
-        if not xlsx_fajlok:
-            print("Nem található .xlsx fájl a megosztott mappában - kihagyva.")
+        if not fajlok:
+            print("Nem található fájl a megosztott mappában - kihagyva.")
             json.dump({"elozo_honap_lelepok": []}, open(KIMENET, "w", encoding="utf-8"))
             return
 
-        legutobbi = xlsx_fajlok[0]
-        print(f"Legutóbbi fájl a Drive-mappában: {legutobbi['name']} ({legutobbi['modifiedTime']})")
+        cel_fajl = fajlok[0]
+        print(f"Használt fájl: {cel_fajl['name']} ({cel_fajl['mimeType']})")
 
-        request = service.files().get_media(fileId=legutobbi["id"])
+        if cel_fajl["mimeType"] == "application/vnd.google-apps.spreadsheet":
+            # natív Google Táblázat - exportáljuk xlsx-ként
+            request = service.files().export(
+                fileId=cel_fajl["id"],
+                mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+        else:
+            # feltöltött .xlsx bináris fájl
+            request = service.files().get_media(fileId=cel_fajl["id"])
+
         buf = io.BytesIO()
         downloader = MediaIoBaseDownload(buf, request)
         done = False
@@ -67,39 +94,46 @@ def main():
         buf.seek(0)
 
         wb = openpyxl.load_workbook(buf, data_only=True)
+
         lap_nev = None
         for jelolt in wb.sheetnames:
-            if "Nyomtatási" in jelolt or "Változat" in jelolt:
+            if jelolt.strip().lower() == fulnev:
                 lap_nev = jelolt
                 break
         if lap_nev is None:
-            lap_nev = wb.sheetnames[0]
+            print(f"Nem található '{fulnev}' nevű fül a fájlban (elérhető fülek: {wb.sheetnames}) - kihagyva.")
+            json.dump({"elozo_honap_lelepok": []}, open(KIMENET, "w", encoding="utf-8"))
+            return
+
         ws = wb[lap_nev]
         print(f"Használt munkalap: {lap_nev}")
 
-        # az utolsó napot tartalmazó oszlop megkeresése: a legmagasabb oszlopszámú
-        # cella, aminek van tartalma bármelyik dolgozó sorában (2. oszloptól indul a
-        # napok rácsa a mi formátumunkban)
-        max_col = 2
-        for row in ws.iter_rows(min_row=5, max_row=30, min_col=2, max_col=40):
-            for cell in row:
-                if cell.value not in (None, "") and cell.column > max_col:
-                    max_col = cell.column
+        napszam_sor = talald_meg_napszam_sort(ws)
+        if napszam_sor is None:
+            print("Nem található napszám-fejléc sor ezen a lapon - kihagyva.")
+            json.dump({"elozo_honap_lelepok": []}, open(KIMENET, "w", encoding="utf-8"))
+            return
 
+        # az utolsó nap oszlopa: a legmagasabb egész szám a fejléc-sorban
+        utolso_nap_oszlop = None
+        utolso_nap_ertek = 0
+        for c in range(2, 41):
+            v = ws.cell(row=napszam_sor, column=c).value
+            if isinstance(v, (int, float)) and v >= utolso_nap_ertek:
+                utolso_nap_ertek = v
+                utolso_nap_oszlop = c
+
+        adat_kezdo_sor = napszam_sor + 2  # napszám sor + hetinap-rövidítés sor után
         lelepok = []
-        for row in ws.iter_rows(min_row=5, max_row=30):
-            nev = row[0].value
-            if not nev:
+        for r in range(adat_kezdo_sor, adat_kezdo_sor + 30):
+            nev = ws.cell(row=r, column=1).value
+            if not nev or not isinstance(nev, str):
                 continue
-            utolso_nap_cella = None
-            for cell in row:
-                if cell.column == max_col:
-                    utolso_nap_cella = cell
-                    break
-            if utolso_nap_cella is not None and van_ugyeletkod(utolso_nap_cella.value):
-                lelepok.append(nev)
+            cellertek = ws.cell(row=r, column=utolso_nap_oszlop).value
+            if van_ugyeletkod(cellertek):
+                lelepok.append(nev.strip())
 
-        print(f"Az utolsó napon ({max_col - 1}.) ügyeletben lévők (ők lépnek le): {lelepok}")
+        print(f"Az utolsó napon ({utolso_nap_ertek}.) ügyeletben lévők (ők lépnek le): {lelepok}")
         json.dump({"elozo_honap_lelepok": lelepok}, open(KIMENET, "w", encoding="utf-8"), ensure_ascii=False)
 
     except Exception as e:
@@ -109,3 +143,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
