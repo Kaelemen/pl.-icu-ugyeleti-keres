@@ -341,6 +341,9 @@ for d in range(num_days):
             worked_days[nm].add(day_date)
 
 ELOZO_HONAP_LELEPOK = set(KIV.get("elozo_honap_lelepok", []))  # kik voltak ügyeletben az előző hónap utolsó napján
+_ismeretlen_lelepok = ELOZO_HONAP_LELEPOK - set(staff_order_all)
+if _ismeretlen_lelepok:
+    print(f"FIGYELEM: 'elozo_honap_lelepok'-ban ismeretlen név(ek) - nem lesz hatásuk: {_ismeretlen_lelepok}")
 
 def is_lelepo(name, day_date):
     # Akinek fix, korlátozott heti munkanapja van (pl. Korompai: csak kedd-csütörtök),

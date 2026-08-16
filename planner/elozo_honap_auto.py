@@ -27,6 +27,10 @@ KIMENET = "elozo_honap_auto.json"
 DUTY_KODOK = {"I", "A", "St"}
 HONAP_FUL_NEVEK = ["", "jan", "febr", "márc", "ápr", "máj", "jún",
                    "júl", "aug", "szept", "okt", "nov", "dec"]
+# Névi eltérések a Drive-táblázat és a rendszer törzsadata között - itt igazítjuk.
+NEV_NORMALIZALAS = {
+    "Daku Zsuzsanna": "Daku Zsuzsa",
+}
 
 
 def van_ugyeletkod(cellertek):
@@ -136,9 +140,9 @@ def main():
                 continue
             cellertek = ws.cell(row=r, column=utolso_nap_oszlop).value
             if van_ugyeletkod(cellertek):
-                lelepok.append(nev.strip())
+                lelepok.append(NEV_NORMALIZALAS.get(nev.strip(), nev.strip()))
 
-        print(f"Az utolsó napon ({utolso_nap_ertek}.) ügyeletben lévők (ők lépnek le): {lelepok}")
+        print(f"Az utolsó napon ({int(utolso_nap_ertek)}.) ügyeletben lévők (ők lépnek le): {lelepok}")
         json.dump({"elozo_honap_lelepok": lelepok}, open(KIMENET, "w", encoding="utf-8"), ensure_ascii=False)
 
     except Exception as e:

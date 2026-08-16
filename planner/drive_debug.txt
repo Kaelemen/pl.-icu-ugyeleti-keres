@@ -1,4 +1,0 @@
-Célhónap: 2026.09 - az előző hónap fülét keressük: 'aug'
-Használt fájl: Beosztás.xlsx  (application/vnd.openxmlformats-officedocument.spreadsheetml.sheet)
-Használt munkalap: aug
-Az utolsó napon (31.0.) ügyeletben lévők (ők lépnek le): ['Kovácsevics József', 'Daku Zsuzsanna', 'Rákóczi Réka']

@@ -56,22 +56,11 @@ jobs:
         run: |
           CEL_EV=$(python3 -c "import json; print(json.load(open('$KIV_FAJL', encoding='utf-8'))['ev'])")
           CEL_HONAP=$(python3 -c "import json; print(json.load(open('$KIV_FAJL', encoding='utf-8'))['honap'])")
-          CEL_EV="$CEL_EV" CEL_HONAP="$CEL_HONAP" python3 elozo_honap_auto.py 2>&1 | tee drive_debug.txt
+          CEL_EV="$CEL_EV" CEL_HONAP="$CEL_HONAP" python3 elozo_honap_auto.py
 
       - name: Automatikusan felismert leszállók beépítése a kívánságokba
         working-directory: planner
         run: python3 merge_elozo_honap.py "$KIV_FAJL"
-
-      - name: DEBUG commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          cp planner/drive_debug.txt planner/ 2>/dev/null || true
-          git add planner/drive_debug.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Debug: Drive olvasás diagnosztika 2"
-            git push
-          fi
 
       - name: Sablon felépítése
         working-directory: planner
