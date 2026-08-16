@@ -48,6 +48,16 @@ jobs:
             echo "KIV_FAJL=${{ github.event.inputs.kivansagok_fajl }}" >> $GITHUB_ENV
           fi
 
+      - name: Előző havi leszállók automatikus felismerése (Google Drive-ból)
+        working-directory: planner
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        run: python3 elozo_honap_auto.py
+
+      - name: Automatikusan felismert leszállók beépítése a kívánságokba
+        working-directory: planner
+        run: python3 merge_elozo_honap.py "$KIV_FAJL"
 
       - name: Sablon felépítése
         working-directory: planner
