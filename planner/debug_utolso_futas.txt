@@ -1,8 +1,0 @@
-kivansagok_json input hossza: 1889
---- KIV_FAJL: kivansagok_input.json ---
-kivansagok_input.json LÉTEZIK, mérete:
-1928 kivansagok_input.json
---- tartalom eleje ---
-{"ev": 2026, "honap": 9, "kivansagok": {"Daku Zsuzsa": {"szabadsag": [], "nem": [4, 5, 6], "szeret": []}, "Enyedi Marcián": {"szabadsag": [14, 15, 16, 17, 18, 19, 20], "nem": [10, 11, 12, 13], "szeret": [8]}, "Gulya Réka": {"szabadsag": [], "nem": [19], "szeret": [30]}, "Hajnal Csilla": {"szabadsag": [], "nem": [], "szeret": [4, 11, 19]}, "Kajner Krisztina": {"szabadsag": [1, 2, 3, 4, 5, 6], "nem": [], "szeret": [11, 14, 18, 19, 25, 26, 28, 30]}, "Karczub János": {"szabadsag": [11, 12, 13, 19
---- ev/honap kiolvasva ---
-ev: 2026 honap: 9
