@@ -589,6 +589,9 @@ for i, name in enumerate(staff_order_all):
     ws_staff.cell(row=STAFF_START + i, column=4, value=kert.get(name))
 
 ws_print = wb["Nyomtatási beosztás"]
+HONAP_NEVEK = ["", "Január", "Február", "Március", "Április", "Május", "Június",
+               "Július", "Augusztus", "Szeptember", "Október", "November", "December"]
+ws_print["A1"] = f"Nyomtatási beosztás (havi rács) — {HONAP_NEVEK[MONTH]} {YEAR}"
 PRINT_HEADER_ROW = 4
 PRINT_START = 5
 staff_order = staff_order_all
