@@ -340,7 +340,11 @@ for d in range(num_days):
         if nm:
             worked_days[nm].add(day_date)
 
+ELOZO_HONAP_LELEPOK = set(KIV.get("elozo_honap_lelepok", []))  # kik voltak ügyeletben az előző hónap utolsó napján
+
 def is_lelepo(name, day_date):
+    if (day_date - first_day).days == 0 and name in ELOZO_HONAP_LELEPOK:
+        return True
     return (day_date - datetime.timedelta(days=1)) in worked_days[name]
 
 # ---------------------------------------------------------------------------
