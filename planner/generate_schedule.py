@@ -343,6 +343,12 @@ for d in range(num_days):
 ELOZO_HONAP_LELEPOK = set(KIV.get("elozo_honap_lelepok", []))  # kik voltak ügyeletben az előző hónap utolsó napján
 
 def is_lelepo(name, day_date):
+    # Akinek fix, korlátozott heti munkanapja van (pl. Korompai: csak kedd-csütörtök),
+    # annál a saját munkanapján soha nem lehet lelépő - az egyetlen lehetséges
+    # jelenléti napja nem eshet ki emiatt, se a hónapváltás miatti felülírásból,
+    # se a rendes (előző napi ügyeletből eredő) lelépő-logikából.
+    if name in RENDES_NAP_CSAK_HETENTE and day_date.weekday() in RENDES_NAP_CSAK_HETENTE[name]:
+        return False
     if (day_date - first_day).days == 0 and name in ELOZO_HONAP_LELEPOK:
         return True
     return (day_date - datetime.timedelta(days=1)) in worked_days[name]
