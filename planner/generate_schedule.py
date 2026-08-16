@@ -263,7 +263,7 @@ for d in range(num_days):
             if pref in ("Szabadság", "Nem szeretne"):
                 continue
             ld = last_duty_date[name]
-            if ld is not None and (day_date - ld).days < MIN_PIHENO:
+            if ld is not None and (day_date - ld).days <= MIN_PIHENO:
                 continue
             if would_exceed_havi_kvota(name):
                 continue
@@ -311,7 +311,7 @@ for d in range(num_days):
                     continue
                 ld = last_duty_date[name]
                 temp_ld = None if name == current else ld
-                if temp_ld is not None and (day_date - temp_ld).days < MIN_PIHENO:
+                if temp_ld is not None and (day_date - temp_ld).days <= MIN_PIHENO:
                     continue
                 ratio = assigned_count[name] / target_weight[name]
                 if best is None or ratio < best[0]:
@@ -552,7 +552,7 @@ for name, *_ in staff:
                             for duty, nm in schedule[d].items() if nm == name)
     for i in range(1, len(days_for_name)):
         gap = (days_for_name[i] - days_for_name[i - 1]).days
-        if gap < MIN_PIHENO:
+        if gap <= MIN_PIHENO:
             violations.append(f"{name} gap {gap} {days_for_name[i-1]}->{days_for_name[i]}")
 
 print("Napok:", num_days)
