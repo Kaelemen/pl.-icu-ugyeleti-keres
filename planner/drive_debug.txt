@@ -1,2 +1,6 @@
 Célhónap: 2026.09 - az előző hónap fülét keressük: 'aug'
+DEBUG - a szolgáltatásfiók számára látható ÖSSZES elem:
+  Beosztás.xlsx  | mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet | id=13Lr4ZWSkAoo3-p8NK9dN_pI12hlXx9YB | parents=None
+  Beosztás.xlsx | mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet | id=1t9BROSacU5j38WvjteDOS9H6IBaI6QVn | parents=None
+DEBUG - a célmappa lekérése sikertelen: <HttpError 404 when requesting https://www.googleapis.com/drive/v3/files/1G9Ae5qRUR1jAsZrNOJVN_9HDmgaNAXEu?fields=id%2Cname%2CmimeType&alt=json returned "File not found: 1G9Ae5qRUR1jAsZrNOJVN_9HDmgaNAXEu.". Details: "[{'message': 'File not found: 1G9Ae5qRUR1jAsZrNOJVN_9HDmgaNAXEu.', 'domain': 'global', 'reason': 'notFound', 'location': 'fileId', 'locationType': 'parameter'}]">
 Nem található fájl a megosztott mappában - kihagyva.
