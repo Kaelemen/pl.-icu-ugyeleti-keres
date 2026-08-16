@@ -61,6 +61,17 @@ def main():
         creds = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
         service = build("drive", "v3", credentials=creds)
 
+        # DEBUG: mit lát egyáltalán a szolgáltatásfiók (a mappát magát is, mindent)
+        mind = service.files().list(pageSize=20, fields="files(id, name, mimeType, parents)").execute()
+        print("DEBUG - a szolgáltatásfiók számára látható ÖSSZES elem:")
+        for f in mind.get("files", []):
+            print(f"  {f.get('name')} | mimeType={f.get('mimeType')} | id={f.get('id')} | parents={f.get('parents')}")
+        try:
+            mappa_info = service.files().get(fileId=FOLDER_ID, fields="id,name,mimeType").execute()
+            print(f"DEBUG - maga a célmappa: {mappa_info}")
+        except Exception as e2:
+            print(f"DEBUG - a célmappa lekérése sikertelen: {e2}")
+
         results = service.files().list(
             q=f"'{FOLDER_ID}' in parents and trashed = false",
             orderBy="modifiedTime desc",
