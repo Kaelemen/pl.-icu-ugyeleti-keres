@@ -38,9 +38,11 @@ jobs:
 
       - name: Kívánságok fájl előkészítése
         working-directory: planner
+        env:
+          KIV_JSON_TARTALOM: ${{ github.event.inputs.kivansagok_json }}
         run: |
-          if [ -n "${{ github.event.inputs.kivansagok_json }}" ]; then
-            echo '${{ github.event.inputs.kivansagok_json }}' > kivansagok_input.json
+          if [ -n "$KIV_JSON_TARTALOM" ]; then
+            printf '%s' "$KIV_JSON_TARTALOM" > kivansagok_input.json
             echo "KIV_FAJL=kivansagok_input.json" >> $GITHUB_ENV
           else
             echo "KIV_FAJL=${{ github.event.inputs.kivansagok_fajl }}" >> $GITHUB_ENV
