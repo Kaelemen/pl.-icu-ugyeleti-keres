@@ -46,6 +46,28 @@ jobs:
             echo "KIV_FAJL=${{ github.event.inputs.kivansagok_fajl }}" >> $GITHUB_ENV
           fi
 
+      - name: DEBUG - diagnosztika a repóba
+        working-directory: planner
+        run: |
+          {
+            echo "kivansagok_json input hossza: ${#GITHUB_EVENT_KIV}"
+            echo "--- KIV_FAJL: $KIV_FAJL ---"
+            if [ -f kivansagok_input.json ]; then
+              echo "kivansagok_input.json LÉTEZIK, mérete:"
+              wc -c kivansagok_input.json
+              echo "--- tartalom eleje ---"
+              head -c 500 kivansagok_input.json
+              echo ""
+              echo "--- ev/honap kiolvasva ---"
+              python3 -c "import json; d=json.load(open('kivansagok_input.json',encoding='utf-8')); print('ev:',d.get('ev'),'honap:',d.get('honap'))" || echo "JSON PARSE HIBA"
+            else
+              echo "kivansagok_input.json NEM létezik - a fallback fájlt fogja használni: $KIV_FAJL"
+            fi
+          } > debug_utolso_futas.txt
+          cat debug_utolso_futas.txt
+        env:
+          GITHUB_EVENT_KIV: ${{ github.event.inputs.kivansagok_json }}
+
       - name: Sablon felépítése
         working-directory: planner
         run: python3 build.py
@@ -89,3 +111,14 @@ jobs:
           path: |
             planner/ICU_beosztas_nyomtathato.xlsx
           retention-days: 30
+
+      - name: DEBUG fájl commitolása
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          cp planner/debug_utolso_futas.txt planner/ 2>/dev/null || true
+          git add planner/debug_utolso_futas.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Debug: utolsó futás diagnosztikája"
+            git push
+          fi
