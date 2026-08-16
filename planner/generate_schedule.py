@@ -25,6 +25,14 @@ with open(SZABALYOK_PATH, encoding="utf-8") as f:
 with open(KIVANSAGOK_PATH, encoding="utf-8") as f:
     KIV = json.load(f)
 
+# Ha a kívánság-fájl tartalmaz "dolgozok" listát (a webes admin felület Dolgozók
+# kezelése szekciójából jön), az felülírja a szabalyok.json-ban lévő törzsadatot -
+# így az admin felületen felvett/törölt/módosított dolgozók azonnal érvényesülnek,
+# nem kell külön kézzel frissíteni a szabalyok.json-t is.
+if KIV.get("dolgozok"):
+    SZAB["dolgozok"] = KIV["dolgozok"]
+    print(f"Dolgozói törzsadat felülírva a kívánság-fájlból ({len(KIV['dolgozok'])} fő).")
+
 YEAR, MONTH = KIV["ev"], KIV["honap"]
 first_day = datetime.date(YEAR, MONTH, 1)
 next_month = datetime.date(YEAR, MONTH + 1, 1) if MONTH != 12 else datetime.date(YEAR + 1, 1, 1)
@@ -91,6 +99,8 @@ RESZMUNKAIDO_TOL = {}   # name -> első nap (int), amitől "rendesen" jelen van
 
 for szab in SZAB["szemelyi_megkotesek"]:
     name = szab["nev"]
+    if name not in staff_order_all:
+        continue  # a dolgozó törölve lett az admin felületen - a régi személyi szabálya kihagyva
     tipus = szab["tipus"]
     if tipus == "tiltott_napok_hetente":
         days = []

@@ -64,7 +64,7 @@ jobs:
 
       - name: Sablon felépítése
         working-directory: planner
-        run: python3 build.py
+        run: python3 build.py ICU_ugyeleti_beosztas.xlsx "$KIV_FAJL"
 
       - name: Beosztás generálása (1 változat)
         if: ${{ github.event.inputs.valtozatok == '1' }}

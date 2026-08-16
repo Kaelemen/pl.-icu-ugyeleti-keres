@@ -12,6 +12,7 @@ from openpyxl.worksheet.protection import SheetProtection
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 KIMENET_PATH = sys.argv[1] if len(sys.argv) > 1 else os.path.join(SCRIPT_DIR, "ICU_ugyeleti_beosztas.xlsx")
+KIVANSAGOK_PATH = sys.argv[2] if len(sys.argv) > 2 else None
 
 FONT_NAME = "Arial"
 
@@ -22,6 +23,18 @@ FONT_NAME = "Arial"
 import json as _json
 with open(os.path.join(SCRIPT_DIR, "szabalyok.json"), encoding="utf-8") as _f:
     _SZAB = _json.load(_f)
+
+# Ha kaptunk kívánság-fájlt és abban van felülíró "dolgozok" lista (a webes admin
+# felület Dolgozók kezelése szekciójából), azzal építjük fel a sablont - így a
+# Kívánságok/Ellenőrzés lapok sor-hivatkozásai mindig a TÉNYLEGES, aktuális
+# dolgozói listával lesznek szinkronban, sose a generate_schedule.py-val eltérő
+# régi adattal.
+if KIVANSAGOK_PATH and os.path.exists(KIVANSAGOK_PATH):
+    with open(KIVANSAGOK_PATH, encoding="utf-8") as _f:
+        _KIV = _json.load(_f)
+    if _KIV.get("dolgozok"):
+        _SZAB["dolgozok"] = _KIV["dolgozok"]
+        print(f"[build.py] Dolgozói törzsadat felülírva a kívánság-fájlból ({len(_KIV['dolgozok'])} fő).")
 
 staff = [(d["nev"], d["kategoria"], d["napi_munkaido"] or 0) for d in _SZAB["dolgozok"]]
 
