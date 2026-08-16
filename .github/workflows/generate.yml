@@ -53,11 +53,22 @@ jobs:
         env:
           GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
-        run: python3 elozo_honap_auto.py
+        run: python3 elozo_honap_auto.py 2>&1 | tee drive_debug.txt
 
       - name: Automatikusan felismert leszállók beépítése a kívánságokba
         working-directory: planner
         run: python3 merge_elozo_honap.py "$KIV_FAJL"
+
+      - name: DEBUG commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          cp planner/drive_debug.txt planner/ 2>/dev/null || true
+          git add planner/drive_debug.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Debug: Drive olvasás diagnosztika"
+            git push
+          fi
 
       - name: Sablon felépítése
         working-directory: planner
