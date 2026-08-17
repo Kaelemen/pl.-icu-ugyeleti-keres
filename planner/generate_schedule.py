@@ -24,6 +24,7 @@ with open(SZABALYOK_PATH, encoding="utf-8") as f:
     SZAB = json.load(f)
 with open(KIVANSAGOK_PATH, encoding="utf-8") as f:
     KIV = json.load(f)
+MINDENKEPPEN_SZERETNE = KIV.get("mindenkeppen_szeretne", {})  # nev -> [napok], amiket mindenképp szeretne ügyeletben
 
 # Ha a kívánság-fájl tartalmaz "dolgozok" listát (a webes admin felület Dolgozók
 # kezelése szekciójából jön), az felülírja a szabalyok.json-ban lévő törzsadatot -
@@ -253,16 +254,65 @@ def would_exceed_havi_kvota(name, extra_duties=1):
     return (assigned_count[name] + extra_duties) * 24 > kvota
 
 duty_types = ["Intenzív", "Aneszt", "Stroke"]
-schedule = {}
+schedule = {d: {} for d in range(num_days)}
+today_assigned_by_day = {d: set() for d in range(num_days)}
+
+# ---------------------------------------------------------------------------
+# ELSŐBBSÉGI KÖR: "mindenképpen szeretném" napok beírása a fő kiosztás előtt.
+# Csak akkor íródik be, ha nem ütközik semmilyen kemény szabállyal (pihenőidő,
+# havi/rész-munkaidős keret, személyi ügyelet-tiltás, kategória-egyezés, az adott
+# napon már ne legyen ügyeletben). A "legalább egy szakorvos" utólagos ellenőrzés
+# ugyanúgy lefut ezekre a napokra is, mint bármelyik másikra.
+for name, napok in MINDENKEPPEN_SZERETNE.items():
+    if name not in tipus_of:
+        continue  # ismeretlen név (pl. törölt dolgozó) - kihagyjuk
+    cat = next((c for n, c, *_ in staff if n == name), None)
+    if cat is None:
+        continue
+    for day_nap in napok:
+        d = day_nap - 1
+        if d < 0 or d >= num_days:
+            continue
+        day_date = first_day + datetime.timedelta(days=d)
+        is_saturday_p = day_date.weekday() == 5
+        if name in today_assigned_by_day[d]:
+            continue  # már be van osztva aznap valamelyik (korábbi) elsőbbségi napja miatt
+        pref = prefs.get((name, day_date))
+        if pref in ("Szabadság", "Nem szeretne"):
+            continue
+        ld = last_duty_date[name]
+        if ld is not None and (day_date - ld).days <= MIN_PIHENO:
+            continue
+        if would_exceed_havi_kvota(name):
+            continue
+        if ugyelet_tiltott(name, day_date):
+            continue
+        if would_exceed_resz_kapacitas(name, day_date):
+            continue
+        for duty in duty_types:
+            if duty == "Stroke" and is_saturday_p and SZOMBAT_NINCS_STROKE:
+                continue
+            if schedule[d].get(duty) is not None:
+                continue  # ezt a szerepet aznap már betöltötte valaki (max. napi keret)
+            if not eligible(cat, duty):
+                continue
+            schedule[d][duty] = name
+            today_assigned_by_day[d].add(name)
+            assigned_count[name] += 1
+            last_duty_date[name] = day_date
+            if name in RESZ_NAPI_ORASZAMOS:
+                kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date)
+            break
 
 for d in range(num_days):
     day_date = first_day + datetime.timedelta(days=d)
     is_saturday = day_date.weekday() == 5
-    today_assigned = set()
-    schedule[d] = {}
+    today_assigned = today_assigned_by_day[d]
     for duty in duty_types:
         if duty == "Stroke" and is_saturday and SZOMBAT_NINCS_STROKE:
             continue
+        if schedule[d].get(duty) is not None:
+            continue  # az elsőbbségi kör már betöltötte ezt a szerepet aznap
         candidates = []
         for name, cat, hrs, req, tipus in staff:
             if not eligible(cat, duty):
