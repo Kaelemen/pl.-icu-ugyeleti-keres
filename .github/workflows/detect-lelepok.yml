@@ -1,0 +1,44 @@
+name: Leszállók felismerése (gyors)
+
+"on":
+  workflow_dispatch:
+    inputs:
+      cel_ev:
+        description: 'Melyik évre generálunk (a felismerés az EZT MEGELŐZŐ hónapot nézi)'
+        required: true
+        type: string
+      cel_honap:
+        description: 'Melyik hónapra generálunk (1-12)'
+        required: true
+        type: string
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python beállítása
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Függőségek telepítése
+        run: pip install openpyxl google-api-python-client google-auth
+
+      - name: Leszállók felismerése
+        working-directory: planner
+        env:
+          GDRIVE_SERVICE_ACCOUNT_JSON: ${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          CEL_EV: ${{ github.event.inputs.cel_ev }}
+          CEL_HONAP: ${{ github.event.inputs.cel_honap }}
+        run: python3 elozo_honap_auto.py
+
+      - name: Eredmény feltöltése
+        uses: actions/upload-artifact@v4
+        with:
+          name: lelepok-eredmeny
+          path: planner/elozo_honap_auto.json
+          retention-days: 1
