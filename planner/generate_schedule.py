@@ -232,15 +232,19 @@ def ugyelet_tiltott(name, day_date):
     return not nap_engedelyezett(name, day_nap, "ugyelet")
 
 def eligible(cat, duty):
+    if cat == "T":
+        return False  # T kategória: sosem osztható be semmilyen ügyeletre
     if duty == "Intenzív":
         return cat == "I"
     if duty == "Aneszt":
         return cat in ("I", "A")
     if duty == "Stroke":
-        return cat in ("I", "A", "S")
+        return cat in ("I", "A", "St")
     return False
 
 tipus_of = {name: tipus for name, _, _, _, tipus in staff}
+cat_of = {name: cat for name, cat, *_ in staff}
+T_KATEGORIA_NEVEK = {name for name, cat in cat_of.items() if cat == "T"}
 assigned_count = {name: 0 for name, *_ in staff}
 target_weight = {name: (req if req else hrs) for name, _, hrs, req, _ in staff}
 last_duty_date = {name: None for name, *_ in staff}
@@ -423,6 +427,8 @@ o_assigned_count = {name: 0 for name, *_ in staff}
 o1_o2 = {}
 
 def is_available_for_O(name, day_date, exclude=()):
+    if name in T_KATEGORIA_NEVEK:
+        return False  # T kategória sosem osztályos
     if name in exclude:
         return False
     if name in schedule[(day_date - first_day).days].values():
@@ -454,6 +460,8 @@ def is_available_for_O(name, day_date, exclude=()):
 def is_available_for_O2(name, day_date, exclude=()):
     """Az O2-nél az St és A ügyeletesek is szóba jöhetnek (nappal még dolgoznak,
     az ügyeletük csak este kezdődik) - csak az Intenzív-ügyeletes van kizárva."""
+    if name in T_KATEGORIA_NEVEK:
+        return False  # T kategória sosem osztályos
     if name in exclude:
         return False
     if schedule[(day_date - first_day).days].get("Intenzív") == name:
@@ -548,6 +556,8 @@ for d in range(num_days):
     ito_present = 1 if schedule[d].get("Intenzív") else 0
     mr_present = 1 if any(heti_fix_esemeny_ma(nm, day_date) for nm in staff_order_all) else 0
     for name in staff_order_all:
+        if name in T_KATEGORIA_NEVEK:
+            continue  # T kategória sosem számít a műtői/O1-O2 előszámláló jelenlétbe
         if jelenlet_tiltott(name, day_date) and name not in schedule[d].values():
             continue
         if nem_dolgozik_hetente_ma(name, day_date) and name not in schedule[d].values():
@@ -746,12 +756,15 @@ for d in range(num_days):
             code = ""  # rezidens külsős gyakorlaton - csak visszahívással kaphat "m"-et, ld. lentebb
         elif keret_of(name) != "Napi":
             code = ""
+        elif name in T_KATEGORIA_NEVEK:
+            code = "t"  # T kategória: minden munkanapon bent van, kis "t" jelöléssel, ügyeletre nem osztható
         else:
             code = "m"
 
         if code and code != "el":
-            present_count += 1
             aktiv_nap_count[name] += 1
+            if name not in T_KATEGORIA_NEVEK:
+                present_count += 1
         if name in duty_today:
             if is_weekend:
                 hetvegi_ugyelet_count[name] += 1
