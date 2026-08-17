@@ -1,0 +1,39 @@
+name: Napi Firestore biztonsági mentés
+
+"on":
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python beállítása
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Függőségek telepítése
+        run: pip install requests
+
+      - name: Mentés készítése
+        working-directory: planner
+        run: python3 firestore_backup.py
+
+      - name: Mentés commitolása a repóba
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          git add planner/backups/ || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Napi Firestore mentés: $(date +%Y-%m-%d)"
+            git push
+          else
+            echo "Nincs változás, nincs mit commitolni."
+          fi
