@@ -670,6 +670,14 @@ muto_row = PRINT_START + len(staff_order)
 WEEKEND_FILL = PatternFill("solid", fgColor="C6E0B4")
 SZABADSAG_FILL = PatternFill("solid", fgColor="000000")
 SZABADSAG_FONT = XLFont(name="Arial", size=9, color="FFFFFF")
+NEM_SZERETNE_FILL = PatternFill("solid", fgColor="C23B3B")
+NEM_SZERETNE_FONT = XLFont(name="Arial", size=9, color="FFFFFF")
+SZERETNE_FILL = PatternFill("solid", fgColor="2E7D4F")
+SZERETNE_FONT = XLFont(name="Arial", size=9, color="FFFFFF")
+MINDENKEPPEN_FILL = PatternFill("solid", fgColor="C9A227")
+MINDENKEPPEN_FONT = XLFont(name="Arial", size=9, color="1C2521")
+NYOLCORA_FILL = PatternFill("solid", fgColor="3D6FB4")
+NYOLCORA_FONT = XLFont(name="Arial", size=9, color="FFFFFF")
 
 m_count = {name: 0 for name in staff_order}
 aktiv_nap_count = {name: 0 for name in staff_order}
@@ -758,9 +766,22 @@ for d in range(num_days):
         if name in KULSOS_GYAKORLATON and code == "" and day_date.weekday() < 5:
             kulsos_hetkoznap_count[name] += 1
         cell = ws_print.cell(row=row_of[name], column=col, value=code if code else None)
+        day_nap = d + 1
         if on_szabadsag:
             cell.fill = SZABADSAG_FILL
             cell.font = SZABADSAG_FONT
+        elif day_nap in MINDENKEPPEN_SZERETNE.get(name, []):
+            cell.fill = MINDENKEPPEN_FILL
+            cell.font = MINDENKEPPEN_FONT
+        elif day_nap in kivansagok.get(name, {}).get("nem", []):
+            cell.fill = NEM_SZERETNE_FILL
+            cell.font = NEM_SZERETNE_FONT
+        elif day_nap in kivansagok.get(name, {}).get("szeret", []):
+            cell.fill = SZERETNE_FILL
+            cell.font = SZERETNE_FONT
+        elif day_nap in NYOLC_ORA_NAPPAL.get(name, []):
+            cell.fill = NYOLCORA_FILL
+            cell.font = NYOLCORA_FONT
         elif is_weekend:
             cell.fill = WEEKEND_FILL
 
