@@ -256,7 +256,18 @@ tipus_of = {name: tipus for name, _, _, _, tipus in staff}
 cat_of = {name: cat for name, cat, *_ in staff}
 T_KATEGORIA_NEVEK = {name for name, cat in cat_of.items() if cat == "T"}
 assigned_count = {name: 0 for name, *_ in staff}
-target_weight = {name: (req if req else hrs) for name, _, hrs, req, _ in staff}
+target_weight = {}
+for name, _cat, hrs, req, _tipus in staff:
+    if req:
+        target_weight[name] = req
+    elif name in HAVI_KERETESEK and havi_oraszam_map.get(name):
+        # Havi keretes dolgozóknál (pl. Pintér Enikő) a célérték a havi órakeretükből
+        # számolt szükséges ügyeletszám (24 óra/ügyelet), NEM a napi óradíjuk - különben
+        # az arányossági logika túl korán "eleget kapottnak" tekinti őket, és a havi
+        # kötelező órájuk nem teljesül.
+        target_weight[name] = havi_oraszam_map[name] / 24
+    else:
+        target_weight[name] = hrs
 # Minden ügyeleti napot nyilvántartunk (nem csak az utolsót!) - az elsőbbségi kör miatt
 # előfordulhat, hogy egy KÉSŐBBI napra már be van osztva valaki, mielőtt a fő ciklus elér egy
 # KORÁBBI naphoz - egyetlen "utolsó dátum" mező ilyenkor felülíródna és elveszne a védelem.
