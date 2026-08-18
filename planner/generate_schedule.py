@@ -86,6 +86,13 @@ for name, v in KIV["kivansagok"].items():
                          "nem": list(v.get("nem", [])),
                          "szeret": list(v.get("szeret", []))}
 
+# Pillanatkép a TÉNYLEGESEN, kifejezetten beküldött kérésekről - mielőtt bármilyen
+# személyi szabály vagy "csak jelölt napokon dolgozik" logika automatikusan kibővítené
+# a "nem" listát. Ez a nyomtatható lap színezéséhez kell, hogy csak azt mutassuk pirosnak,
+# amit a dolgozó ténylegesen "nem szeretne"-ként jelölt - ne az algoritmus belső,
+# levezetett kiegészítéseit.
+EREDETI_KIVANSAGOK = {name: {k: list(v) for k, v in p.items()} for name, p in kivansagok.items()}
+
 def days_by_weekday(weekday_idx):
     out = []
     for d in range(num_days):
@@ -792,10 +799,10 @@ for d in range(num_days):
             # egymást, és a kék jelzés hasznosabb infó, mint az általános piros.
             cell.fill = NYOLCORA_FILL
             cell.font = NYOLCORA_FONT
-        elif day_nap in kivansagok.get(name, {}).get("nem", []):
+        elif day_nap in EREDETI_KIVANSAGOK.get(name, {}).get("nem", []):
             cell.fill = NEM_SZERETNE_FILL
             cell.font = NEM_SZERETNE_FONT
-        elif day_nap in kivansagok.get(name, {}).get("szeret", []):
+        elif day_nap in EREDETI_KIVANSAGOK.get(name, {}).get("szeret", []):
             cell.fill = SZERETNE_FILL
             cell.font = SZERETNE_FONT
         elif is_weekend:
