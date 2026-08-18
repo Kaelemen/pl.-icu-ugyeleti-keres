@@ -438,8 +438,9 @@ def is_available_for_O(name, day_date, exclude=()):
         return False  # T kategória sosem osztályos
     if name in exclude:
         return False
-    if name in schedule[(day_date - first_day).days].values():
-        return False
+    if name != O1_ALAP and name in schedule[(day_date - first_day).days].values():
+        return False  # az alapértelmezett O1-es (pl. Kelemen) akkor is O1 lehet, ha aznap
+                       # ügyeletben van - ilyenkor "I/O1", "A/O1" vagy "St/O1" kombinált kód lesz
     if is_szabadsag(name, day_date):
         return False
     if is_lelepo(name, day_date):

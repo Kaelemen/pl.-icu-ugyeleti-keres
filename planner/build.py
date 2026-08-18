@@ -37,6 +37,7 @@ if KIVANSAGOK_PATH and os.path.exists(KIVANSAGOK_PATH):
         print(f"[build.py] Dolgozói törzsadat felülírva a kívánság-fájlból ({len(_KIV['dolgozok'])} fő).")
 
 staff = [(d["nev"], d["kategoria"], d["napi_munkaido"] or 0) for d in _SZAB["dolgozok"]]
+O1_ALAP = _SZAB.get("altalanos_szabalyok", {}).get("o1_alapertelmezett_szemely", "")
 
 HAVI_KERETESEK = {d["nev"] for d in _SZAB["dolgozok"]
                    if d["szerzodes_tipus"] == "Részmunkaidő - havi órakeret"}
@@ -604,7 +605,7 @@ for i in range(31):
     )
     o_check = (
         f'IF(AND($F{r}<>"",$F{r}=$G{r}),"Az O1 és O2 nem lehet ugyanaz a fő! ","")'
-        f'&IF(AND($F{r}<>"",OR($F{r}=$C{r},$F{r}=$D{r},$F{r}=$E{r})),'
+        f'&IF(AND($F{r}<>"",$F{r}<>"{O1_ALAP}",OR($F{r}=$C{r},$F{r}=$D{r},$F{r}=$E{r})),'
         f'"Az O1 osztályos nem lehet egyben ügyeletes is! ","")'
         f'&IF(AND($G{r}<>"",$G{r}=$C{r}),'
         f'"Az O2 osztályos nem lehet egyben Intenzív-ügyeletes! ","")'
