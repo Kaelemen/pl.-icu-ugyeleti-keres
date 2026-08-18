@@ -1,0 +1,34 @@
+=== GULYA ÉLŐ ADATOK A FIRESTORE-BÓL ===
+keresek dokumentum (ev=2026, honap=9):
+{
+  "szabadsag": "",
+  "mindenkeppen_szeretne": "30",
+  "megjegyzes": "",
+  "kulsos_gyakorlat": null,
+  "nev": "Gulya Réka",
+  "nyolc_ora_nappal": "",
+  "ev": 2026,
+  "nincs_keres": false,
+  "nem_szeretne": "19",
+  "admin_rogzitette": true,
+  "honap": 9,
+  "szeretne": "",
+  "beadva": "2026-08-18T14:58:59.588Z",
+  "kert_ugyeletszam": null
+}
+
+reszmunkaido_periodusok dokumentumok:
+{
+  "ev": 2026,
+  "adatok": {
+    "Gulya Réka": {
+      "tipus": "csak_ettol_a_naptol",
+      "nap": 16
+    },
+    "Balogh László": {
+      "nap": 14,
+      "tipus": "csak_ettol_a_naptol"
+    }
+  },
+  "honap": 9
+}
