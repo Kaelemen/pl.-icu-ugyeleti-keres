@@ -1069,6 +1069,12 @@ for name in staff_order:
         ws_print.cell(row=row_of[name], column=35, value=tulora)
     else:
         ugyeleti_total = 24 * duty_count
+        if name in HAVI_KERETESEK and havi_oraszam_map.get(name):
+            # Folyamatos munkarendű, havi keretes dolgozóknál (pl. Pintér Enikő) nincs
+            # külön nappali/ügyeleti bontás - minden ledolgozott óra (nappal, ügyeletben,
+            # hétvégén) egyben számít a havi kerethez képest.
+            tulora = math.floor(ugyeleti_total - havi_oraszam_map[name] + 0.5)
+            ws_print.cell(row=row_of[name], column=35, value=tulora)
     ws_print.cell(row=row_of[name], column=34, value=ugyeleti_total)
 
     # Óraelszámolás lap szinkronban tartása ugyanezzel a (helyes, teljes) számítással

@@ -793,8 +793,9 @@ ws_print["A2"] = ('Ezt a lapot a beosztás-generáló script tölti fel a Beoszt
                    'I=Intenzív, A=Aneszt, St=Stroke, O1/O2=osztályos, Mr=MR-altatás, el=lelépő nap, '
                    'm=rendes munkanap. A "Műtő" sor a min. 7 fős műtői létszámhoz képesti eltérést mutatja. '
                    'A Teljesített nappali óraszám a lelépős órákat is tartalmazza; havi keretesnél a teljes '
-                   'ügyeleti óraszám az "Ügyeletben töltött órák" oszlopba kerül. A Túlóra (nappali) a '
-                   'teljesített nappali óraszámnak a szerződéses kapacitást meghaladó része.')
+                   'ügyeleti óraszám az "Ügyeletben töltött órák" oszlopba kerül. A Túlóra a szerződéses '
+                   'havi kapacitást meghaladó (vagy alatta maradó, ha negatív) órák száma - "Napi" keretnél '
+                   'csak a nappali órák, folyamatos munkarendű havi keretnél az összes ledolgozott óra alapján.')
 ws_print["A2"].font = Font(name=FONT_NAME, size=10, italic=True, color="808080")
 ws_print["A2"].alignment = left
 ws_print.merge_cells("A2:AI2")
@@ -816,7 +817,7 @@ for i in range(31):
     c_hdr.alignment = center
     c_hdr.border = border
 
-for label, col in (("Teljesített nappali óraszám", 33), ("Ügyeletben töltött órák", 34), ("Túlóra (nappali)", 35)):
+for label, col in (("Teljesített nappali óraszám", 33), ("Ügyeletben töltött órák", 34), ("Túlóra", 35)):
     c = ws_print.cell(row=PRINT_HEADER_ROW, column=col, value=label)
     c.font = header_font
     c.fill = header_fill
