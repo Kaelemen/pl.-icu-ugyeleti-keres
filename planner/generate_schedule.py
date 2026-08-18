@@ -6,6 +6,7 @@ Használat: python3 generate_schedule.py [kivansagok_fajl.json] [sablon.xlsx] [k
 """
 import sys
 import json
+import math
 import datetime
 import random
 import openpyxl
@@ -1047,12 +1048,14 @@ for name in staff_order:
                           napi_rate * kulsos_hetkoznap_count.get(name, 0))
         ugyeleti_total = 16 * hetkoznapi_ugyelet_count[name] + 24 * hetvegi_ugyelet_count[name]
         ws_print.cell(row=row_of[name], column=33, value=nappali_total)
-        # Túlóra (nappali): a teljesített nappali óraszámnak a szerződéses havi kapacitást
-        # meghaladó része - a rész-munkaidősöknél a már meglévő kapacitás-értéket használjuk,
-        # teljes állásúaknál ugyanazzal a képlettel (napi óradíj × havi munkanapok) számolva.
+        # Túlóra (nappali): a teljesített nappali óraszám eltérése a szerződéses havi
+        # kapacitástól - pozitív, ha túllépte, negatív, ha nem teljesítette. A rész-munkaidősöknél
+        # a már meglévő kapacitás-értéket használjuk, teljes állásúaknál ugyanazzal a képlettel
+        # (napi óradíj × havi munkanapok) számolva. Kerekítés a matematikai szabály szerint
+        # (0,5-től felfelé), egész órára.
         kapacitas_altalanos = RESZ_NAPI_KAPACITAS.get(name, napi_rate * munkanapok_a_honapban)
-        tulora = max(0, round(nappali_total - kapacitas_altalanos, 1))
-        ws_print.cell(row=row_of[name], column=35, value=tulora if tulora else None)
+        tulora = math.floor(nappali_total - kapacitas_altalanos + 0.5)
+        ws_print.cell(row=row_of[name], column=35, value=tulora)
     else:
         ugyeleti_total = 24 * duty_count
     ws_print.cell(row=row_of[name], column=34, value=ugyeleti_total)
