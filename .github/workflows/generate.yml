@@ -69,14 +69,7 @@ jobs:
       - name: Beosztás generálása (1 változat)
         if: ${{ github.event.inputs.valtozatok == '1' }}
         working-directory: planner
-        run: |
-          python3 -c "
-import json
-kiv = json.load(open('$KIV_FAJL', encoding='utf-8'))
-print('reszmunkaido_periodusok:', kiv.get('reszmunkaido_periodusok'))
-print('Gulya kivansaga:', kiv.get('kivansagok', {}).get('Gulya Réka'))
-" > gulya_debug.txt
-          python3 generate_schedule.py "$KIV_FAJL" ICU_ugyeleti_beosztas.xlsx ICU_ugyeleti_beosztas_kimenet.xlsx | tee -a gulya_debug.txt
+        run: python3 generate_schedule.py "$KIV_FAJL" ICU_ugyeleti_beosztas.xlsx ICU_ugyeleti_beosztas_kimenet.xlsx
 
       - name: Beosztás generálása (4 változat)
         if: ${{ github.event.inputs.valtozatok == '4' }}
@@ -112,14 +105,3 @@ print('Gulya kivansaga:', kiv.get('kivansagok', {}).get('Gulya Réka'))
           path: |
             planner/ICU_beosztas_nyomtathato.xlsx
           retention-days: 30
-
-      - name: DEBUG commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          cp planner/gulya_debug.txt planner/ 2>/dev/null || true
-          git add planner/gulya_debug.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Debug: Gulya diagnosztika"
-            git push
-          fi
