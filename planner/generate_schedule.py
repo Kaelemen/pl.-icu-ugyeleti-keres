@@ -1105,10 +1105,12 @@ for name in staff_order:
         # kapacitástól - pozitív, ha túllépte, negatív, ha nem teljesítette. A rész-munkaidősöknél
         # a már meglévő kapacitás-értéket használjuk, teljes állásúaknál ugyanazzal a képlettel
         # (napi óradíj × havi munkanapok) számolva. Kerekítés a matematikai szabály szerint
-        # (0,5-től felfelé), egész órára.
-        kapacitas_altalanos = RESZ_NAPI_KAPACITAS.get(name, napi_rate * munkanapok_a_honapban)
-        tulora = math.floor(nappali_total - kapacitas_altalanos + 0.5)
-        ws_print.cell(row=row_of[name], column=35, value=tulora)
+        # (0,5-től felfelé), egész órára. Berkes Tíbornál nincs túlóra-számítás - ő csak a
+        # jelölt napokon jön, nincs havi elvárt kapacitása.
+        if name != "Berkes Tíbor":
+            kapacitas_altalanos = RESZ_NAPI_KAPACITAS.get(name, napi_rate * munkanapok_a_honapban)
+            tulora = math.floor(nappali_total - kapacitas_altalanos + 0.5)
+            ws_print.cell(row=row_of[name], column=35, value=tulora)
     else:
         ugyeleti_total = 24 * duty_count
         if name in HAVI_KERETESEK and havi_oraszam_map.get(name):
