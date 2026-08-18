@@ -786,15 +786,18 @@ for d in range(num_days):
         elif day_nap in MINDENKEPPEN_SZERETNE.get(name, []):
             cell.fill = MINDENKEPPEN_FILL
             cell.font = MINDENKEPPEN_FONT
+        elif day_nap in NYOLC_ORA_NAPPAL.get(name, []):
+            # a "8 óra alkalmas" külön dologról szól (rendes napi munka, nem ügyelet),
+            # ezért ez megelőzi a "nem szeretné ügyeletet" jelzést - a kettő nem zárja ki
+            # egymást, és a kék jelzés hasznosabb infó, mint az általános piros.
+            cell.fill = NYOLCORA_FILL
+            cell.font = NYOLCORA_FONT
         elif day_nap in kivansagok.get(name, {}).get("nem", []):
             cell.fill = NEM_SZERETNE_FILL
             cell.font = NEM_SZERETNE_FONT
         elif day_nap in kivansagok.get(name, {}).get("szeret", []):
             cell.fill = SZERETNE_FILL
             cell.font = SZERETNE_FONT
-        elif day_nap in NYOLC_ORA_NAPPAL.get(name, []):
-            cell.fill = NYOLCORA_FILL
-            cell.font = NYOLCORA_FONT
         elif is_weekend:
             cell.fill = WEEKEND_FILL
 
