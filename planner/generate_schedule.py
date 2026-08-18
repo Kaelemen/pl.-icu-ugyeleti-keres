@@ -56,6 +56,15 @@ HAVI_KERETESEK = {nev for nev, kt in keret_tipus_map.items() if kt == "Havi"}
 REZIDENSEK = {d["nev"] for d in SZAB["dolgozok"] if d["tipus"] == "Rezidens"}
 KULSOS_GYAKORLATON = set(KIV.get("kulsos_gyakorlaton", []))  # rezidensek, akik ebben a hónapban külsős gyakorlaton vannak
 
+# 3 havi kiegyenlítés: az előző hónap túlórája (Google Drive-ból automatikusan beolvasva,
+# vagy admin által kézzel megadva) csökkenti (ha pozitív), illetve növeli (ha negatív, azaz
+# hiány volt) a jelen hónap kötelező óraszám-keretét - így törekszünk rá, hogy 3 hónap alatt
+# nullázódjon a túlóra/hiány.
+ELOZO_HONAP_TULORA = KIV.get("elozo_honap_tulora", {})
+for _nev, _tulora in ELOZO_HONAP_TULORA.items():
+    if _nev in havi_oraszam_map:
+        havi_oraszam_map[_nev] = havi_oraszam_map[_nev] - _tulora
+
 def keret_of(name):
     return keret_tipus_map.get(name, "Napi")
 
@@ -75,6 +84,9 @@ munkanapok_a_honapban = sum(1 for d in range(num_days)
 RESZ_NAPI_ORASZAMOS = {d["nev"]: d["napi_munkaido"] for d in SZAB["dolgozok"]
                         if d["szerzodes_tipus"] == "Részmunkaidő - napi óraszám"}
 RESZ_NAPI_KAPACITAS = {nev: napi * munkanapok_a_honapban for nev, napi in RESZ_NAPI_ORASZAMOS.items()}
+for _nev, _tulora in ELOZO_HONAP_TULORA.items():
+    if _nev in RESZ_NAPI_KAPACITAS:
+        RESZ_NAPI_KAPACITAS[_nev] = RESZ_NAPI_KAPACITAS[_nev] - _tulora
 kotelezo_ora_used = {nev: 0 for nev in RESZ_NAPI_ORASZAMOS}
 
 # ---------------------------------------------------------------------------
@@ -1108,7 +1120,8 @@ for name in staff_order:
         # (0,5-től felfelé), egész órára. Berkes Tíbornál nincs túlóra-számítás - ő csak a
         # jelölt napokon jön, nincs havi elvárt kapacitása.
         if name != "Berkes Tíbor":
-            kapacitas_altalanos = RESZ_NAPI_KAPACITAS.get(name, napi_rate * munkanapok_a_honapban)
+            kapacitas_altalanos = RESZ_NAPI_KAPACITAS.get(
+                name, napi_rate * munkanapok_a_honapban - ELOZO_HONAP_TULORA.get(name, 0))
             tulora = math.floor(nappali_total - kapacitas_altalanos + 0.5)
             ws_print.cell(row=row_of[name], column=35, value=tulora)
     else:
