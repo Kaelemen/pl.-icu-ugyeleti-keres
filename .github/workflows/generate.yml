@@ -50,7 +50,7 @@ jobs:
 
       - name: DEBUG - Gulya adatai
         working-directory: planner
-        run: python3 debug_gulya.py "$KIV_FAJL" > gulya_debug.txt 2>&1; cat gulya_debug.txt
+        run: pip install --quiet requests && python3 debug_gulya.py > gulya_debug.txt 2>&1; cat gulya_debug.txt
 
       - name: Előző havi leszállók automatikus felismerése (Google Drive-ból)
         working-directory: planner
