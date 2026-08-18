@@ -48,6 +48,10 @@ jobs:
             echo "KIV_FAJL=${{ github.event.inputs.kivansagok_fajl }}" >> $GITHUB_ENV
           fi
 
+      - name: DEBUG - Gulya adatai
+        working-directory: planner
+        run: python3 debug_gulya.py "$KIV_FAJL" > gulya_debug.txt 2>&1; cat gulya_debug.txt
+
       - name: Előző havi leszállók automatikus felismerése (Google Drive-ból)
         working-directory: planner
         env:
@@ -105,3 +109,14 @@ jobs:
           path: |
             planner/ICU_beosztas_nyomtathato.xlsx
           retention-days: 30
+
+      - name: DEBUG commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          cp planner/gulya_debug.txt planner/ 2>/dev/null || true
+          git add planner/gulya_debug.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Debug: Gulya diagnosztika"
+            git push
+          fi
