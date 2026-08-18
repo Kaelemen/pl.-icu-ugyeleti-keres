@@ -254,7 +254,13 @@ cat_of = {name: cat for name, cat, *_ in staff}
 T_KATEGORIA_NEVEK = {name for name, cat in cat_of.items() if cat == "T"}
 assigned_count = {name: 0 for name, *_ in staff}
 target_weight = {name: (req if req else hrs) for name, _, hrs, req, _ in staff}
-last_duty_date = {name: None for name, *_ in staff}
+# Minden ügyeleti napot nyilvántartunk (nem csak az utolsót!) - az elsőbbségi kör miatt
+# előfordulhat, hogy egy KÉSŐBBI napra már be van osztva valaki, mielőtt a fő ciklus elér egy
+# KORÁBBI naphoz - egyetlen "utolsó dátum" mező ilyenkor felülíródna és elveszne a védelem.
+duty_dates = {name: set() for name, *_ in staff}
+
+def piheno_utkozik(name, day_date):
+    return any(abs((day_date - dd).days) <= MIN_PIHENO for dd in duty_dates[name])
 
 def would_exceed_havi_kvota(name, extra_duties=1):
     if name not in HAVI_KERETESEK:
@@ -291,8 +297,7 @@ for name, napok in MINDENKEPPEN_SZERETNE.items():
         pref = prefs.get((name, day_date))
         if pref in ("Szabadság", "Nem szeretne"):
             continue
-        ld = last_duty_date[name]
-        if ld is not None and abs((day_date - ld).days) <= MIN_PIHENO:
+        if piheno_utkozik(name, day_date):
             continue
         if would_exceed_havi_kvota(name):
             continue
@@ -310,7 +315,7 @@ for name, napok in MINDENKEPPEN_SZERETNE.items():
             schedule[d][duty] = name
             today_assigned_by_day[d].add(name)
             assigned_count[name] += 1
-            last_duty_date[name] = day_date
+            duty_dates[name].add(day_date)
             if name in RESZ_NAPI_ORASZAMOS:
                 kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date)
             break
@@ -333,8 +338,7 @@ for d in range(num_days):
             pref = prefs.get((name, day_date))
             if pref in ("Szabadság", "Nem szeretne"):
                 continue
-            ld = last_duty_date[name]
-            if ld is not None and abs((day_date - ld).days) <= MIN_PIHENO:
+            if piheno_utkozik(name, day_date):
                 continue
             if would_exceed_havi_kvota(name):
                 continue
@@ -354,7 +358,7 @@ for d in range(num_days):
         schedule[d][duty] = chosen
         today_assigned.add(chosen)
         assigned_count[chosen] += 1
-        last_duty_date[chosen] = day_date
+        duty_dates[chosen].add(day_date)
         if chosen in RESZ_NAPI_ORASZAMOS:
             kotelezo_ora_used[chosen] += kotelezo_delta_ha_ma_ugyel(chosen, day_date)
 
@@ -380,9 +384,7 @@ for d in range(num_days):
                     continue
                 if name != current and would_exceed_resz_kapacitas(name, day_date):
                     continue
-                ld = last_duty_date[name]
-                temp_ld = None if name == current else ld
-                if temp_ld is not None and abs((day_date - temp_ld).days) <= MIN_PIHENO:
+                if name != current and piheno_utkozik(name, day_date):
                     continue
                 ratio = assigned_count[name] / target_weight[name]
                 if best is None or ratio < best[0]:
@@ -391,12 +393,13 @@ for d in range(num_days):
                 new_name = best[1]
                 assigned_count[current] -= 1
                 today_assigned.discard(current)
+                duty_dates[current].discard(day_date)
                 if current in RESZ_NAPI_ORASZAMOS:
                     kotelezo_ora_used[current] -= kotelezo_delta_ha_ma_ugyel(current, day_date)
                 schedule[d][duty] = new_name
                 today_assigned.add(new_name)
                 assigned_count[new_name] += 1
-                last_duty_date[new_name] = day_date
+                duty_dates[new_name].add(day_date)
                 if new_name in RESZ_NAPI_ORASZAMOS:
                     kotelezo_ora_used[new_name] += kotelezo_delta_ha_ma_ugyel(new_name, day_date)
                 break
