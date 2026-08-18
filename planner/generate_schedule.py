@@ -207,17 +207,6 @@ for name, p in kivansagok.items():
 def is_szabadsag(name, day_date):
     return prefs.get((name, day_date)) == "Szabadság"
 
-def munkanapok_szemelyre(name):
-    """A hónap munkanapjainak száma az adott személyre - kihagyva azokat a heti napokat,
-    amiken a személyi szabálya szerint sosem dolgozik (pl. Zöldréti Anikó: szerda)."""
-    info = HETI_FIX_ESEMENY.get(name, {})
-    tiltott_weekdayk = set(info.get("nem_dolgozik_weekday", []))
-    if not tiltott_weekdayk:
-        return munkanapok_a_honapban
-    return sum(1 for d in range(num_days)
-               if (first_day + datetime.timedelta(days=d)).weekday() < 5
-               and (first_day + datetime.timedelta(days=d)).weekday() not in tiltott_weekdayk)
-
 def kotelezo_delta_ha_ma_ugyel(name, day_date):
     delta = NAPI_KOTELEZO_ORA
     if (day_date + datetime.timedelta(days=1)).weekday() < 5:
@@ -1117,7 +1106,7 @@ for name in staff_order:
         # a már meglévő kapacitás-értéket használjuk, teljes állásúaknál ugyanazzal a képlettel
         # (napi óradíj × havi munkanapok) számolva. Kerekítés a matematikai szabály szerint
         # (0,5-től felfelé), egész órára.
-        kapacitas_altalanos = RESZ_NAPI_KAPACITAS.get(name, napi_rate * munkanapok_szemelyre(name))
+        kapacitas_altalanos = RESZ_NAPI_KAPACITAS.get(name, napi_rate * munkanapok_a_honapban)
         tulora = math.floor(nappali_total - kapacitas_altalanos + 0.5)
         ws_print.cell(row=row_of[name], column=35, value=tulora)
     else:
