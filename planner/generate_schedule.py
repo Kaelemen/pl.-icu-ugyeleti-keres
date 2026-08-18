@@ -883,6 +883,48 @@ for name in RESZ_NAPI_ORASZAMOS:
         if muto_cell.value is not None:
             muto_cell.value += 1
 
+# Ugyanez a pótlólagos "8 órás nappali nap" logika a havi keretes (folyamatos munkarendű,
+# pl. Pintér Enikő) dolgozóknál is - náluk a "kapacitás" a havi órakeret és a már kapott
+# ügyeleti órák különbsége (hiszen egybe számít minden ledolgozott óra).
+for name in HAVI_KERETESEK:
+    if not havi_oraszam_map.get(name):
+        continue
+    kvota = havi_oraszam_map[name]
+    fennmaradt = kvota - 24 * assigned_count.get(name, 0)
+    if fennmaradt <= 0:
+        continue
+    hozzaadott_nappali_ora = 0
+    megadott_8ora_napok = NYOLC_ORA_NAPPAL.get(name)
+    if megadott_8ora_napok is not None:
+        jelolt_napok = [d for d in range(num_days) if (d + 1) in megadott_8ora_napok]
+    else:
+        jelolt_napok = list(range(num_days))
+    for d in sorted(jelolt_napok, key=lambda x: raw_present_count_by_day.get(x, 999)):
+        if hozzaadott_nappali_ora >= fennmaradt:
+            break
+        day_date = first_day + datetime.timedelta(days=d)
+        if day_date.weekday() >= 5:
+            continue
+        day_nap = d + 1
+        if day_nap in EREDETI_KIFEJEZETT_NEM.get(name, set()):
+            continue
+        if is_szabadsag(name, day_date):
+            continue
+        if jelenlet_tiltott(name, day_date):
+            continue
+        col = 2 + d
+        cell = ws_print.cell(row=row_of[name], column=col)
+        if cell.value:
+            continue
+        cell.value = "m"
+        m_count[name] += 1
+        aktiv_nap_count[name] += 1
+        hozzaadott_nappali_ora += NAPI_KOTELEZO_ORA
+        raw_present_count_by_day[d] = raw_present_count_by_day.get(d, 0) + 1
+        muto_cell = ws_print.cell(row=muto_row, column=col)
+        if muto_cell.value is not None:
+            muto_cell.value += 1
+
 # Túllépés-vágás: ha valakinek (jellemzően nagyon alacsony napi órakeretű, sok "jó napot"
 # jelölő résmunkaidős kollégának) a jelölt napjai önmagukban messze meghaladják a kapacitását
 # + a 7 órás tűréshatárt, a fölösleges "m" napokat vissza kell venni - ugyanaz a max. 7 órás
@@ -1070,10 +1112,12 @@ for name in staff_order:
     else:
         ugyeleti_total = 24 * duty_count
         if name in HAVI_KERETESEK and havi_oraszam_map.get(name):
-            # Folyamatos munkarendű, havi keretes dolgozóknál (pl. Pintér Enikő) nincs
-            # külön nappali/ügyeleti bontás - minden ledolgozott óra (nappal, ügyeletben,
-            # hétvégén) egyben számít a havi kerethez képest.
-            tulora = math.floor(ugyeleti_total - havi_oraszam_map[name] + 0.5)
+            # Folyamatos munkarendű, havi keretes dolgozóknál (pl. Pintér Enikő) a fix
+            # napjaik részben 8 órás nappali, részben ügyeleti napok - mindkettő egyben
+            # számít a havi órakerethez képest.
+            nappali_resz = NAPI_KOTELEZO_ORA * m_count[name]
+            ws_print.cell(row=row_of[name], column=33, value=nappali_resz if nappali_resz else None)
+            tulora = math.floor(nappali_resz + ugyeleti_total - havi_oraszam_map[name] + 0.5)
             ws_print.cell(row=row_of[name], column=35, value=tulora)
     ws_print.cell(row=row_of[name], column=34, value=ugyeleti_total)
 
