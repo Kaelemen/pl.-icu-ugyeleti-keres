@@ -162,6 +162,9 @@ for name, v in KIV.get("reszmunkaido_periodusok", {}).items():
     elif tipus == "csak_eddig_a_napig":
         RESZMUNKAIDO_TOL[name] = {"utolso_nap": v["utolso_nap"], "erinti": erinti}
 
+print("DEBUG RESZMUNKAIDO_TOL:", RESZMUNKAIDO_TOL)
+print("DEBUG Gulya CSAK_JELOLT_NAPOKON tagsag (elotte meg nincs feltoltve, kesobb ellenorizzuk)")
+
 # "csak jelölt napokon dolgozik": minden más nap (ami nincs szabin/szeretve/nemben) -> Nem szeretne.
 # Kivéve: (a) ha valakinek EGYÁLTALÁN NINCS "jó napja" megadva, ÉS ez a megkötése kizárólag a
 # részmunkaidő-napi-óraszám kapacitása miatt jött létre automatikusan - akkor nem korlátozzuk,
@@ -182,6 +185,10 @@ for name in CSAK_JELOLT_NAPOKON:
     for d in range(1, num_days + 1):
         if d not in covered:
             p["nem"].append(d)
+
+print("DEBUG Gulya CSAK_JELOLT_NAPOKON tagja:", "Gulya Réka" in CSAK_JELOLT_NAPOKON)
+print("DEBUG Gulya vegso nem lista:", kivansagok.get("Gulya Réka", {}).get("nem"))
+print("DEBUG Gulya vegso szeret lista:", kivansagok.get("Gulya Réka", {}).get("szeret"))
 
 def nap_engedelyezett(name, day_nap_szam, hatas):
     """hatas: 'jelenlet' vagy 'ugyelet' - engedélyezett-e ez a nap erre a hatásra nézve"""

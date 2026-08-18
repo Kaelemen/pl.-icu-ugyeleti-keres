@@ -69,10 +69,6 @@ jobs:
       - name: Beosztás generálása (1 változat)
         if: ${{ github.event.inputs.valtozatok == '1' }}
         working-directory: planner
-        run: python3 generate_schedule.py "$KIV_FAJL" ICU_ugyeleti_beosztas.xlsx ICU_ugyeleti_beosztas_kimenet.xlsx
-
-      - name: DEBUG - Gulya diagnosztika
-        working-directory: planner
         run: |
           python3 -c "
 import json
@@ -80,7 +76,7 @@ kiv = json.load(open('$KIV_FAJL', encoding='utf-8'))
 print('reszmunkaido_periodusok:', kiv.get('reszmunkaido_periodusok'))
 print('Gulya kivansaga:', kiv.get('kivansagok', {}).get('Gulya Réka'))
 " > gulya_debug.txt
-          cat gulya_debug.txt
+          python3 generate_schedule.py "$KIV_FAJL" ICU_ugyeleti_beosztas.xlsx ICU_ugyeleti_beosztas_kimenet.xlsx | tee -a gulya_debug.txt
 
       - name: Beosztás generálása (4 változat)
         if: ${{ github.event.inputs.valtozatok == '4' }}
