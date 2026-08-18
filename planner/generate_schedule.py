@@ -236,6 +236,8 @@ def jelenlet_tiltott(name, day_date):
 
 def ugyelet_tiltott(name, day_date):
     day_nap = (day_date - first_day).days + 1
+    if jelenlet_tiltott(name, day_date):
+        return True  # ha nincs jelen (pl. "csak ettől a naptól" korlát), ügyeletre sem osztható be
     return not nap_engedelyezett(name, day_nap, "ugyelet")
 
 def eligible(cat, duty):
@@ -854,6 +856,8 @@ for name in RESZ_NAPI_ORASZAMOS:
             continue
         if is_szabadsag(name, day_date):
             continue
+        if jelenlet_tiltott(name, day_date):
+            continue
         col = 2 + d
         cell = ws_print.cell(row=row_of[name], column=col)
         if cell.value:
@@ -911,7 +915,8 @@ for d in range(num_days):
     col = 2 + d
     jeloltek = [nm for nm in REZIDENSEK if nm in KULSOS_GYAKORLATON]
     jeloltek = [nm for nm in jeloltek if ws_print.cell(row=row_of[nm], column=col).value is None
-                and not is_szabadsag(nm, day_date) and not is_lelepo(nm, day_date)]
+                and not is_szabadsag(nm, day_date) and not is_lelepo(nm, day_date)
+                and not jelenlet_tiltott(nm, day_date)]
     jeloltek.sort(key=lambda nm: visszahivas_count[nm])
     for nm in jeloltek:
         if hiany <= 0:
