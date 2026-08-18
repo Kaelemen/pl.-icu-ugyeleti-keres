@@ -162,9 +162,6 @@ for name, v in KIV.get("reszmunkaido_periodusok", {}).items():
     elif tipus == "csak_eddig_a_napig":
         RESZMUNKAIDO_TOL[name] = {"utolso_nap": v["utolso_nap"], "erinti": erinti}
 
-print("DEBUG RESZMUNKAIDO_TOL:", RESZMUNKAIDO_TOL)
-print("DEBUG Gulya CSAK_JELOLT_NAPOKON tagsag (elotte meg nincs feltoltve, kesobb ellenorizzuk)")
-
 # "csak jelölt napokon dolgozik": minden más nap (ami nincs szabin/szeretve/nemben) -> Nem szeretne.
 # Kivéve: (a) ha valakinek EGYÁLTALÁN NINCS "jó napja" megadva, ÉS ez a megkötése kizárólag a
 # részmunkaidő-napi-óraszám kapacitása miatt jött létre automatikusan - akkor nem korlátozzuk,
@@ -185,10 +182,6 @@ for name in CSAK_JELOLT_NAPOKON:
     for d in range(1, num_days + 1):
         if d not in covered:
             p["nem"].append(d)
-
-print("DEBUG Gulya CSAK_JELOLT_NAPOKON tagja:", "Gulya Réka" in CSAK_JELOLT_NAPOKON)
-print("DEBUG Gulya vegso nem lista:", kivansagok.get("Gulya Réka", {}).get("nem"))
-print("DEBUG Gulya vegso szeret lista:", kivansagok.get("Gulya Réka", {}).get("szeret"))
 
 def nap_engedelyezett(name, day_nap_szam, hatas):
     """hatas: 'jelenlet' vagy 'ugyelet' - engedélyezett-e ez a nap erre a hatásra nézve"""
@@ -287,7 +280,7 @@ for name, napok in MINDENKEPPEN_SZERETNE.items():
     cat = next((c for n, c, *_ in staff if n == name), None)
     if cat is None:
         continue
-    for day_nap in napok:
+    for day_nap in sorted(napok):
         d = day_nap - 1
         if d < 0 or d >= num_days:
             continue
@@ -299,7 +292,7 @@ for name, napok in MINDENKEPPEN_SZERETNE.items():
         if pref in ("Szabadság", "Nem szeretne"):
             continue
         ld = last_duty_date[name]
-        if ld is not None and (day_date - ld).days <= MIN_PIHENO:
+        if ld is not None and abs((day_date - ld).days) <= MIN_PIHENO:
             continue
         if would_exceed_havi_kvota(name):
             continue
@@ -341,7 +334,7 @@ for d in range(num_days):
             if pref in ("Szabadság", "Nem szeretne"):
                 continue
             ld = last_duty_date[name]
-            if ld is not None and (day_date - ld).days <= MIN_PIHENO:
+            if ld is not None and abs((day_date - ld).days) <= MIN_PIHENO:
                 continue
             if would_exceed_havi_kvota(name):
                 continue
@@ -389,7 +382,7 @@ for d in range(num_days):
                     continue
                 ld = last_duty_date[name]
                 temp_ld = None if name == current else ld
-                if temp_ld is not None and (day_date - temp_ld).days <= MIN_PIHENO:
+                if temp_ld is not None and abs((day_date - temp_ld).days) <= MIN_PIHENO:
                     continue
                 ratio = assigned_count[name] / target_weight[name]
                 if best is None or ratio < best[0]:
