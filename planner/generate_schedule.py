@@ -1047,6 +1047,12 @@ for name in staff_order:
                           napi_rate * kulsos_hetkoznap_count.get(name, 0))
         ugyeleti_total = 16 * hetkoznapi_ugyelet_count[name] + 24 * hetvegi_ugyelet_count[name]
         ws_print.cell(row=row_of[name], column=33, value=nappali_total)
+        # Túlóra (nappali): a teljesített nappali óraszámnak a szerződéses havi kapacitást
+        # meghaladó része - a rész-munkaidősöknél a már meglévő kapacitás-értéket használjuk,
+        # teljes állásúaknál ugyanazzal a képlettel (napi óradíj × havi munkanapok) számolva.
+        kapacitas_altalanos = RESZ_NAPI_KAPACITAS.get(name, napi_rate * munkanapok_a_honapban)
+        tulora = max(0, round(nappali_total - kapacitas_altalanos, 1))
+        ws_print.cell(row=row_of[name], column=35, value=tulora if tulora else None)
     else:
         ugyeleti_total = 24 * duty_count
     ws_print.cell(row=row_of[name], column=34, value=ugyeleti_total)

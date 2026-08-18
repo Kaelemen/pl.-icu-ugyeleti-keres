@@ -783,19 +783,21 @@ for i in range(31):
     ws_print.column_dimensions[get_column_letter(2 + i)].width = 6
 ws_print.column_dimensions["AG"].width = 16
 ws_print.column_dimensions["AH"].width = 16
+ws_print.column_dimensions["AI"].width = 16
 
 ws_print["A1"] = "Nyomtatási beosztás (havi rács)"
 ws_print["A1"].font = title_font
-ws_print.merge_cells("A1:AH1")
+ws_print.merge_cells("A1:AI1")
 
 ws_print["A2"] = ('Ezt a lapot a beosztás-generáló script tölti fel a Beosztás lap alapján - kód jelölés: '
                    'I=Intenzív, A=Aneszt, St=Stroke, O1/O2=osztályos, Mr=MR-altatás, el=lelépő nap, '
                    'm=rendes munkanap. A "Műtő" sor a min. 7 fős műtői létszámhoz képesti eltérést mutatja. '
                    'A Teljesített nappali óraszám a lelépős órákat is tartalmazza; havi keretesnél a teljes '
-                   'ügyeleti óraszám az "Ügyeletben töltött órák" oszlopba kerül.')
+                   'ügyeleti óraszám az "Ügyeletben töltött órák" oszlopba kerül. A Túlóra (nappali) a '
+                   'teljesített nappali óraszámnak a szerződéses kapacitást meghaladó része.')
 ws_print["A2"].font = Font(name=FONT_NAME, size=10, italic=True, color="808080")
 ws_print["A2"].alignment = left
-ws_print.merge_cells("A2:AH2")
+ws_print.merge_cells("A2:AI2")
 ws_print.row_dimensions[2].height = 40
 
 PRINT_HEADER_ROW = 4
@@ -814,7 +816,7 @@ for i in range(31):
     c_hdr.alignment = center
     c_hdr.border = border
 
-for label, col in (("Teljesített nappali óraszám", 33), ("Ügyeletben töltött órák", 34)):
+for label, col in (("Teljesített nappali óraszám", 33), ("Ügyeletben töltött órák", 34), ("Túlóra (nappali)", 35)):
     c = ws_print.cell(row=PRINT_HEADER_ROW, column=col, value=label)
     c.font = header_font
     c.fill = header_fill
@@ -848,6 +850,12 @@ for i, (name, _cat, _hrs) in enumerate(staff):
     c_ugyeleti.alignment = center
     c_ugyeleti.number_format = '0" óra"'
     c_ugyeleti.border = border
+
+    c_tulora = ws_print.cell(row=r, column=35)
+    c_tulora.font = normal_font
+    c_tulora.alignment = center
+    c_tulora.number_format = '0" óra"'
+    c_tulora.border = border
 
 muto_row = PRINT_START + len(staff)
 c_muto = ws_print.cell(row=muto_row, column=1, value="Műtő")
