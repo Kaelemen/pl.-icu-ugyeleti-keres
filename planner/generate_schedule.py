@@ -118,6 +118,11 @@ CSAK_JELOLT_NAPOKON = set()
 RENDES_NAP_CSAK_HETENTE = {}   # name -> set(weekday_idx), csak ezeken a napokon lehet "m"
 HETI_FIX_ESEMENY = {}   # name -> {"weekday": int, "kod": str}
 RESZMUNKAIDO_TOL = {}   # name -> első nap (int), amitől "rendesen" jelen van
+# Azok a napok, amik KIZÁRÓLAG a "tiltott_napok_hetente" (heti ismétlődő ügyelet-tiltás,
+# pl. Zöldréti: nem vihet keddi ügyeletet) szabály miatt kerültek a "nem" listába - ez csak
+# az ÜGYELETRE vonatkozik, nem szabad a jelenlétét (rendes "m" napját) is blokkolnia, ha
+# valaki emellett "csak jelölt napokon dolgozik" típusú (pl. rész-munkaidős) besorolást kap.
+CSAK_UGYELET_TILTAS_NAPOK = {}   # name -> set(napok)
 
 for szab in SZAB["szemelyi_megkotesek"]:
     name = szab["nev"]
@@ -131,6 +136,7 @@ for szab in SZAB["szemelyi_megkotesek"]:
         for d in days:
             if d not in kivansagok[name]["nem"] and d not in kivansagok[name]["szeret"]:
                 kivansagok[name]["nem"].append(d)
+                CSAK_UGYELET_TILTAS_NAPOK.setdefault(name, set()).add(d)
     elif tipus == "tiltott_kezdes_hetente":
         days = []
         for wd in szab["napok"]:
@@ -184,7 +190,8 @@ for name, v in KIV.get("reszmunkaido_periodusok", {}).items():
 # NEM azt, hogy szabadon beosztható; (b) ha valakinek strukturális időszak-korlátja van a
 # jelenlétére nézve (pl. Gulya) - annál a "jó napok" lista csak ügyelet-preferencia, nem
 # szűkíti tovább a jelenlétét az időszakon belül.
-EREDETI_KIFEJEZETT_NEM = {name: set(kivansagok[name]["nem"]) for name in CSAK_JELOLT_NAPOKON}
+EREDETI_KIFEJEZETT_NEM = {name: set(kivansagok[name]["nem"]) - CSAK_UGYELET_TILTAS_NAPOK.get(name, set())
+                           for name in CSAK_JELOLT_NAPOKON}
 for name in CSAK_JELOLT_NAPOKON:
     p = kivansagok[name]
     if not p["szeret"] and name in CSAK_JELOLT_NAPOKON_KAPACITAS_MIATT:
@@ -792,7 +799,8 @@ for d in range(num_days):
             code = ""
         elif is_weekend:
             code = ""
-        elif name in CSAK_JELOLT_NAPOKON and prefs.get((name, day_date)) == "Nem szeretne":
+        elif (name in CSAK_JELOLT_NAPOKON and prefs.get((name, day_date)) == "Nem szeretne"
+              and (d + 1) not in CSAK_UGYELET_TILTAS_NAPOK.get(name, set())):
             code = ""
         elif name in RENDES_NAP_CSAK_HETENTE and day_date.weekday() not in RENDES_NAP_CSAK_HETENTE[name]:
             code = ""  # fix heti rendes napja van, ezen a hétköznapon nincs bent
