@@ -36,10 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: DEBUG - Rákóczi adatai
-        working-directory: planner
-        run: pip install --quiet requests && python3 debug_rakoczi.py > rakoczi_debug.txt 2>&1; cat rakoczi_debug.txt
-
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
@@ -83,16 +79,5 @@ jobs:
           name: icu-beosztas-eredmeny
           path: |
             planner/ICU_beosztas_nyomtathato.xlsx
-
-      - name: DEBUG commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          cp planner/rakoczi_debug.txt planner/ 2>/dev/null || true
-          git add planner/rakoczi_debug.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Debug: Rakoczi diagnosztika"
-            git push
-          fi
           retention-days: 30
 
