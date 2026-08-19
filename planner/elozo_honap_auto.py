@@ -50,21 +50,10 @@ def talald_meg_napszam_sort(ws, max_sor=15, max_oszlop=40):
     return None
 
 
-def talald_meg_tulora_oszlopot(ws, max_sor=15, max_oszlop=60):
-    """Megkeresi a 'Túlóra' feliratú oszlopot a fejléc közelében - ha nincs ilyen oszlop
-    a táblázatban (pl. régebbi, e funkció előtti mentés), None-t ad vissza."""
-    for r in range(1, max_sor + 1):
-        for c in range(1, max_oszlop + 1):
-            v = ws.cell(row=r, column=c).value
-            if isinstance(v, str) and "túlóra" in v.strip().lower():
-                return c
-    return None
-
-
 def main():
     if not SA_JSON or not CEL_HONAP:
         print("Hiányzó beállítás (kulcs/hónap) - kihagyva.")
-        json.dump({"elozo_honap_lelepok": [], "elozo_honap_tulora": {}}, open(KIMENET, "w", encoding="utf-8"))
+        json.dump({"elozo_honap_lelepok": []}, open(KIMENET, "w", encoding="utf-8"))
         return
 
     elozo_honap = CEL_HONAP - 1 if CEL_HONAP > 1 else 12
@@ -90,7 +79,7 @@ def main():
         fajlok = results.get("files", [])
         if not fajlok:
             print("Nem található fájl a megosztott mappában - kihagyva.")
-            json.dump({"elozo_honap_lelepok": [], "elozo_honap_tulora": {}}, open(KIMENET, "w", encoding="utf-8"))
+            json.dump({"elozo_honap_lelepok": []}, open(KIMENET, "w", encoding="utf-8"))
             return
 
         cel_fajl = fajlok[0]
@@ -122,7 +111,7 @@ def main():
                 break
         if lap_nev is None:
             print(f"Nem található '{fulnev}' nevű fül a fájlban (elérhető fülek: {wb.sheetnames}) - kihagyva.")
-            json.dump({"elozo_honap_lelepok": [], "elozo_honap_tulora": {}}, open(KIMENET, "w", encoding="utf-8"))
+            json.dump({"elozo_honap_lelepok": []}, open(KIMENET, "w", encoding="utf-8"))
             return
 
         ws = wb[lap_nev]
@@ -131,7 +120,7 @@ def main():
         napszam_sor = talald_meg_napszam_sort(ws)
         if napszam_sor is None:
             print("Nem található napszám-fejléc sor ezen a lapon - kihagyva.")
-            json.dump({"elozo_honap_lelepok": [], "elozo_honap_tulora": {}}, open(KIMENET, "w", encoding="utf-8"))
+            json.dump({"elozo_honap_lelepok": []}, open(KIMENET, "w", encoding="utf-8"))
             return
 
         # az utolsó nap oszlopa: a legmagasabb egész szám a fejléc-sorban
@@ -154,30 +143,11 @@ def main():
                 lelepok.append(NEV_NORMALIZALAS.get(nev.strip(), nev.strip()))
 
         print(f"Az utolsó napon ({int(utolso_nap_ertek)}.) ügyeletben lévők (ők lépnek le): {lelepok}")
-
-        # Túlóra oszlop kiolvasása (ha van ilyen a táblázatban) - ez viszi tovább a
-        # 3 havi kiegyenlítést: az előző hónap túlórája/hiánya módosítja a jelen hónap
-        # kötelező óraszám-keretét.
-        tulora_oszlop = talald_meg_tulora_oszlopot(ws)
-        elozo_honap_tulora = {}
-        if tulora_oszlop is not None:
-            for r in range(adat_kezdo_sor, adat_kezdo_sor + 30):
-                nev = ws.cell(row=r, column=1).value
-                if not nev or not isinstance(nev, str):
-                    continue
-                v = ws.cell(row=r, column=tulora_oszlop).value
-                if isinstance(v, (int, float)):
-                    elozo_honap_tulora[NEV_NORMALIZALAS.get(nev.strip(), nev.strip())] = v
-            print(f"Előző havi túlóra-adatok ({ws.cell(row=1, column=tulora_oszlop).value or 'Túlóra'} oszlop): {elozo_honap_tulora}")
-        else:
-            print("Nem található 'Túlóra' oszlop az előző havi táblázatban - kihagyva (nincs kiegyenlítés).")
-
-        json.dump({"elozo_honap_lelepok": lelepok, "elozo_honap_tulora": elozo_honap_tulora},
-                   open(KIMENET, "w", encoding="utf-8"), ensure_ascii=False)
+        json.dump({"elozo_honap_lelepok": lelepok}, open(KIMENET, "w", encoding="utf-8"), ensure_ascii=False)
 
     except Exception as e:
         print(f"Hiba a Drive-olvasás közben ({e}) - üres listával folytatjuk, az admin felület kézi bevitele lesz a mérvadó.")
-        json.dump({"elozo_honap_lelepok": [], "elozo_honap_tulora": {}}, open(KIMENET, "w", encoding="utf-8"))
+        json.dump({"elozo_honap_lelepok": []}, open(KIMENET, "w", encoding="utf-8"))
 
 
 if __name__ == "__main__":
