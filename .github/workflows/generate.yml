@@ -36,10 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: DEBUG2 - Rákóczi friss adatai
-        working-directory: planner
-        run: pip install --quiet requests && python3 debug_rakoczi.py > rakoczi_debug2.txt 2>&1; cat rakoczi_debug2.txt
-
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
@@ -60,11 +56,6 @@ jobs:
         if: ${{ github.event.inputs.valtozatok == '1' }}
         working-directory: planner
         run: python3 generate_schedule.py "$KIV_FAJL" ICU_ugyeleti_beosztas.xlsx ICU_ugyeleti_beosztas_kimenet.xlsx
-
-      - name: DEBUG2 - Rákóczi eredmény ellenőrzése
-        if: ${{ github.event.inputs.valtozatok == '1' }}
-        working-directory: planner
-        run: python3 check_rakoczi_output.py >> rakoczi_debug2.txt; cat rakoczi_debug2.txt
 
       - name: Beosztás generálása (4 változat)
         if: ${{ github.event.inputs.valtozatok == '4' }}
@@ -89,15 +80,4 @@ jobs:
           path: |
             planner/ICU_beosztas_nyomtathato.xlsx
           retention-days: 30
-
-      - name: DEBUG2 commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          cp planner/rakoczi_debug2.txt planner/ 2>/dev/null || true
-          git add planner/rakoczi_debug2.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Debug2: Rakoczi friss diagnosztika"
-            git push
-          fi
 
