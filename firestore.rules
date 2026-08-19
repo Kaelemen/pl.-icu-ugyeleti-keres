@@ -13,5 +13,8 @@ service cloud.firestore {
     match /reszmunkaido_periodusok/{docId} {
       allow read, write: if true;
     }
+    match /elozo_honap_tulora/{docId} {
+      allow read, write: if true;
+    }
   }
 }
