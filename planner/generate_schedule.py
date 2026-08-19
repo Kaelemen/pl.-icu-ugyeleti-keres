@@ -976,8 +976,7 @@ for name in RESZ_NAPI_ORASZAMOS:
     if current_nappali <= kapacitas + TULLEPES_TURESHATAR:
         continue
     m_napok = [d for d in range(num_days)
-               if ws_print.cell(row=row_of[name], column=2 + d).value == "m"
-               and (d + 1) not in NYOLC_ORA_NAPPAL.get(name, [])]
+               if ws_print.cell(row=row_of[name], column=2 + d).value == "m"]
     m_napok.sort(key=lambda x: -raw_present_count_by_day.get(x, 0))
     for d in m_napok:
         if current_nappali <= kapacitas + TULLEPES_TURESHATAR:
