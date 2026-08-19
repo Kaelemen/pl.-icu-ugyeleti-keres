@@ -1,0 +1,39 @@
+=== TELJES SZEPTEMBERI KERESEK ===
+{"kert_ugyeletszam": 3, "mindenkeppen_szeretne": "", "nyolc_ora_nappal": "", "szabadsag": "", "nincs_keres": false, "szeretne": "", "admin_rogzitette": true, "nev": "Balogh László", "megjegyzes": "", "beadva": "2026-08-18T14:58:41.884Z", "honap": 9, "nem_szeretne": "24", "ev": 2026, "kulsos_gyakorlat": null}
+{"honap": 9, "szeretne": "8,20", "ev": 2026, "admin_rogzitette": true, "kulsos_gyakorlat": null, "mindenkeppen_szeretne": "", "nev": "Berek Sarolta", "beadva": "2026-08-18T13:35:31.059Z", "kert_ugyeletszam": null, "nyolc_ora_nappal": "", "megjegyzes": "", "nincs_keres": false, "szabadsag": "", "nem_szeretne": "3,10,17,23-24,28"}
+{"ev": 2026, "nyolc_ora_nappal": "", "kert_ugyeletszam": 2, "megjegyzes": "", "nev": "Berkes Tíbor", "nincs_keres": false, "admin_rogzitette": true, "honap": 9, "szabadsag": "", "beadva": "2026-08-16T14:56:26.485Z", "kulsos_gyakorlat": null, "szeretne": "11,25", "nem_szeretne": ""}
+{"nem_szeretne": "4-6", "szabadsag": "", "nincs_keres": false, "beadva": "2026-08-15T09:39:51.034Z", "szeretne": "", "nev": "Daku Zsuzsa", "admin_rogzitette": true, "megjegyzes": "", "nyolc_ora_nappal": "", "ev": 2026, "kert_ugyeletszam": null, "honap": 9}
+{"szeretne": "8", "nem_szeretne": "10-13", "nev": "Enyedi Marcián", "ev": 2026, "megjegyzes": "", "szabadsag": "14-20", "nyolc_ora_nappal": "", "admin_rogzitette": true, "beadva": "2026-08-15T09:42:59.439Z", "nincs_keres": false, "honap": 9, "kert_ugyeletszam": 5}
+{"kulsos_gyakorlat": null, "nem_szeretne": "19", "mindenkeppen_szeretne": "30", "nincs_keres": false, "szabadsag": "", "honap": 9, "admin_rogzitette": true, "megjegyzes": "", "nev": "Gulya Réka", "ev": 2026, "szeretne": "", "nyolc_ora_nappal": "", "beadva": "2026-08-18T14:58:59.588Z", "kert_ugyeletszam": null}
+{"nincs_keres": false, "admin_rogzitette": true, "nev": "Hajnal Csilla", "mindenkeppen_szeretne": "4,11,19", "megjegyzes": "", "kulsos_gyakorlat": null, "honap": 9, "nyolc_ora_nappal": "", "nem_szeretne": "", "szabadsag": "", "szeretne": "", "kert_ugyeletszam": null, "beadva": "2026-08-18T13:37:11.606Z", "ev": 2026}
+{"nincs_keres": false, "szabadsag": "1-6", "beadva": "2026-08-15T09:09:36.807Z", "kert_ugyeletszam": 3, "megjegyzes": "", "ev": 2026, "nem_szeretne": "", "honap": 9, "admin_rogzitette": true, "szeretne": "11,14,18-19,25-26,28,30", "nyolc_ora_nappal": "7,21,23", "nev": "Kajner Krisztina"}
+{"nincs_keres": false, "szabadsag": "11-13,19", "honap": 9, "kert_ugyeletszam": 8, "megjegyzes": "", "ev": 2026, "nyolc_ora_nappal": "", "szeretne": "", "nev": "Karczub János", "kulsos_gyakorlat": true, "nem_szeretne": "15-18", "beadva": "2026-08-16T15:24:45.994Z", "admin_rogzitette": true}
+{"megjegyzes": "Még 2 hétvégi ügyeletet szeretnék", "beadva": "2026-08-18T20:23:33.032Z", "honap": 9, "szabadsag": "", "nev": "Katona József", "nyolc_ora_nappal": "", "szeretne": "2,9,16,23,30", "nem_szeretne": "20-21", "kert_ugyeletszam": null, "mindenkeppen_szeretne": "13,26", "kulsos_gyakorlat": null, "ev": 2026, "nincs_keres": false, "admin_rogzitette": true}
+{"kert_ugyeletszam": null, "szeretne": "", "nincs_keres": false, "szabadsag": "", "nem_szeretne": "11-12,19,27", "nyolc_ora_nappal": "", "honap": 9, "ev": 2026, "megjegyzes": "", "nev": "Kelemen József", "kulsos_gyakorlat": null, "beadva": "2026-08-16T17:58:22.663Z"}
+{"honap": 9, "szeretne": "2,8,10,15,20,22,24,29", "nem_szeretne": "", "beadva": "2026-08-15T09:12:52.940Z", "nincs_keres": false, "megjegyzes": "", "kert_ugyeletszam": 4, "nev": "Korompai Máté", "nyolc_ora_nappal": "1,3,7,9,16-17,21,23,28,30", "ev": 2026, "szabadsag": "4,11,14,18", "admin_rogzitette": true}
+{"kulsos_gyakorlat": null, "megjegyzes": "", "beadva": "2026-08-17T06:06:08.184Z", "szeretne": "", "admin_rogzitette": true, "szabadsag": "21-30", "honap": 9, "nincs_keres": false, "ev": 2026, "nev": "Kovácsevics József", "nyolc_ora_nappal": "", "nem_szeretne": "19-20", "kert_ugyeletszam": null}
+{"ev": 2026, "kert_ugyeletszam": null, "nyolc_ora_nappal": "", "nem_szeretne": "4-6,10,18-19,24,27", "megjegyzes": "", "admin_rogzitette": true, "szeretne": "17,20,23,29", "nev": "Lambertus Iván", "nincs_keres": false, "honap": 9, "beadva": "2026-08-15T09:42:02.597Z", "szabadsag": ""}
+{"admin_rogzitette": true, "ev": 2026, "mindenkeppen_szeretne": "5,9,16,23", "nincs_keres": false, "honap": 9, "nev": "Pintér Enikő", "kulsos_gyakorlat": null, "nem_szeretne": "", "szabadsag": "", "szeretne": "", "beadva": "2026-08-18T13:38:04.296Z", "nyolc_ora_nappal": "7-8,14-15,21-22", "kert_ugyeletszam": null, "megjegyzes": ""}
+{"admin_rogzitette": true, "beadva": "2026-08-18T14:02:06.997Z", "kulsos_gyakorlat": false, "szeretne": "", "kert_ugyeletszam": null, "nem_szeretne": "4-6,11-15,17,19-20,25-27", "nyolc_ora_nappal": "", "ev": 2026, "nev": "Rákóczi Réka", "mindenkeppen_szeretne": "2,16", "nincs_keres": false, "honap": 9, "szabadsag": "18", "megjegyzes": ""}
+>>> RAKOCZI TELJES REKORD: {
+  "admin_rogzitette": true,
+  "beadva": "2026-08-18T14:02:06.997Z",
+  "kulsos_gyakorlat": false,
+  "szeretne": "",
+  "kert_ugyeletszam": null,
+  "nem_szeretne": "4-6,11-15,17,19-20,25-27",
+  "nyolc_ora_nappal": "",
+  "ev": 2026,
+  "nev": "Rákóczi Réka",
+  "mindenkeppen_szeretne": "2,16",
+  "nincs_keres": false,
+  "honap": 9,
+  "szabadsag": "18",
+  "megjegyzes": ""
+}
+{"kert_ugyeletszam": 5, "nyolc_ora_nappal": "", "szabadsag": "21-27", "ev": 2026, "megjegyzes": "", "szeretne": "12-13,17", "beadva": "2026-08-16T14:55:41.571Z", "honap": 9, "admin_rogzitette": true, "nem_szeretne": "4-6,11,18-20", "nincs_keres": false, "kulsos_gyakorlat": null, "nev": "Róbert Beáta"}
+{"megjegyzes": "", "nev": "Sorbán József", "szeretne": "1-3,7-10,14", "kert_ugyeletszam": 4, "honap": 9, "szabadsag": "", "ev": 2026, "admin_rogzitette": true, "nincs_keres": false, "nem_szeretne": "", "beadva": "2026-08-15T09:15:34.336Z", "nyolc_ora_nappal": ""}
+{"nincs_keres": false, "megjegyzes": "", "nev": "Sztermen Márton", "szabadsag": "", "beadva": "2026-08-15T09:38:42.328Z", "ev": 2026, "nyolc_ora_nappal": "", "nem_szeretne": "", "admin_rogzitette": true, "szeretne": "3-6,10-13,17-20,24-27", "kert_ugyeletszam": 2, "honap": 9}
+{"nev": "Szász Kornélia", "ev": 2026, "admin_rogzitette": true, "szabadsag": "7-18", "nincs_keres": false, "nem_szeretne": "", "szeretne": "", "beadva": "2026-08-18T13:38:43.239Z", "kulsos_gyakorlat": null, "kert_ugyeletszam": null, "nyolc_ora_nappal": "4,25", "megjegyzes": "", "mindenkeppen_szeretne": "6", "honap": 9}
+{"beadva": "2026-08-15T09:39:26.314Z", "szabadsag": "", "megjegyzes": "", "honap": 9, "szeretne": "", "nev": "Zöldréti Anikó", "admin_rogzitette": true, "nincs_keres": false, "nem_szeretne": "4-5,12,18-19,26-27", "nyolc_ora_nappal": "", "ev": 2026, "kert_ugyeletszam": 4}
+dolgozok rekord: {"nev": "Rákóczi Réka", "kategoria": "A", "szerzodes_tipus": "Teljes állás", "havi_oraszam": null, "kulsos_gyakorlat_erintett": true, "sorszam": 20, "napi_munkaido": 8, "tipus": "Rezidens"}
