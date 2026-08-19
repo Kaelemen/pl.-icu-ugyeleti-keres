@@ -26,6 +26,7 @@ with open(SZABALYOK_PATH, encoding="utf-8") as f:
 with open(KIVANSAGOK_PATH, encoding="utf-8") as f:
     KIV = json.load(f)
 MINDENKEPPEN_SZERETNE = KIV.get("mindenkeppen_szeretne", {})  # nev -> [napok], amiket mindenképp szeretne ügyeletben
+ELOZO_HONAP_LELEPOK = set(KIV.get("elozo_honap_lelepok", []))  # kik voltak ügyeletben az előző hónap utolsó napján
 
 # Ha a kívánság-fájl tartalmaz "dolgozok" listát (a webes admin felület Dolgozók
 # kezelése szekciójából jön), az felülírja a szabalyok.json-ban lévő törzsadatot -
@@ -285,8 +286,17 @@ for name, _cat, hrs, req, _tipus in staff:
 # KORÁBBI naphoz - egyetlen "utolsó dátum" mező ilyenkor felülíródna és elveszne a védelem.
 duty_dates = {name: set() for name, *_ in staff}
 
+# Az előző hónap utolsó napján ügyeletben lévők (ELOZO_HONAP_LELEPOK) "virtuális" ügyelet-
+# dátumot kapnak (az előző hónap utolsó napja) a duty_dates nyilvántartásban is - enélkül a
+# fő ügyelet-kiosztó kör pihenőidő-ellenőrzése nem tudna róla, és előfordulhatna, hogy valaki
+# már a hónap 1-2. napján új ügyeletet kapna annak ellenére, hogy ténylegesen lelépő állapotban van.
+for _nev in ELOZO_HONAP_LELEPOK:
+    if _nev in duty_dates:
+        duty_dates[_nev].add(first_day - datetime.timedelta(days=1))
+
 def piheno_utkozik(name, day_date):
     return any(abs((day_date - dd).days) <= MIN_PIHENO for dd in duty_dates[name])
+
 
 def would_exceed_havi_kvota(name, extra_duties=1):
     if name not in HAVI_KERETESEK:
@@ -440,7 +450,6 @@ for d in range(num_days):
         if nm:
             worked_days[nm].add(day_date)
 
-ELOZO_HONAP_LELEPOK = set(KIV.get("elozo_honap_lelepok", []))  # kik voltak ügyeletben az előző hónap utolsó napján
 _ismeretlen_lelepok = ELOZO_HONAP_LELEPOK - set(staff_order_all)
 if _ismeretlen_lelepok:
     print(f"FIGYELEM: 'elozo_honap_lelepok'-ban ismeretlen név(ek) - nem lesz hatásuk: {_ismeretlen_lelepok}")
