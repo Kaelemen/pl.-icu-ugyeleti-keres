@@ -383,7 +383,11 @@ for d in range(num_days):
             if would_exceed_resz_kapacitas(name, day_date):
                 continue
             ratio = assigned_count[name] / target_weight[name]
-            bonus = -0.3 if pref == "Szeretne" else 0.0
+            # Ha valaki kifejezetten kért egy konkrét ügyeletszámot, és még nem érte el -
+            # erős elsőbbséget kap, amíg meg nem kapja (a fenti kemény szabályok, kapacitás,
+            # pihenőidő stb. továbbra is érvényesek, csak a "kit válasszunk" versenyben nyer).
+            kert_meg_nincs_meg = req is not None and req > 0 and assigned_count[name] < req
+            bonus = -1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0)
             jitter = (rng.random() - 0.5) * 0.06
             candidates.append((ratio + bonus + jitter, assigned_count[name], name))
         if not candidates:
