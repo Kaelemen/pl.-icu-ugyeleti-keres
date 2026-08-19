@@ -76,18 +76,13 @@ jobs:
         working-directory: planner
         run: python3 generate_4_variants.py "$KIV_FAJL" ICU_ugyeleti_beosztas.xlsx ICU_ugyeleti_beosztas_kimenet
 
-      - name: LibreOffice gyorsítótár visszaállítása
-        id: libreoffice-cache
+      - name: APT csomag-gyorsítótár visszaállítása
         uses: actions/cache@v4
         with:
-          path: |
-            /usr/lib/libreoffice
-            /usr/bin/soffice
-            /usr/bin/libreoffice
-          key: libreoffice-calc-${{ runner.os }}-v1
+          path: /var/cache/apt/archives
+          key: apt-libreoffice-calc-${{ runner.os }}-v2
 
-      - name: LibreOffice telepítése (csak ha nincs gyorsítótárazva)
-        if: steps.libreoffice-cache.outputs.cache-hit != 'true'
+      - name: LibreOffice telepítése
         run: sudo apt-get update -qq && sudo apt-get install -y -qq libreoffice-calc
 
       - name: Képletek újraszámolása
