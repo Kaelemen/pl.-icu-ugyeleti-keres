@@ -64,18 +64,7 @@ jobs:
       - name: DEBUG2 - Rákóczi eredmény ellenőrzése
         if: ${{ github.event.inputs.valtozatok == '1' }}
         working-directory: planner
-        run: |
-          python3 -c "
-import openpyxl
-wb = openpyxl.load_workbook('ICU_ugyeleti_beosztas_kimenet.xlsx', data_only=True)
-wp = wb['Nyomtatási beosztás']
-for r in range(5,27):
-    if wp.cell(row=r,column=1).value == 'Rákóczi Réka':
-        row_r = r
-napok = [(c-1, wp.cell(row=row_r,column=c).value) for c in range(2,32) if wp.cell(row=row_r,column=c).value]
-print('Rakoczi minden napja:', napok)
-" >> rakoczi_debug2.txt
-          cat rakoczi_debug2.txt
+        run: python3 check_rakoczi_output.py >> rakoczi_debug2.txt; cat rakoczi_debug2.txt
 
       - name: Beosztás generálása (4 változat)
         if: ${{ github.event.inputs.valtozatok == '4' }}
