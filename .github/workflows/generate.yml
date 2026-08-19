@@ -36,6 +36,10 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
+      - name: DEBUG - Zöldréti adatai
+        working-directory: planner
+        run: pip install --quiet requests && python3 debug_zoldreti.py > zoldreti_debug.txt 2>&1; cat zoldreti_debug.txt
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
@@ -97,4 +101,15 @@ jobs:
           path: |
             planner/ICU_beosztas_nyomtathato.xlsx
           retention-days: 30
+
+      - name: DEBUG commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          cp planner/zoldreti_debug.txt planner/ 2>/dev/null || true
+          git add planner/zoldreti_debug.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Debug: Zoldreti diagnosztika"
+            git push
+          fi
 
