@@ -702,10 +702,46 @@ DATA_START = 6
 col_map = {"Intenzív": 3, "Stroke": 4, "Aneszt": 5}
 for d in range(num_days):
     row = DATA_START + d
+    day_date = first_day + datetime.timedelta(days=d)
     for duty, col in col_map.items():
         ws.cell(row=row, column=col, value=schedule[d].get(duty))
     ws.cell(row=row, column=6, value=o1_o2.get(d, {}).get("O1"))
     ws.cell(row=row, column=7, value=o1_o2.get(d, {}).get("O2"))
+
+    # Ellenőrzés oszlop (H) - közvetlenül Python-ban kiszámolva (nem Excel-képlettel), hogy
+    # a fájlnak ne kelljen LibreOffice-os újraszámoláson átmennie a kézbesítés előtt.
+    uzenetek = []
+    intenziv_nm, stroke_nm, aneszt_nm = schedule[d].get("Intenzív"), schedule[d].get("Stroke"), schedule[d].get("Aneszt")
+    if day_date.weekday() == 5 and stroke_nm:
+        uzenetek.append("Szombaton nincs Stroke ügyelet! ")
+    napi_ugyeletesek = [x for x in (intenziv_nm, stroke_nm, aneszt_nm) if x]
+    if len(napi_ugyeletesek) != len(set(napi_ugyeletesek)):
+        uzenetek.append("Egy fő két ügyeletre nem osztható be egy napon! ")
+    for nm in napi_ugyeletesek:
+        if any(abs((day_date - dd).days) <= MIN_PIHENO for dd in duty_dates.get(nm, set()) if dd != day_date):
+            uzenetek.append("Pihenőidő (min. 2 nap) megsértve! ")
+            break
+    duty_col_nev = {"Intenzív": intenziv_nm, "Stroke": stroke_nm, "Aneszt": aneszt_nm}
+    for duty_nev, nm in duty_col_nev.items():
+        if nm and prefs.get((nm, day_date)) == "Szabadság":
+            uzenetek.append(f"{nm} szabadságon van ({duty_nev})! ")
+    o1_nm, o2_nm = o1_o2.get(d, {}).get("O1"), o1_o2.get(d, {}).get("O2")
+    if o1_nm and prefs.get((o1_nm, day_date)) == "Szabadság":
+        uzenetek.append(f"{o1_nm} szabadságon van (O1)! ")
+    if o2_nm and prefs.get((o2_nm, day_date)) == "Szabadság":
+        uzenetek.append(f"{o2_nm} szabadságon van (O2)! ")
+    for duty_nev, nm in duty_col_nev.items():
+        if nm and prefs.get((nm, day_date)) == "Nem szeretne":
+            uzenetek.append(f"{nm} nem szeretett volna dolgozni ({duty_nev})! ")
+    if napi_ugyeletesek and not any(tipus_of.get(nm) == "Szakorvos" for nm in napi_ugyeletesek):
+        uzenetek.append("Nincs szakorvos az ügyeletben aznap! ")
+    if o1_nm and o1_nm == o2_nm:
+        uzenetek.append("Az O1 és O2 nem lehet ugyanaz a fő! ")
+    if o1_nm and o1_nm != O1_ALAP and o1_nm in napi_ugyeletesek:
+        uzenetek.append("Az O1 osztályos nem lehet egyben ügyeletes is! ")
+    if o2_nm and o2_nm == intenziv_nm:
+        uzenetek.append("Az O2 osztályos nem lehet egyben Intenzív-ügyeletes! ")
+    ws.cell(row=row, column=8, value="".join(uzenetek).strip())
 
 # Kívánságok lap feltöltése (a végleges, szabályokkal kiegészített prefs alapján)
 ws_kiv = wb["Kívánságok"]
