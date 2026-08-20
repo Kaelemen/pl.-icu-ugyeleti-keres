@@ -522,9 +522,15 @@ for d in range(num_days):
             # erős elsőbbséget kap, amíg meg nem kapja (a fenti kemény szabályok, kapacitás,
             # pihenőidő stb. továbbra is érvényesek, csak a "kit válasszunk" versenyben nyer).
             kert_meg_nincs_meg = req is not None and req > 0 and assigned_count[name] < req
+            # Szórási bónusz: aki régebben volt utoljára ügyeletben (vagy még egyáltalán nem
+            # volt ebben a hónapban), enyhe előnyt kap - ez segít elkerülni, hogy valakinek
+            # összezsúfolódjanak az ügyeletei a hónap egy részében, míg máshol semmi.
+            utolso_ugyelet = max(duty_dates[name]) if duty_dates[name] else None
+            nap_tavolsag = (day_date - utolso_ugyelet).days if utolso_ugyelet else (d + 1)
+            szoras_bonus = -min(nap_tavolsag, 15) * 0.008
             bonus = -1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0)
             jitter = (rng.random() - 0.5) * 0.06
-            candidates.append((ratio + bonus + jitter, assigned_count[name], name))
+            candidates.append((ratio + bonus + szoras_bonus + jitter, assigned_count[name], name))
         if not candidates:
             day_nap = d + 1
             jovahagyott_nev = next((k["nev"] for k in ENGEDELYEZETT_KIVETELEK
