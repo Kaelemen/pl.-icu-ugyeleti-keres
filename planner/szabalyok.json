@@ -281,6 +281,18 @@
         "csutortok"
       ],
       "megjegyzes": "Rendes ('m') munkanapja kizárólag kedd és csütörtök; más hétköznapon csak ügyeletben lehet jelen, egyébként nincs bent"
+    },
+    {
+      "tipus": "par_nem_egyutt",
+      "nevek": [
+        "Kelemen József",
+        "Katona József"
+      ],
+      "kivetel_hetnapok": [
+        "pentek",
+        "szombat"
+      ],
+      "megjegyzes": "Kelemen és Katona nem ügyelhet együtt, kivéve pénteken vagy szombaton"
     }
   ],
   "orakeret_szamitas": {

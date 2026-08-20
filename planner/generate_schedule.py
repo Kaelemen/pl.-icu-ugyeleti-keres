@@ -123,8 +123,16 @@ RESZMUNKAIDO_TOL = {}   # name -> első nap (int), amitől "rendesen" jelen van
 # az ÜGYELETRE vonatkozik, nem szabad a jelenlétét (rendes "m" napját) is blokkolnia, ha
 # valaki emellett "csak jelölt napokon dolgozik" típusú (pl. rész-munkaidős) besorolást kap.
 CSAK_UGYELET_TILTAS_NAPOK = {}   # name -> set(napok)
+PARBAN_TILTOTT = []   # [(nev1, nev2, {kivetel_weekday_idx, ...})]
 
 for szab in SZAB["szemelyi_megkotesek"]:
+    if szab["tipus"] == "par_nem_egyutt":
+        nevek = szab["nevek"]
+        if not all(n in staff_order_all for n in nevek):
+            continue  # valamelyik dolgozó törölve lett - a régi szabály kihagyva
+        kivetel = {WEEKDAY_HU[w] for w in szab.get("kivetel_hetnapok", [])}
+        PARBAN_TILTOTT.append((nevek[0], nevek[1], kivetel))
+        continue
     name = szab["nev"]
     if name not in staff_order_all:
         continue  # a dolgozó törölve lett az admin felületen - a régi személyi szabálya kihagyva
@@ -261,6 +269,18 @@ def ugyelet_tiltott(name, day_date):
         return True  # ha nincs jelen (pl. "csak ettől a naptól" korlát), ügyeletre sem osztható be
     return not nap_engedelyezett(name, day_nap, "ugyelet")
 
+def parban_tiltott_utkozik(name, day_date, today_assigned):
+    """Két konkrét személy (pl. Kelemen és Katona) nem lehet egyszerre ügyeletben,
+    kivéve a szabályban megjelölt kivétel-napokon (pl. péntek/szombat)."""
+    for n1, n2, kivetel in PARBAN_TILTOTT:
+        if day_date.weekday() in kivetel:
+            continue
+        if name == n1 and n2 in today_assigned:
+            return True
+        if name == n2 and n1 in today_assigned:
+            return True
+    return False
+
 def eligible(cat, duty):
     if cat == "T":
         return False  # T kategória: sosem osztható be semmilyen ügyeletre
@@ -341,6 +361,8 @@ def kivetel_jeloltet_keres(duty, day_date, today_assigned):
             continue  # ez sosem hágható át
         if ugyelet_tiltott(name, day_date):
             continue  # személyi ügyelet-tiltás (pl. heti fix nap) sosem hágható át
+        if parban_tiltott_utkozik(name, day_date, today_assigned):
+            continue  # páros-tiltás (pl. Kelemen+Katona) sosem hágható át
         serult_szabaly = None
         if pref == "Nem szeretne":
             serult_szabaly = "nem_szeretne"
@@ -407,6 +429,8 @@ for name, napok in MINDENKEPPEN_SZERETNE.items():
             continue  # ez sosem hágható át
         if ugyelet_tiltott(name, day_date):
             continue  # személyi ügyelet-tiltás sosem hágható át
+        if parban_tiltott_utkozik(name, day_date, today_assigned_by_day[d]):
+            continue  # páros-tiltás (pl. Kelemen+Katona) sosem hágható át
         serult_szabaly = None
         if pref == "Nem szeretne":
             serult_szabaly = "nem_szeretne"
@@ -467,6 +491,8 @@ for d in range(num_days):
             if would_exceed_havi_kvota(name):
                 continue
             if ugyelet_tiltott(name, day_date):
+                continue
+            if parban_tiltott_utkozik(name, day_date, today_assigned):
                 continue
             if would_exceed_resz_kapacitas(name, day_date):
                 continue
