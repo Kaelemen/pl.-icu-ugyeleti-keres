@@ -88,6 +88,11 @@ RESZ_NAPI_KAPACITAS = {nev: napi * munkanapok_a_honapban for nev, napi in RESZ_N
 for _nev, _tulora in ELOZO_HONAP_TULORA.items():
     if _nev in RESZ_NAPI_KAPACITAS:
         RESZ_NAPI_KAPACITAS[_nev] = RESZ_NAPI_KAPACITAS[_nev] - _tulora
+
+# "Fél állás" (napi 4 órás) dolgozóknál havonta max. 3 ügyelet lehet, függetlenül attól,
+# hogy az óra-kapacitájuk elméletileg többet is megengedne.
+FEL_ALLAS_MAX_UGYELET = 3
+FEL_ALLAS_NEVEK = {nev for nev, napi in RESZ_NAPI_ORASZAMOS.items() if napi == 4.0}
 kotelezo_ora_used = {nev: 0 for nev in RESZ_NAPI_ORASZAMOS}
 
 # ---------------------------------------------------------------------------
@@ -281,6 +286,11 @@ def parban_tiltott_utkozik(name, day_date, today_assigned):
             return True
     return False
 
+def fel_allas_tullepne(name, extra=1):
+    """Fél állású (napi 4 órás) dolgozónál havonta max. FEL_ALLAS_MAX_UGYELET ügyelet
+    lehet - ez kemény, sosem áthágható felső korlát, függetlenül az óra-kapacitástól."""
+    return name in FEL_ALLAS_NEVEK and (assigned_count[name] + extra) > FEL_ALLAS_MAX_UGYELET
+
 def eligible(cat, duty):
     if cat == "T":
         return False  # T kategória: sosem osztható be semmilyen ügyeletre
@@ -363,6 +373,8 @@ def kivetel_jeloltet_keres(duty, day_date, today_assigned):
             continue  # személyi ügyelet-tiltás (pl. heti fix nap) sosem hágható át
         if parban_tiltott_utkozik(name, day_date, today_assigned):
             continue  # páros-tiltás (pl. Kelemen+Katona) sosem hágható át
+        if fel_allas_tullepne(name):
+            continue  # fél állásúaknál a havi 3 ügyelet kemény felső korlát, sosem hágható át
         serult_szabaly = None
         if pref == "Nem szeretne":
             serult_szabaly = "nem_szeretne"
@@ -431,6 +443,8 @@ for name, napok in MINDENKEPPEN_SZERETNE.items():
             continue  # személyi ügyelet-tiltás sosem hágható át
         if parban_tiltott_utkozik(name, day_date, today_assigned_by_day[d]):
             continue  # páros-tiltás (pl. Kelemen+Katona) sosem hágható át
+        if fel_allas_tullepne(name):
+            continue  # fél állásúaknál a havi 3 ügyelet kemény felső korlát, sosem hágható át
         serult_szabaly = None
         if pref == "Nem szeretne":
             serult_szabaly = "nem_szeretne"
@@ -493,6 +507,8 @@ for d in range(num_days):
             if ugyelet_tiltott(name, day_date):
                 continue
             if parban_tiltott_utkozik(name, day_date, today_assigned):
+                continue
+            if fel_allas_tullepne(name):
                 continue
             if would_exceed_resz_kapacitas(name, day_date):
                 continue
