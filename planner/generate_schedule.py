@@ -313,6 +313,53 @@ def would_exceed_havi_kvota(name, extra_duties=1):
         return False
     return (assigned_count[name] + extra_duties) * 24 > kvota
 
+JAVASOLT_KIVETELEK = []  # [{"nap":, "tipus":, "nev":, "szabaly":}] - amiket csak szabály-áthágással
+                          # lehetne kitölteni, admin jóváhagyásra várva
+ENGEDELYEZETT_KIVETELEK = KIV.get("engedelyezett_kivetelek", [])  # admin által előzőleg jóváhagyott áthágások
+
+SZABALY_LEIRASOK = {
+    "piheno": "pihenőidő (min. 2 nap két ügyelet között)",
+    "kapacitas": "rész-munkaidős havi óra-kapacitás túllépése",
+    "havi_kvota": "havi keretes óraszám túllépése",
+    "nem_szeretne": "kifejezetten jelezte, hogy nem szeretne dolgozni aznap",
+}
+
+
+def kivetel_jeloltet_keres(duty, day_date, today_assigned):
+    """Megkeresi, ki tudná betölteni a szerepet, ha PONTOSAN EGY konkrét szabályt
+    megsértenénk - a kategória-egyezés és a szabadság sosem hágható át, ezekkel
+    sosem próbálkozunk. A leggyengébb (legkevésbé súlyos) szabálysértést részesíti
+    előnyben."""
+    jeloltek_szabalyonkent = {"nem_szeretne": [], "piheno": [], "kapacitas": [], "havi_kvota": []}
+    for name, cat, hrs, req, tipus in staff:
+        if not eligible(cat, duty):
+            continue
+        if name in today_assigned:
+            continue
+        pref = prefs.get((name, day_date))
+        if pref == "Szabadság":
+            continue  # ez sosem hágható át
+        if ugyelet_tiltott(name, day_date):
+            continue  # személyi ügyelet-tiltás (pl. heti fix nap) sosem hágható át
+        serult_szabaly = None
+        if pref == "Nem szeretne":
+            serult_szabaly = "nem_szeretne"
+        elif piheno_utkozik(name, day_date):
+            serult_szabaly = "piheno"
+        elif would_exceed_resz_kapacitas(name, day_date):
+            serult_szabaly = "kapacitas"
+        elif would_exceed_havi_kvota(name):
+            serult_szabaly = "havi_kvota"
+        if serult_szabaly is None:
+            continue
+        ratio = assigned_count[name] / target_weight[name]
+        jeloltek_szabalyonkent[serult_szabaly].append((ratio, name))
+    for szabaly in ("nem_szeretne", "piheno", "kapacitas", "havi_kvota"):
+        if jeloltek_szabalyonkent[szabaly]:
+            jeloltek_szabalyonkent[szabaly].sort()
+            return szabaly, jeloltek_szabalyonkent[szabaly][0][1]
+    return None, None
+
 duty_types = ["Intenzív", "Aneszt", "Stroke"]
 schedule = {d: {} for d in range(num_days)}
 today_assigned_by_day = {d: set() for d in range(num_days)}
@@ -337,16 +384,50 @@ for name, napok in MINDENKEPPEN_SZERETNE.items():
         is_saturday_p = day_date.weekday() == 5
         if name in today_assigned_by_day[d]:
             continue  # már be van osztva aznap valamelyik (korábbi) elsőbbségi napja miatt
+        jovahagyott = any(k["nap"] == day_nap and k["tipus"] == "mindenkeppen" and k["nev"] == name
+                           for k in ENGEDELYEZETT_KIVETELEK)
+        if jovahagyott:
+            for duty in duty_types:
+                if duty == "Stroke" and is_saturday_p and SZOMBAT_NINCS_STROKE:
+                    continue
+                if schedule[d].get(duty) is not None:
+                    continue
+                if not eligible(cat, duty):
+                    continue
+                schedule[d][duty] = name
+                today_assigned_by_day[d].add(name)
+                assigned_count[name] += 1
+                duty_dates[name].add(day_date)
+                if name in RESZ_NAPI_ORASZAMOS:
+                    kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date)
+                break
+            continue
         pref = prefs.get((name, day_date))
-        if pref in ("Szabadság", "Nem szeretne"):
-            continue
-        if piheno_utkozik(name, day_date):
-            continue
-        if would_exceed_havi_kvota(name):
-            continue
+        if pref == "Szabadság":
+            continue  # ez sosem hágható át
         if ugyelet_tiltott(name, day_date):
-            continue
-        if would_exceed_resz_kapacitas(name, day_date):
+            continue  # személyi ügyelet-tiltás sosem hágható át
+        serult_szabaly = None
+        if pref == "Nem szeretne":
+            serult_szabaly = "nem_szeretne"
+        elif piheno_utkozik(name, day_date):
+            serult_szabaly = "piheno"
+        elif would_exceed_havi_kvota(name):
+            serult_szabaly = "havi_kvota"
+        elif would_exceed_resz_kapacitas(name, day_date):
+            serult_szabaly = "kapacitas"
+        van_szabad_szerep = any(
+            schedule[d].get(duty) is None and eligible(cat, duty)
+            and not (duty == "Stroke" and is_saturday_p and SZOMBAT_NINCS_STROKE)
+            for duty in duty_types
+        )
+        if serult_szabaly is not None:
+            if van_szabad_szerep:
+                JAVASOLT_KIVETELEK.append({
+                    "nap": day_nap, "tipus": "mindenkeppen", "nev": name, "szabaly": serult_szabaly,
+                    "leiras": f"{name} mindenképp szeretné a(z) {day_nap}. napot, de ehhez át kellene "
+                              f"hágni: {SZABALY_LEIRASOK[serult_szabaly]}.",
+                })
             continue
         for duty in duty_types:
             if duty == "Stroke" and is_saturday_p and SZOMBAT_NINCS_STROKE:
@@ -398,6 +479,25 @@ for d in range(num_days):
             jitter = (rng.random() - 0.5) * 0.06
             candidates.append((ratio + bonus + jitter, assigned_count[name], name))
         if not candidates:
+            day_nap = d + 1
+            jovahagyott_nev = next((k["nev"] for k in ENGEDELYEZETT_KIVETELEK
+                                     if k["nap"] == day_nap and k["tipus"] == duty), None)
+            if jovahagyott_nev:
+                chosen = jovahagyott_nev
+                schedule[d][duty] = chosen
+                today_assigned.add(chosen)
+                assigned_count[chosen] += 1
+                duty_dates[chosen].add(day_date)
+                if chosen in RESZ_NAPI_ORASZAMOS:
+                    kotelezo_ora_used[chosen] += kotelezo_delta_ha_ma_ugyel(chosen, day_date)
+                continue
+            szabaly, jelolt_nev = kivetel_jeloltet_keres(duty, day_date, today_assigned)
+            if jelolt_nev:
+                JAVASOLT_KIVETELEK.append({
+                    "nap": day_nap, "tipus": duty, "nev": jelolt_nev, "szabaly": szabaly,
+                    "leiras": f"{jelolt_nev} tudná betölteni {duty} ügyeletet {day_nap}-án, "
+                              f"de ehhez át kellene hágni: {SZABALY_LEIRASOK[szabaly]}.",
+                })
             schedule[d][duty] = None
             continue
         candidates.sort(key=lambda x: (x[0], x[1], x[2]))
@@ -1206,3 +1306,11 @@ for name in staff_order:
 
 wb.save(KIMENET_PATH)
 print("saved", KIMENET_PATH, f"(seed={SEED})")
+
+if JAVASOLT_KIVETELEK:
+    kivetel_kimenet = KIMENET_PATH.rsplit(".", 1)[0] + "_javasolt_kivetelek.json"
+    with open(kivetel_kimenet, "w", encoding="utf-8") as f:
+        json.dump(JAVASOLT_KIVETELEK, f, ensure_ascii=False, indent=2)
+    print(f"Javasolt kivételek ({len(JAVASOLT_KIVETELEK)} db) elmentve: {kivetel_kimenet}")
+    for kiv_item in JAVASOLT_KIVETELEK:
+        print(" -", kiv_item["leiras"])

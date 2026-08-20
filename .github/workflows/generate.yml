@@ -73,11 +73,16 @@ jobs:
             python3 osszevont_nyomtathato.py ICU_beosztas_nyomtathato.xlsx ICU_ugyeleti_beosztas_kimenet.xlsx
           fi
 
+      - name: Javasolt kivételek összegyűjtése (ha vannak)
+        working-directory: planner
+        run: python3 merge_javasolt_kivetelek.py
+
       - name: Eredmény feltöltése letölthetőként
         uses: actions/upload-artifact@v4
         with:
           name: icu-beosztas-eredmeny
           path: |
             planner/ICU_beosztas_nyomtathato.xlsx
+            planner/javasolt_kivetelek_osszevont.json
           retention-days: 30
 
