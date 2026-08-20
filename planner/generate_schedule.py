@@ -490,6 +490,7 @@ for name, napok in MINDENKEPPEN_SZERETNE.items():
 for d in range(num_days):
     day_date = first_day + datetime.timedelta(days=d)
     is_saturday = day_date.weekday() == 5
+    is_weekend_day = day_date.weekday() >= 5
     today_assigned = today_assigned_by_day[d]
     for duty in duty_types:
         if duty == "Stroke" and is_saturday and SZOMBAT_NINCS_STROKE:
@@ -528,9 +529,16 @@ for d in range(num_days):
             utolso_ugyelet = max(duty_dates[name]) if duty_dates[name] else None
             nap_tavolsag = (day_date - utolso_ugyelet).days if utolso_ugyelet else (d + 1)
             szoras_bonus = -min(nap_tavolsag, 15) * 0.008
+            # Hétvégi arányossági bónusz: hétvégi napokon azt részesítjük előnyben, akinek
+            # eddig arányosan kevesebb hétvégi ügyelete volt - hogy a hétvégék terhe is
+            # egyenletesen oszoljon el, ne csak az összesített ügyeletszám.
+            hetvegi_bonus = 0.0
+            if is_weekend_day:
+                sajat_hetvegik = sum(1 for dd in duty_dates[name] if dd.weekday() >= 5)
+                hetvegi_bonus = (sajat_hetvegik / target_weight[name]) * 0.2
             bonus = -1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0)
             jitter = (rng.random() - 0.5) * 0.06
-            candidates.append((ratio + bonus + szoras_bonus + jitter, assigned_count[name], name))
+            candidates.append((ratio + bonus + szoras_bonus + hetvegi_bonus + jitter, assigned_count[name], name))
         if not candidates:
             day_nap = d + 1
             jovahagyott_nev = next((k["nev"] for k in ENGEDELYEZETT_KIVETELEK
