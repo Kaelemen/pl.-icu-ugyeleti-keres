@@ -26,6 +26,7 @@ with open(SZABALYOK_PATH, encoding="utf-8") as f:
 with open(KIVANSAGOK_PATH, encoding="utf-8") as f:
     KIV = json.load(f)
 MINDENKEPPEN_SZERETNE = KIV.get("mindenkeppen_szeretne", {})  # nev -> [napok], amiket mindenképp szeretne ügyeletben
+NYOLC_ORA_NAPPAL = KIV.get("nyolc_ora_nappal", {})  # nev -> [napok], amikor 8 órás rendes napot tud vállalni
 ELOZO_HONAP_LELEPOK = set(KIV.get("elozo_honap_lelepok", []))  # kik voltak ügyeletben az előző hónap utolsó napján
 
 # Ha a kívánság-fájl tartalmaz "dolgozok" listát (a webes admin felület Dolgozók
@@ -379,6 +380,9 @@ def kivetel_jeloltet_keres(duty, day_date, today_assigned):
             continue  # páros-tiltás (pl. Kelemen+Katona) sosem hágható át
         if fel_allas_tullepne(name, req):
             continue  # fél állásúaknál a havi 3 ügyelet kemény felső korlát, sosem hágható át
+        day_nap_kiv = (day_date - first_day).days + 1
+        if day_nap_kiv in NYOLC_ORA_NAPPAL.get(name, []) and day_nap_kiv not in kivansagok.get(name, {}).get("szeret", []):
+            continue  # "8 órára alkalmas" nap csak rendes napi munkára vonatkozik, nem ügyeletre
         serult_szabaly = None
         if pref == "Nem szeretne":
             serult_szabaly = "nem_szeretne"
@@ -506,6 +510,8 @@ for d in range(num_days):
             pref = prefs.get((name, day_date))
             if pref in ("Szabadság", "Nem szeretne"):
                 continue
+            if (d + 1) in NYOLC_ORA_NAPPAL.get(name, []) and (d + 1) not in kivansagok.get(name, {}).get("szeret", []):
+                continue  # "8 órára alkalmas" nap csak rendes napi munkára vonatkozik, nem ügyeletre
             if piheno_utkozik(name, day_date):
                 continue
             if would_exceed_havi_kvota(name):
@@ -919,7 +925,6 @@ for (name, day_date), value in prefs.items():
 ws_staff = wb["Dolgozók"]
 STAFF_START = 4
 kert = KIV.get("kert_ugyeletszam", {})
-NYOLC_ORA_NAPPAL = KIV.get("nyolc_ora_nappal", {})  # nev -> [napok], amikor 8 órás rendes napot tud vállalni
 for i, name in enumerate(staff_order_all):
     ws_staff.cell(row=STAFF_START + i, column=4, value=kert.get(name))
 
