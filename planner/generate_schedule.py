@@ -83,6 +83,8 @@ O1_O2_TILTOTT = set(ALT.get("o1_o2_tiltott_szemelyek", []))
 NAPI_KOTELEZO_ORA = SZAB["orakeret_konstansok"]["napi_kotelezo_ora"]
 munkanapok_a_honapban = sum(1 for d in range(num_days)
                              if (first_day + datetime.timedelta(days=d)).weekday() < 5)
+HETVEGI_NAPOK_A_HONAPBAN = num_days - munkanapok_a_honapban
+HETVEGI_ARANY_A_HONAPBAN = HETVEGI_NAPOK_A_HONAPBAN / num_days  # pl. 8/30 ≈ 0.27
 RESZ_NAPI_ORASZAMOS = {d["nev"]: d["napi_munkaido"] for d in SZAB["dolgozok"]
                         if d["szerzodes_tipus"] == "Részmunkaidő - napi óraszám"}
 RESZ_NAPI_KAPACITAS = {nev: napi * munkanapok_a_honapban for nev, napi in RESZ_NAPI_ORASZAMOS.items()}
@@ -535,13 +537,17 @@ for d in range(num_days):
             utolso_ugyelet = max(duty_dates[name]) if duty_dates[name] else None
             nap_tavolsag = (day_date - utolso_ugyelet).days if utolso_ugyelet else (d + 1)
             szoras_bonus = -min(nap_tavolsag, 15) * 0.008
-            # Hétvégi arányossági bónusz: hétvégi napokon azt részesítjük előnyben, akinek
-            # eddig arányosan kevesebb hétvégi ügyelete volt - hogy a hétvégék terhe is
-            # egyenletesen oszoljon el, ne csak az összesített ügyeletszám.
+            # Hétvégi arányossági bónusz: mindenkinek van egy "elvárt" hétvégi ügyeletszáma
+            # (a saját összesített célszámának kb. 27%-a, a hónap hétvégi-nap arányának
+            # megfelelően) - hétvégi napon azt részesítjük ERŐS előnyben, aki ehhez képest
+            # a legjobban le van maradva, hogy a hétvégék terhe is arányosan oszoljon el,
+            # ne csak az összesített ügyeletszám.
             hetvegi_bonus = 0.0
             if is_weekend_day:
                 sajat_hetvegik = sum(1 for dd in duty_dates[name] if dd.weekday() >= 5)
-                hetvegi_bonus = (sajat_hetvegik / target_weight[name]) * 0.2
+                elvart_hetvegi = target_weight[name] * HETVEGI_ARANY_A_HONAPBAN
+                hetvegi_hianyossag = elvart_hetvegi - sajat_hetvegik  # pozitív = le van maradva
+                hetvegi_bonus = -hetvegi_hianyossag * 0.35
             bonus = -1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0)
             jitter = (rng.random() - 0.5) * 0.06
             candidates.append((ratio + bonus + szoras_bonus + hetvegi_bonus + jitter, assigned_count[name], name))
