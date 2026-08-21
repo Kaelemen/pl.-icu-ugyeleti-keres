@@ -668,6 +668,70 @@ for d in range(num_days):
                 break
 
 # ---------------------------------------------------------------------------
+# Kiegyenlítő átadás: ha valaki a kért (vagy "mindenképp szeretném" alapú) ügyeletszáma
+# fölött kapott (jellemzően lefedettségi szükségből), megnézzük, hogy a MÁR kiosztott
+# napjai közül át tudja-e venni valaki, akinek kevesebb ügyelete van nála, és az átadás
+# nem sértene semmilyen szabályt az új embernél.
+# ---------------------------------------------------------------------------
+for name in sorted(assigned_count.keys(), key=lambda n: -assigned_count[n]):
+    req_eq = next((r for n, _, _, r, _ in staff if n == name), None)
+    hatekony_keres_eq = req_eq if req_eq else len(MINDENKEPPEN_SZERETNE.get(name, []))
+    if hatekony_keres_eq == 0 or assigned_count[name] <= hatekony_keres_eq:
+        continue
+    for nap_datum in sorted(duty_dates[name]):
+        if nap_datum < first_day:
+            continue  # virtuális (előző havi) dátum, nem valódi ez havi ügyelet
+        if assigned_count[name] <= hatekony_keres_eq:
+            break
+        d_idx = (nap_datum - first_day).days
+        duty_talalt = next((dt for dt in duty_types if schedule[d_idx].get(dt) == name), None)
+        if duty_talalt is None:
+            continue
+        if (d_idx + 1) in MINDENKEPPEN_SZERETNE.get(name, []):
+            continue  # a saját "mindenképp" napját nem adjuk át
+        legjobb_alt = None
+        for alt_name, alt_cat, alt_hrs, alt_req, alt_tipus in staff:
+            if alt_name == name or not eligible(alt_cat, duty_talalt):
+                continue
+            if alt_name in today_assigned_by_day[d_idx]:
+                continue
+            if assigned_count[alt_name] >= assigned_count[name] - 1:
+                continue  # csak akkor éri meg átadni, ha az illető tényleg kevesebbet ügyel
+            alt_pref = prefs.get((alt_name, nap_datum))
+            if alt_pref in ("Szabadság", "Nem szeretne"):
+                continue
+            if (d_idx + 1) in NYOLC_ORA_NAPPAL.get(alt_name, []) and (d_idx + 1) not in kivansagok.get(alt_name, {}).get("szeret", []):
+                continue
+            if piheno_utkozik(alt_name, nap_datum):
+                continue
+            if would_exceed_havi_kvota(alt_name):
+                continue
+            if foglalt_kapacitas_serulne(alt_name, alt_pref):
+                continue
+            if ugyelet_tiltott(alt_name, nap_datum):
+                continue
+            if parban_tiltott_utkozik(alt_name, nap_datum, today_assigned_by_day[d_idx]):
+                continue
+            if fel_allas_tullepne(alt_name, alt_req):
+                continue
+            if would_exceed_resz_kapacitas(alt_name, nap_datum):
+                continue
+            if legjobb_alt is None or assigned_count[alt_name] < assigned_count[legjobb_alt]:
+                legjobb_alt = alt_name
+        if legjobb_alt is not None:
+            schedule[d_idx][duty_talalt] = legjobb_alt
+            today_assigned_by_day[d_idx].discard(name)
+            today_assigned_by_day[d_idx].add(legjobb_alt)
+            assigned_count[name] -= 1
+            assigned_count[legjobb_alt] += 1
+            duty_dates[name].discard(nap_datum)
+            duty_dates[legjobb_alt].add(nap_datum)
+            if name in RESZ_NAPI_ORASZAMOS:
+                kotelezo_ora_used[name] -= kotelezo_delta_ha_ma_ugyel(name, nap_datum)
+            if legjobb_alt in RESZ_NAPI_ORASZAMOS:
+                kotelezo_ora_used[legjobb_alt] += kotelezo_delta_ha_ma_ugyel(legjobb_alt, nap_datum)
+
+# ---------------------------------------------------------------------------
 # lelépő nap: bármelyik duty utáni nap MINDENKINÉL (napi és havi keretesnél is)
 # ---------------------------------------------------------------------------
 worked_days = {name: set() for name, *_ in staff}
