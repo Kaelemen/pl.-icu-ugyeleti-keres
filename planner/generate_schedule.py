@@ -545,9 +545,10 @@ for d in range(num_days):
             # Szórási bónusz: aki régebben volt utoljára ügyeletben (vagy még egyáltalán nem
             # volt ebben a hónapban), enyhe előnyt kap - ez segít elkerülni, hogy valakinek
             # összezsúfolódjanak az ügyeletei a hónap egy részében, míg máshol semmi.
-            utolso_ugyelet = max(duty_dates[name]) if duty_dates[name] else None
+            korabbi_ugyeletek = [dd for dd in duty_dates[name] if dd < day_date]
+            utolso_ugyelet = max(korabbi_ugyeletek) if korabbi_ugyeletek else None
             nap_tavolsag = (day_date - utolso_ugyelet).days if utolso_ugyelet else (d + 1)
-            szoras_bonus = -min(nap_tavolsag, 15) * 0.008
+            szoras_bonus = -min(nap_tavolsag, 20) * 0.025
             # Hétvégi arányossági bónusz: mindenkinek van egy "elvárt" hétvégi ügyeletszáma
             # (a saját összesített célszámának kb. 27%-a, a hónap hétvégi-nap arányának
             # megfelelően) - hétvégi napon azt részesítjük ERŐS előnyben, aki ehhez képest
