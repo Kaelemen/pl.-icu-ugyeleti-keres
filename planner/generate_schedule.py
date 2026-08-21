@@ -503,39 +503,6 @@ for name, napok in MINDENKEPPEN_SZERETNE.items():
                 kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date)
             break
 
-# Jóváhagyott "sajat_szeretett_nap" kivételek kényszerített beírása - ha az admin egy
-# korábbi generálásból jóváhagyta, hogy valaki egy szabály áthágásával megkapja a saját
-# "szeretném" napját, azt itt, a fő verseny előtt beírjuk.
-for kivetel in ENGEDELYEZETT_KIVETELEK:
-    if kivetel.get("tipus") != "sajat_szeretett_nap":
-        continue
-    name = kivetel["nev"]
-    day_nap = kivetel["nap"]
-    d = day_nap - 1
-    if d < 0 or d >= num_days or name not in tipus_of:
-        continue
-    if name in today_assigned_by_day[d]:
-        continue
-    cat = next((c for n, c, *_ in staff if n == name), None)
-    if cat is None:
-        continue
-    day_date = first_day + datetime.timedelta(days=d)
-    is_saturday_kn = day_date.weekday() == 5
-    for duty in duty_types:
-        if duty == "Stroke" and is_saturday_kn and SZOMBAT_NINCS_STROKE:
-            continue
-        if schedule[d].get(duty) is not None:
-            continue
-        if not eligible(cat, duty):
-            continue
-        schedule[d][duty] = name
-        today_assigned_by_day[d].add(name)
-        assigned_count[name] += 1
-        duty_dates[name].add(day_date)
-        if name in RESZ_NAPI_ORASZAMOS:
-            kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date)
-        break
-
 for d in range(num_days):
     day_date = first_day + datetime.timedelta(days=d)
     is_saturday = day_date.weekday() == 5
@@ -928,49 +895,6 @@ for name, cat, hrs, req, tipus in staff:
                     break
             if atultetes_sikerult:
                 break
-
-# ---------------------------------------------------------------------------
-# Ha valaki egy kért ("szeretném") napját VÉGÜL sem kapta meg (se az eredeti
-# kiosztásnál, se az ütközés-feloldásnál), és ennek pontosan egyetlen konkrét szabály
-# az oka, ezt is javasoljuk az admin felé - ne dobjuk el csendben.
-# ---------------------------------------------------------------------------
-for name, cat, hrs, req, tipus in staff:
-    sajat_szeret = kivansagok.get(name, {}).get("szeret", [])
-    if not sajat_szeret:
-        continue
-    sajat_duty_napok = {(dd - first_day).days + 1 for dd in duty_dates[name] if dd >= first_day}
-    for hianyzo_nap in sajat_szeret:
-        if hianyzo_nap in sajat_duty_napok:
-            continue
-        d_idx = hianyzo_nap - 1
-        day_date_h = first_day + datetime.timedelta(days=d_idx)
-        van_szabad_szerep_kn = any(
-            schedule[d_idx].get(duty) is None and eligible(cat, duty)
-            and not (duty == "Stroke" and day_date_h.weekday() == 5 and SZOMBAT_NINCS_STROKE)
-            for duty in duty_types
-        )
-        if van_szabad_szerep_kn:
-            continue  # ez esetben az eredeti "üres hely" logika már kezelte/kezelni fogja
-        pref_kn = prefs.get((name, day_date_h))
-        if pref_kn == "Szabadság" or name in today_assigned_by_day[d_idx] or ugyelet_tiltott(name, day_date_h) \
-                or parban_tiltott_utkozik(name, day_date_h, today_assigned_by_day[d_idx]) or fel_allas_tullepne(name, req):
-            continue  # ezek sosem hághatók át
-        serult_szabaly_kn = None
-        if piheno_utkozik(name, day_date_h):
-            serult_szabaly_kn = "piheno"
-        elif would_exceed_havi_kvota(name):
-            serult_szabaly_kn = "havi_kvota"
-        elif would_exceed_resz_kapacitas(name, day_date_h):
-            serult_szabaly_kn = "kapacitas"
-        if serult_szabaly_kn is None:
-            continue  # nem szabály miatt maradt le, hanem mert más nyerte el fair versenyben
-        mar_szerepel = any(k["nap"] == hianyzo_nap and k["nev"] == name for k in JAVASOLT_KIVETELEK)
-        if not mar_szerepel:
-            JAVASOLT_KIVETELEK.append({
-                "nap": hianyzo_nap, "tipus": "sajat_szeretett_nap", "nev": name, "szabaly": serult_szabaly_kn,
-                "leiras": f"{name} szeretné a(z) {hianyzo_nap}. napot, de ehhez át kellene "
-                          f"hágni: {SZABALY_LEIRASOK[serult_szabaly_kn]}.",
-            })
 
 # ---------------------------------------------------------------------------
 # lelépő nap: bármelyik duty utáni nap MINDENKINÉL (napi és havi keretesnél is)
