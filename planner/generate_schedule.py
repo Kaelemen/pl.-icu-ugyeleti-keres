@@ -670,9 +670,11 @@ for d in range(num_days):
 # ---------------------------------------------------------------------------
 # Kiegyenlítő átadás: ha valaki a kért (vagy "mindenképp szeretném" alapú) ügyeletszáma
 # fölött kapott (jellemzően lefedettségi szükségből), megnézzük, hogy a MÁR kiosztott
-# napjai közül át tudja-e venni valaki, akinek kevesebb ügyelete van nála, és az átadás
-# nem sértene semmilyen szabályt az új embernél.
+# napjai közül át tudja-e venni valaki, akinek a SAJÁT célszámához képest arányosan
+# kevesebb ügyelete van a csapat egészének átlagához képest, és az átadás nem sértene
+# semmilyen szabályt az új embernél.
 # ---------------------------------------------------------------------------
+ratio_atlag = sum(assigned_count[n] / target_weight[n] for n, *_ in staff) / len(staff)
 for name in sorted(assigned_count.keys(), key=lambda n: -assigned_count[n]):
     req_eq = next((r for n, _, _, r, _ in staff if n == name), None)
     hatekony_keres_eq = req_eq if req_eq else len(MINDENKEPPEN_SZERETNE.get(name, []))
@@ -695,8 +697,9 @@ for name in sorted(assigned_count.keys(), key=lambda n: -assigned_count[n]):
                 continue
             if alt_name in today_assigned_by_day[d_idx]:
                 continue
-            if assigned_count[alt_name] >= assigned_count[name] - 1:
-                continue  # csak akkor éri meg átadni, ha az illető tényleg kevesebbet ügyel
+            alt_ratio = assigned_count[alt_name] / target_weight[alt_name]
+            if alt_ratio >= ratio_atlag:
+                continue  # csak az átlagnál (a csapat egészéhez képest) lemaradtaknak adjuk át
             alt_pref = prefs.get((alt_name, nap_datum))
             if alt_pref in ("Szabadság", "Nem szeretne"):
                 continue
@@ -716,7 +719,7 @@ for name in sorted(assigned_count.keys(), key=lambda n: -assigned_count[n]):
                 continue
             if would_exceed_resz_kapacitas(alt_name, nap_datum):
                 continue
-            if legjobb_alt is None or assigned_count[alt_name] < assigned_count[legjobb_alt]:
+            if legjobb_alt is None or alt_ratio < (assigned_count[legjobb_alt] / target_weight[legjobb_alt]):
                 legjobb_alt = alt_name
         if legjobb_alt is not None:
             schedule[d_idx][duty_talalt] = legjobb_alt
