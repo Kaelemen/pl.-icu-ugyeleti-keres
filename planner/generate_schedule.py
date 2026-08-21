@@ -515,6 +515,7 @@ for d in range(num_days):
             continue  # az elsőbbségi kör már betöltötte ezt a szerepet aznap
         candidates = []
         tullepok_candidates = []  # akik már túlteljesítették a kérésüket - csak vészmegoldásként
+        jelolt_nelkuli_candidates = []  # akik nem jelölték meg "szeretném"-ként ezt a napot - csak akkor, ha senki jelölt nincs
         for name, cat, hrs, req, tipus in staff:
             if not eligible(cat, duty):
                 continue
@@ -579,8 +580,15 @@ for d in range(num_days):
             tetel = (ratio + bonus + szoras_bonus + hetvegi_bonus + jitter, assigned_count[name], name)
             if kertet_mar_tulteljesitette and not regi_szarazsag:
                 tullepok_candidates.append(tetel)
-            else:
+            elif pref == "Szeretne" or regi_szarazsag:
                 candidates.append(tetel)
+            else:
+                jelolt_nelkuli_candidates.append(tetel)
+        if not candidates:
+            # Ha senki nem jelölte magát erre a napra "szeretném"-nek (és vészfék sincs
+            # aktívan), csak akkor válogatunk a jelöletlenek közül - az ügyeletre alkalmas
+            # (kifejezetten megjelölt) napok élveznek elsőbbséget mindenkinél.
+            candidates = jelolt_nelkuli_candidates
         if not candidates:
             candidates = tullepok_candidates
         if not candidates:
