@@ -516,6 +516,7 @@ for d in range(num_days):
         candidates = []
         tullepok_candidates = []  # akik már túlteljesítették a kérésüket - csak vészmegoldásként
         jelolt_nelkuli_candidates = []  # akik nem jelölték meg "szeretném"-ként ezt a napot - csak akkor, ha senki jelölt nincs
+        varakozo_candidates = []  # jelöletlenek, akiknek van még ki nem elégített saját preferált napjuk később - legutolsó tartalék
         for name, cat, hrs, req, tipus in staff:
             if not eligible(cat, duty):
                 continue
@@ -576,19 +577,36 @@ for d in range(num_days):
             hatekony_keres = req if req else len(MINDENKEPPEN_SZERETNE.get(name, []))
             kertet_mar_tulteljesitette = hatekony_keres > 0 and assigned_count[name] >= hatekony_keres
             bonus = -1.5 if regi_szarazsag else (-1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0))
+            # Ha valakinek a hónap HÁTRALÉVŐ részében van még ki nem elégített, saját maga
+            # által megjelölt "szeretném" napja, azt ne "pazaroljuk el" egy nem kért napon -
+            # inkább várjunk, amíg a saját napjára sor kerül. Ezért az ilyen embereket külön
+            # (harmadik, még hátrébb sorolt) szintre tesszük a jelöletlen napokon, és csak
+            # akkor nyúlunk hozzájuk, ha végképp nincs más - se preferáló, se "tiszta"
+            # jelöletlen (nincs is neki előjegyzett napja) ember.
+            van_meg_sajat_jelolt_kesobb = pref != "Szeretne" and any(
+                nap > (d + 1) for nap in kivansagok.get(name, {}).get("szeret", [])
+            )
             jitter = (rng.random() - 0.5) * 0.06
             tetel = (ratio + bonus + szoras_bonus + hetvegi_bonus + jitter, assigned_count[name], name)
             if kertet_mar_tulteljesitette and not regi_szarazsag:
                 tullepok_candidates.append(tetel)
             elif pref == "Szeretne" or regi_szarazsag:
                 candidates.append(tetel)
+            elif van_meg_sajat_jelolt_kesobb:
+                varakozo_candidates.append(tetel)
             else:
                 jelolt_nelkuli_candidates.append(tetel)
         if not candidates:
             # Ha senki nem jelölte magát erre a napra "szeretném"-nek (és vészfék sincs
-            # aktívan), csak akkor válogatunk a jelöletlenek közül - az ügyeletre alkalmas
-            # (kifejezetten megjelölt) napok élveznek elsőbbséget mindenkinél.
+            # aktívan), csak akkor válogatunk a "tiszta" jelöletlenek közül (akiknek nincs
+            # ki nem elégített saját preferenciájuk) - az ügyeletre alkalmas (kifejezetten
+            # megjelölt) napok élveznek elsőbbséget mindenkinél.
             candidates = jelolt_nelkuli_candidates
+        if not candidates:
+            # Csak ha végképp nincs "tiszta" jelöletlen sem, nyúlunk azokhoz, akiknek van
+            # még saját preferált napjuk hátra - inkább őket várakoztatjuk, mint hogy
+            # elpazaroljuk a helyüket egy nem kért napon.
+            candidates = varakozo_candidates
         if not candidates:
             candidates = tullepok_candidates
         if not candidates:
