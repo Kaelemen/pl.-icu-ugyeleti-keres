@@ -351,19 +351,11 @@ def would_exceed_havi_kvota(name, extra_duties=1):
     return (assigned_count[name] + extra_duties) * 24 > kvota
 
 def foglalt_kapacitas_serulne(name, pref):
-    """Havi keretes ("fix napos") dolgozónál: ha ezt a napot NEM kifejezetten kérte
-    (se "szeretném", se "mindenképp szeretném"), és az ügyelet elfogadása után nem
-    maradna elég kapacitása a saját "8 órára alkalmas" napjainak teljesítésére, akkor
-    ne kapja meg ezt a normál versenyben - hagyjunk helyet a kifejezetten kért napjainak,
-    ne foglalja el egy véletlenül kiosztott, nem kért ügyelet."""
-    if name not in HAVI_KERETESEK or pref == "Szeretne":
-        return False
-    kvota = havi_oraszam_map.get(name)
-    if not kvota:
-        return False
-    szukseges_nyolc_ora = len(NYOLC_ORA_NAPPAL.get(name, [])) * 8
-    uj_ugyeleti_ora = (assigned_count[name] + 1) * 24
-    return (uj_ugyeleti_ora + szukseges_nyolc_ora) > kvota
+    """Havi keretes ("fix napos") dolgozó a normál (nem elsőbbségi) versenyben CSAK azokon
+    a napokon kaphat ügyeletet, amiket kifejezetten kért ("szeretném" jelöléssel) - soha
+    nem kaphat véletlenszerűen, nem kért napot, hogy a kifejezetten kért napjai (akár
+    ügyelet, akár "8 órára alkalmas" rendes nap) mindig elsőbbséget élvezzenek."""
+    return name in HAVI_KERETESEK and pref != "Szeretne"
 
 JAVASOLT_KIVETELEK = []  # [{"nap":, "tipus":, "nev":, "szabaly":}] - amiket csak szabály-áthágással
                           # lehetne kitölteni, admin jóváhagyásra várva
@@ -400,6 +392,8 @@ def kivetel_jeloltet_keres(duty, day_date, today_assigned):
         day_nap_kiv = (day_date - first_day).days + 1
         if day_nap_kiv in NYOLC_ORA_NAPPAL.get(name, []) and day_nap_kiv not in kivansagok.get(name, {}).get("szeret", []):
             continue  # "8 órára alkalmas" nap csak rendes napi munkára vonatkozik, nem ügyeletre
+        if foglalt_kapacitas_serulne(name, pref):
+            continue  # havi keretes ("fix napos") csak kifejezetten kért napot kaphat, sosem hágható át
         serult_szabaly = None
         if pref == "Nem szeretne":
             serult_szabaly = "nem_szeretne"
