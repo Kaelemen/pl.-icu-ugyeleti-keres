@@ -85,6 +85,7 @@ munkanapok_a_honapban = sum(1 for d in range(num_days)
                              if (first_day + datetime.timedelta(days=d)).weekday() < 5)
 HETVEGI_NAPOK_A_HONAPBAN = num_days - munkanapok_a_honapban
 HETVEGI_ARANY_A_HONAPBAN = HETVEGI_NAPOK_A_HONAPBAN / num_days  # pl. 8/30 ≈ 0.27
+MAX_NAP_UGYELET_NELKUL = 12  # ha ennyi nap után sincs senkinek ügyelete, "vészfék" lép életbe
 RESZ_NAPI_ORASZAMOS = {d["nev"]: d["napi_munkaido"] for d in SZAB["dolgozok"]
                         if d["szerzodes_tipus"] == "Részmunkaidő - napi óraszám"}
 RESZ_NAPI_KAPACITAS = {nev: napi * munkanapok_a_honapban for nev, napi in RESZ_NAPI_ORASZAMOS.items()}
@@ -560,7 +561,12 @@ for d in range(num_days):
                 elvart_hetvegi = target_weight[name] * HETVEGI_ARANY_A_HONAPBAN
                 hetvegi_hianyossag = elvart_hetvegi - sajat_hetvegik  # pozitív = le van maradva
                 hetvegi_bonus = -hetvegi_hianyossag * 0.35
-            bonus = -1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0)
+            # "Vészfék": ha valaki a hónap MAX_NAP_UGYELET_NELKUL. napjáig még egyáltalán
+            # nem kapott ügyeletet, onnantól nagyon erős elsőbbséget kap - erősebbet, mint a
+            # "kért ügyeletszám" prioritás is -, hogy senki ne maradjon indokolatlanul sokáig
+            # ügyelet nélkül csak azért, mert a versenyben mindig alulmaradt.
+            regi_szarazsag = assigned_count[name] == 0 and (d + 1) > MAX_NAP_UGYELET_NELKUL
+            bonus = -1.5 if regi_szarazsag else (-1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0))
             jitter = (rng.random() - 0.5) * 0.06
             candidates.append((ratio + bonus + szoras_bonus + hetvegi_bonus + jitter, assigned_count[name], name))
         if not candidates:
