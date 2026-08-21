@@ -566,7 +566,16 @@ for d in range(num_days):
             # "kért ügyeletszám" prioritás is -, hogy senki ne maradjon indokolatlanul sokáig
             # ügyelet nélkül csak azért, mert a versenyben mindig alulmaradt.
             regi_szarazsag = assigned_count[name] == 0 and (d + 1) > MAX_NAP_UGYELET_NELKUL
+            # A "kifejezetten kért" mennyiség vagy a konkrét kért ügyeletszám, vagy - ha az
+            # nincs megadva - a "mindenképp szeretném" napok száma (hiszen az is explicit
+            # igény). Ha valaki ezt már elérte/túllépte, háttérbe szorul azokkal szemben,
+            # akiknek nincs (még) teljesített kérésük - hogy a kért szám ne csak minimum-
+            # garancia legyen, hanem ne is vigyen el fölöslegesen helyet másoktól.
+            hatekony_keres = req if req else len(MINDENKEPPEN_SZERETNE.get(name, []))
+            kertet_mar_tulteljesitette = hatekony_keres > 0 and assigned_count[name] >= hatekony_keres
             bonus = -1.5 if regi_szarazsag else (-1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0))
+            if kertet_mar_tulteljesitette and not regi_szarazsag:
+                bonus += 1.3
             jitter = (rng.random() - 0.5) * 0.06
             candidates.append((ratio + bonus + szoras_bonus + hetvegi_bonus + jitter, assigned_count[name], name))
         if not candidates:
