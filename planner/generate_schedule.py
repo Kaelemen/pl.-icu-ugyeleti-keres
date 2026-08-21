@@ -761,6 +761,104 @@ for name in sorted(assigned_count.keys(), key=lambda n: -assigned_count[n]):
                 kotelezo_ora_used[legjobb_alt] += kotelezo_delta_ha_ma_ugyel(legjobb_alt, nap_datum)
 
 # ---------------------------------------------------------------------------
+# Preferencia-ütközés feloldása: ha valakinek nem sikerült megkapnia egy általa kért
+# ("szeretném") napot, mert azt más (szintén kérő) megkapta, megnézzük, hogy a nyertes
+# át tudna-e ülni egy MÁSIK, saját maga által kért napra - felszabadítva az eredeti
+# napot annak, aki elsőként (és eredetileg) azt szerette volna.
+# ---------------------------------------------------------------------------
+for name, cat, hrs, req, tipus in staff:
+    sajat_szeret = kivansagok.get(name, {}).get("szeret", [])
+    if not sajat_szeret:
+        continue
+    sajat_duty_napok = {(dd - first_day).days + 1 for dd in duty_dates[name] if dd >= first_day}
+    hianyzo_napok = [n for n in sajat_szeret if n not in sajat_duty_napok]
+    for hianyzo_nap in hianyzo_napok:
+        d_idx = hianyzo_nap - 1
+        day_date_h = first_day + datetime.timedelta(days=d_idx)
+        for duty in duty_types:
+            if not eligible(cat, duty):
+                continue
+            winner = schedule[d_idx].get(duty)
+            if winner is None or winner == name:
+                continue
+            winner_cat = cat_of.get(winner)
+            winner_req = next((r for n, _, _, r, _ in staff if n == winner), None)
+            winner_sajat_szeret = kivansagok.get(winner, {}).get("szeret", [])
+            winner_duty_napok = {(dd - first_day).days + 1 for dd in duty_dates[winner] if dd >= first_day}
+            atultetes_sikerult = False
+            for alt_nap in winner_sajat_szeret:
+                if alt_nap in winner_duty_napok or alt_nap == hianyzo_nap:
+                    continue
+                alt_d_idx = alt_nap - 1
+                alt_day_date = first_day + datetime.timedelta(days=alt_d_idx)
+                for alt_duty in duty_types:
+                    if not eligible(winner_cat, alt_duty):
+                        continue
+                    if schedule[alt_d_idx].get(alt_duty) is not None:
+                        continue
+                    if winner in today_assigned_by_day[alt_d_idx]:
+                        continue
+                    alt_pref = prefs.get((winner, alt_day_date))
+                    if alt_pref in ("Szabadság", "Nem szeretne"):
+                        continue
+                    if (alt_nap) in NYOLC_ORA_NAPPAL.get(winner, []) and alt_nap not in winner_sajat_szeret:
+                        continue
+                    if piheno_utkozik(winner, alt_day_date):
+                        continue
+                    if would_exceed_havi_kvota(winner):
+                        continue
+                    if foglalt_kapacitas_serulne(winner, alt_pref):
+                        continue
+                    if ugyelet_tiltott(winner, alt_day_date):
+                        continue
+                    if parban_tiltott_utkozik(winner, alt_day_date, today_assigned_by_day[alt_d_idx]):
+                        continue
+                    if fel_allas_tullepne(winner, winner_req):
+                        continue
+                    if would_exceed_resz_kapacitas(winner, alt_day_date):
+                        continue
+                    if parban_tiltott_utkozik(name, day_date_h, today_assigned_by_day[d_idx] - {winner}):
+                        continue
+                    name_pref = prefs.get((name, day_date_h))
+                    if name_pref in ("Szabadság", "Nem szeretne"):
+                        continue
+                    if piheno_utkozik(name, day_date_h):
+                        continue
+                    if would_exceed_havi_kvota(name):
+                        continue
+                    if foglalt_kapacitas_serulne(name, name_pref):
+                        continue
+                    if ugyelet_tiltott(name, day_date_h):
+                        continue
+                    if fel_allas_tullepne(name, req):
+                        continue
+                    if would_exceed_resz_kapacitas(name, day_date_h):
+                        continue
+                    # minden rendben - áttesszük a nyertest az alternatív napjára,
+                    # és felszabadítjuk az eredeti napot a vesztesnek
+                    schedule[alt_d_idx][alt_duty] = winner
+                    today_assigned_by_day[alt_d_idx].add(winner)
+                    duty_dates[winner].add(alt_day_date)
+                    if winner in RESZ_NAPI_ORASZAMOS:
+                        kotelezo_ora_used[winner] += kotelezo_delta_ha_ma_ugyel(winner, alt_day_date)
+
+                    schedule[d_idx][duty] = name
+                    today_assigned_by_day[d_idx].discard(winner)
+                    today_assigned_by_day[d_idx].add(name)
+                    duty_dates[winner].discard(day_date_h)
+                    duty_dates[name].add(day_date_h)
+                    if winner in RESZ_NAPI_ORASZAMOS:
+                        kotelezo_ora_used[winner] -= kotelezo_delta_ha_ma_ugyel(winner, day_date_h)
+                    if name in RESZ_NAPI_ORASZAMOS:
+                        kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date_h)
+                    atultetes_sikerult = True
+                    break
+                if atultetes_sikerult:
+                    break
+            if atultetes_sikerult:
+                break
+
+# ---------------------------------------------------------------------------
 # lelépő nap: bármelyik duty utáni nap MINDENKINÉL (napi és havi keretesnél is)
 # ---------------------------------------------------------------------------
 worked_days = {name: set() for name, *_ in staff}
