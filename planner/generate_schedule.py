@@ -350,6 +350,21 @@ def would_exceed_havi_kvota(name, extra_duties=1):
         return False
     return (assigned_count[name] + extra_duties) * 24 > kvota
 
+def foglalt_kapacitas_serulne(name, pref):
+    """Havi keretes ("fix napos") dolgozónál: ha ezt a napot NEM kifejezetten kérte
+    (se "szeretném", se "mindenképp szeretném"), és az ügyelet elfogadása után nem
+    maradna elég kapacitása a saját "8 órára alkalmas" napjainak teljesítésére, akkor
+    ne kapja meg ezt a normál versenyben - hagyjunk helyet a kifejezetten kért napjainak,
+    ne foglalja el egy véletlenül kiosztott, nem kért ügyelet."""
+    if name not in HAVI_KERETESEK or pref == "Szeretne":
+        return False
+    kvota = havi_oraszam_map.get(name)
+    if not kvota:
+        return False
+    szukseges_nyolc_ora = len(NYOLC_ORA_NAPPAL.get(name, [])) * 8
+    uj_ugyeleti_ora = (assigned_count[name] + 1) * 24
+    return (uj_ugyeleti_ora + szukseges_nyolc_ora) > kvota
+
 JAVASOLT_KIVETELEK = []  # [{"nap":, "tipus":, "nev":, "szabaly":}] - amiket csak szabály-áthágással
                           # lehetne kitölteni, admin jóváhagyásra várva
 ENGEDELYEZETT_KIVETELEK = KIV.get("engedelyezett_kivetelek", [])  # admin által előzőleg jóváhagyott áthágások
@@ -517,6 +532,8 @@ for d in range(num_days):
             if piheno_utkozik(name, day_date):
                 continue
             if would_exceed_havi_kvota(name):
+                continue
+            if foglalt_kapacitas_serulne(name, pref):
                 continue
             if ugyelet_tiltott(name, day_date):
                 continue
