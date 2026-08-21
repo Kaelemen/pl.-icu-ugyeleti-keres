@@ -782,13 +782,49 @@ for name, cat, hrs, req, tipus in staff:
             if winner is None or winner == name:
                 continue
             if hianyzo_nap in MINDENKEPPEN_SZERETNE.get(winner, []):
-                continue  # a nyertes "mindenképp szeretném" napja - sosem mozdítjuk el onnan
+                # A nyertes "mindenképp szeretném" napja - a napot magát nem vesszük el
+                # tőle, de ha UGYANAZON a napon egy MÁSIK ügyelettípusra is jogosult, és az
+                # szabadon áll, átválthat oda - így a nap-garanciája teljesül, de az eredeti
+                # (itt kért) típus felszabadul annak, aki azt kérte.
+                name_pref_mk = prefs.get((name, day_date_h))
+                if name_pref_mk in ("Szabadság", "Nem szeretne"):
+                    continue
+                if piheno_utkozik(name, day_date_h) or would_exceed_havi_kvota(name) \
+                        or foglalt_kapacitas_serulne(name, name_pref_mk) or ugyelet_tiltott(name, day_date_h) \
+                        or fel_allas_tullepne(name, req) or would_exceed_resz_kapacitas(name, day_date_h) \
+                        or parban_tiltott_utkozik(name, day_date_h, today_assigned_by_day[d_idx]):
+                    continue
+                winner_cat_mk = cat_of.get(winner)
+                winner_req_mk = next((r for n, _, _, r, _ in staff if n == winner), None)
+                athelyezve = False
+                for masik_duty in duty_types:
+                    if masik_duty == duty or not eligible(winner_cat_mk, masik_duty):
+                        continue
+                    if schedule[d_idx].get(masik_duty) is not None:
+                        continue
+                    if masik_duty == "Stroke" and day_date_h.weekday() == 5 and SZOMBAT_NINCS_STROKE:
+                        continue
+                    schedule[d_idx][masik_duty] = winner
+                    schedule[d_idx][duty] = name
+                    duty_dates[name].add(day_date_h)
+                    today_assigned_by_day[d_idx].add(name)
+                    if name in RESZ_NAPI_ORASZAMOS:
+                        kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date_h)
+                    athelyezve = True
+                    break
+                if athelyezve:
+                    break
+                continue  # nincs másik szabad típusa aznap - a napot nem vesszük el tőle
             winner_cat = cat_of.get(winner)
             winner_req = next((r for n, _, _, r, _ in staff if n == winner), None)
             winner_sajat_szeret = kivansagok.get(winner, {}).get("szeret", [])
             winner_duty_napok = {(dd - first_day).days + 1 for dd in duty_dates[winner] if dd >= first_day}
+            # Ha a nyertesnek nincs egyáltalán saját jelölt napja, "rugalmasnak" tekintjük -
+            # ilyenkor bármelyik szabályos (nem feltétlenül általa kért) napra megpróbáljuk
+            # áthelyezni, hogy felszabaduljon a hely annak, aki ezt a napot kifejezetten kérte.
+            alt_nap_jeloltek = winner_sajat_szeret if winner_sajat_szeret else list(range(1, num_days + 1))
             atultetes_sikerult = False
-            for alt_nap in winner_sajat_szeret:
+            for alt_nap in alt_nap_jeloltek:
                 if alt_nap in winner_duty_napok or alt_nap == hianyzo_nap:
                     continue
                 alt_d_idx = alt_nap - 1
