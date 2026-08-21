@@ -514,6 +514,7 @@ for d in range(num_days):
         if schedule[d].get(duty) is not None:
             continue  # az elsőbbségi kör már betöltötte ezt a szerepet aznap
         candidates = []
+        tullepok_candidates = []  # akik már túlteljesítették a kérésüket - csak vészmegoldásként
         for name, cat, hrs, req, tipus in staff:
             if not eligible(cat, duty):
                 continue
@@ -568,16 +569,20 @@ for d in range(num_days):
             regi_szarazsag = assigned_count[name] == 0 and (d + 1) > MAX_NAP_UGYELET_NELKUL
             # A "kifejezetten kért" mennyiség vagy a konkrét kért ügyeletszám, vagy - ha az
             # nincs megadva - a "mindenképp szeretném" napok száma (hiszen az is explicit
-            # igény). Ha valaki ezt már elérte/túllépte, háttérbe szorul azokkal szemben,
-            # akiknek nincs (még) teljesített kérésük - hogy a kért szám ne csak minimum-
-            # garancia legyen, hanem ne is vigyen el fölöslegesen helyet másoktól.
+            # igény). Ha valaki ezt már elérte/túllépte, a normál versenyben KIZÁRJUK -
+            # csak akkor kaphat mégis, ha a nap végén senki más nem maradna a szerepre
+            # (lásd lejjebb: tullepok_candidates csak vészmegoldásként kerül elő).
             hatekony_keres = req if req else len(MINDENKEPPEN_SZERETNE.get(name, []))
             kertet_mar_tulteljesitette = hatekony_keres > 0 and assigned_count[name] >= hatekony_keres
             bonus = -1.5 if regi_szarazsag else (-1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0))
-            if kertet_mar_tulteljesitette and not regi_szarazsag:
-                bonus += 1.3
             jitter = (rng.random() - 0.5) * 0.06
-            candidates.append((ratio + bonus + szoras_bonus + hetvegi_bonus + jitter, assigned_count[name], name))
+            tetel = (ratio + bonus + szoras_bonus + hetvegi_bonus + jitter, assigned_count[name], name)
+            if kertet_mar_tulteljesitette and not regi_szarazsag:
+                tullepok_candidates.append(tetel)
+            else:
+                candidates.append(tetel)
+        if not candidates:
+            candidates = tullepok_candidates
         if not candidates:
             day_nap = d + 1
             jovahagyott_nev = next((k["nev"] for k in ENGEDELYEZETT_KIVETELEK
@@ -619,6 +624,7 @@ for d in range(num_days):
             if (d + 1) in MINDENKEPPEN_SZERETNE.get(current, []):
                 continue  # "mindenképp szeretném" alapján kapta ezt a napot - nem cserélhető le
             best = None
+            best_tullepo = None
             for name, cat, hrs, req, tipus in staff:
                 if tipus != "Szakorvos" or not eligible(cat, duty):
                     continue
@@ -636,8 +642,16 @@ for d in range(num_days):
                 if name != current and piheno_utkozik(name, day_date):
                     continue
                 ratio = assigned_count[name] / target_weight[name]
-                if best is None or ratio < best[0]:
-                    best = (ratio, name)
+                hatekony_keres_sw = req if req else len(MINDENKEPPEN_SZERETNE.get(name, []))
+                tullepte_sw = name != current and hatekony_keres_sw > 0 and assigned_count[name] >= hatekony_keres_sw
+                if tullepte_sw:
+                    if best_tullepo is None or ratio < best_tullepo[0]:
+                        best_tullepo = (ratio, name)
+                else:
+                    if best is None or ratio < best[0]:
+                        best = (ratio, name)
+            if best is None:
+                best = best_tullepo
             if best is not None and best[1] != current:
                 new_name = best[1]
                 assigned_count[current] -= 1
