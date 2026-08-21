@@ -781,6 +781,8 @@ for name, cat, hrs, req, tipus in staff:
             winner = schedule[d_idx].get(duty)
             if winner is None or winner == name:
                 continue
+            if hianyzo_nap in MINDENKEPPEN_SZERETNE.get(winner, []):
+                continue  # a nyertes "mindenképp szeretném" napja - sosem mozdítjuk el onnan
             winner_cat = cat_of.get(winner)
             winner_req = next((r for n, _, _, r, _ in staff if n == winner), None)
             winner_sajat_szeret = kivansagok.get(winner, {}).get("szeret", [])
