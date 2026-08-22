@@ -36,6 +36,10 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
+      - name: SORREND frissítése Firestore-ban
+        working-directory: planner
+        run: pip install --quiet requests && python3 update_sorszam.py
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
