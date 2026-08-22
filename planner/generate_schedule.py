@@ -761,6 +761,74 @@ for name in sorted(assigned_count.keys(), key=lambda n: -assigned_count[n]):
                 kotelezo_ora_used[legjobb_alt] += kotelezo_delta_ha_ma_ugyel(legjobb_alt, nap_datum)
 
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Lánc-áthelyezés segédfüggvénye: megpróbál helyet szabadítani 'nev' számára valamelyik
+# SAJÁT preferált napján - ha az foglalt, rekurzívan megpróbálja AZT a foglalót is
+# áthelyezni egy Ő preferált napjára (korlátozott mélységig), így egy egész lánc mentén
+# szabadíthat fel helyet. Siker esetén VÉGRE IS HAJTJA az egész láncot (kivéve az utolsó,
+# 'nev' beírását - azt a hívó végzi el), és visszaadja a felszabadult (nap_index, duty)
+# helyet. Sikertelenség esetén None-t ad vissza, és semmit nem módosít.
+LANC_MAX_MELYSEG = 3
+
+def lancolt_hely_felszabaditasa(nev, tiltott_nevek, melyseg=0):
+    if melyseg >= LANC_MAX_MELYSEG:
+        return None
+    nev_cat = cat_of.get(nev)
+    nev_req = next((r for n, _, _, r, _ in staff if n == nev), None)
+    nev_szeret = kivansagok.get(nev, {}).get("szeret", [])
+    if not nev_szeret:
+        return None
+    nev_duty_napok = {(dd - first_day).days + 1 for dd in duty_dates[nev] if dd >= first_day}
+    for alt_nap in nev_szeret:
+        if alt_nap in nev_duty_napok:
+            continue
+        alt_d_idx = alt_nap - 1
+        alt_day_date = first_day + datetime.timedelta(days=alt_d_idx)
+        if nev in today_assigned_by_day[alt_d_idx]:
+            continue
+        nev_pref_alt = prefs.get((nev, alt_day_date))
+        if nev_pref_alt in ("Szabadság", "Nem szeretne"):
+            continue
+        if alt_nap in NYOLC_ORA_NAPPAL.get(nev, []) and alt_nap not in nev_szeret:
+            continue
+        if piheno_utkozik(nev, alt_day_date) or would_exceed_havi_kvota(nev) \
+                or foglalt_kapacitas_serulne(nev, nev_pref_alt) or ugyelet_tiltott(nev, alt_day_date) \
+                or fel_allas_tullepne(nev, nev_req) or would_exceed_resz_kapacitas(nev, alt_day_date):
+            continue
+        for alt_duty in duty_types:
+            if not eligible(nev_cat, alt_duty):
+                continue
+            if alt_duty == "Stroke" and alt_day_date.weekday() == 5 and SZOMBAT_NINCS_STROKE:
+                continue
+            if parban_tiltott_utkozik(nev, alt_day_date, today_assigned_by_day[alt_d_idx] - {nev}):
+                continue
+            foglalo = schedule[alt_d_idx].get(alt_duty)
+            if foglalo is None:
+                return (alt_d_idx, alt_duty)  # üres hely, nem kellett lánc
+            if foglalo == nev or foglalo in tiltott_nevek:
+                continue
+            if alt_nap in MINDENKEPPEN_SZERETNE.get(foglalo, []):
+                continue  # az ő "mindenképp" napja - nem mozdítjuk el
+            eredmeny = lancolt_hely_felszabaditasa(foglalo, tiltott_nevek | {nev}, melyseg + 1)
+            if eredmeny is None:
+                continue
+            cel_d_idx, cel_duty = eredmeny
+            cel_day_date = first_day + datetime.timedelta(days=cel_d_idx)
+            schedule[cel_d_idx][cel_duty] = foglalo
+            today_assigned_by_day[cel_d_idx].add(foglalo)
+            duty_dates[foglalo].add(cel_day_date)
+            if foglalo in RESZ_NAPI_ORASZAMOS:
+                kotelezo_ora_used[foglalo] += kotelezo_delta_ha_ma_ugyel(foglalo, cel_day_date)
+
+            schedule[alt_d_idx][alt_duty] = None
+            today_assigned_by_day[alt_d_idx].discard(foglalo)
+            assigned_count[foglalo] -= 1
+            duty_dates[foglalo].discard(alt_day_date)
+            if foglalo in RESZ_NAPI_ORASZAMOS:
+                kotelezo_ora_used[foglalo] -= kotelezo_delta_ha_ma_ugyel(foglalo, alt_day_date)
+            return (alt_d_idx, alt_duty)
+    return None
+
 # Preferencia-ütközés feloldása: ha valakinek nem sikerült megkapnia egy általa kért
 # ("szeretném") napot, mert azt más (szintén kérő) megkapta, megnézzük, hogy a nyertes
 # át tudna-e ülni egy MÁSIK, saját maga által kért napra - felszabadítva az eredeti
@@ -808,6 +876,7 @@ for name, cat, hrs, req, tipus in staff:
                     schedule[d_idx][duty] = name
                     duty_dates[name].add(day_date_h)
                     today_assigned_by_day[d_idx].add(name)
+                    assigned_count[name] += 1
                     if name in RESZ_NAPI_ORASZAMOS:
                         kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date_h)
                     athelyezve = True
@@ -885,6 +954,7 @@ for name, cat, hrs, req, tipus in staff:
                     today_assigned_by_day[d_idx].add(name)
                     duty_dates[winner].discard(day_date_h)
                     duty_dates[name].add(day_date_h)
+                    assigned_count[name] += 1
                     if winner in RESZ_NAPI_ORASZAMOS:
                         kotelezo_ora_used[winner] -= kotelezo_delta_ha_ma_ugyel(winner, day_date_h)
                     if name in RESZ_NAPI_ORASZAMOS:
@@ -893,6 +963,36 @@ for name, cat, hrs, req, tipus in staff:
                     break
                 if atultetes_sikerult:
                     break
+            if not atultetes_sikerult:
+                # Közvetlen áthelyezés nem sikerült - próbáljuk lánc mentén (a nyertes
+                # helyett próbáljuk meg AZT is áthelyezni, aki ÖT blokkolná, stb.)
+                name_pref_lc = prefs.get((name, day_date_h))
+                if name_pref_lc not in ("Szabadság", "Nem szeretne") \
+                        and not piheno_utkozik(name, day_date_h) and not would_exceed_havi_kvota(name) \
+                        and not foglalt_kapacitas_serulne(name, name_pref_lc) and not ugyelet_tiltott(name, day_date_h) \
+                        and not fel_allas_tullepne(name, req) and not would_exceed_resz_kapacitas(name, day_date_h) \
+                        and not parban_tiltott_utkozik(name, day_date_h, today_assigned_by_day[d_idx] - {winner}):
+                    eredmeny_lc = lancolt_hely_felszabaditasa(winner, {name, winner})
+                    if eredmeny_lc is not None:
+                        cel_d_idx_lc, cel_duty_lc = eredmeny_lc
+                        cel_day_date_lc = first_day + datetime.timedelta(days=cel_d_idx_lc)
+                        schedule[cel_d_idx_lc][cel_duty_lc] = winner
+                        today_assigned_by_day[cel_d_idx_lc].add(winner)
+                        duty_dates[winner].add(cel_day_date_lc)
+                        if winner in RESZ_NAPI_ORASZAMOS:
+                            kotelezo_ora_used[winner] += kotelezo_delta_ha_ma_ugyel(winner, cel_day_date_lc)
+
+                        schedule[d_idx][duty] = name
+                        today_assigned_by_day[d_idx].discard(winner)
+                        today_assigned_by_day[d_idx].add(name)
+                        duty_dates[winner].discard(day_date_h)
+                        duty_dates[name].add(day_date_h)
+                        assigned_count[name] += 1
+                        if winner in RESZ_NAPI_ORASZAMOS:
+                            kotelezo_ora_used[winner] -= kotelezo_delta_ha_ma_ugyel(winner, day_date_h)
+                        if name in RESZ_NAPI_ORASZAMOS:
+                            kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date_h)
+                        atultetes_sikerult = True
             if atultetes_sikerult:
                 break
 
