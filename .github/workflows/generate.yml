@@ -38,7 +38,17 @@ jobs:
 
       - name: SORREND ellenőrzése
         working-directory: planner
-        run: python3 verify_sorszam.py
+        run: python3 verify_sorszam.py > sorszam_eredmeny.txt; cat sorszam_eredmeny.txt
+
+      - name: SORREND commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          git add planner/sorszam_eredmeny.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Sorszam ellenorzes eredmenye"
+            git push
+          fi
 
       - name: Kívánságok fájl előkészítése
         working-directory: planner
