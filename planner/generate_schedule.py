@@ -324,6 +324,13 @@ for name, _cat, hrs, req, _tipus in staff:
         # az arányossági logika túl korán "eleget kapottnak" tekinti őket, és a havi
         # kötelező órájuk nem teljesül.
         target_weight[name] = havi_oraszam_map[name] / 24
+    elif name not in RESZ_NAPI_ORASZAMOS and name not in HAVI_KERETESEK:
+        # Teljes állású, semmilyen explicit kérése nincs - a nyers napi óraszám
+        # (jellemzően 8) túl magas lenne "célszámnak", mert emiatt az ő aránya
+        # (assigned/target) sokáig mesterségesen alacsony marad, még sok ügyelet után
+        # is - reálisabb, a megfigyelt tisztességes eredményekhez kalibrált arányt
+        # használunk helyette, hogy időben "eleget kapottnak" számítson ő is.
+        target_weight[name] = hrs * 0.7
     else:
         target_weight[name] = hrs
 # Minden ügyeleti napot nyilvántartunk (nem csak az utolsót!) - az elsőbbségi kör miatt
@@ -569,12 +576,13 @@ for d in range(num_days):
             # "kért ügyeletszám" prioritás is -, hogy senki ne maradjon indokolatlanul sokáig
             # ügyelet nélkül csak azért, mert a versenyben mindig alulmaradt.
             regi_szarazsag = assigned_count[name] == 0 and (d + 1) > MAX_NAP_UGYELET_NELKUL
-            # A "kifejezetten kért" mennyiség vagy a konkrét kért ügyeletszám, vagy - ha az
-            # nincs megadva - a "mindenképp szeretném" napok száma (hiszen az is explicit
-            # igény). Ha valaki ezt már elérte/túllépte, a normál versenyben KIZÁRJUK -
-            # csak akkor kaphat mégis, ha a nap végén senki más nem maradna a szerepre
-            # (lásd lejjebb: tullepok_candidates csak vészmegoldásként kerül elő).
-            hatekony_keres = req if req else len(MINDENKEPPEN_SZERETNE.get(name, []))
+            # A "kifejezetten kért" mennyiség: konkrét kért ügyeletszám, vagy - ha az nincs
+            # megadva - a "mindenképp szeretném" napok száma, vagy - ha ez sincs - a (most
+            # már reálisan skálázott) célszámból kerekített érték. Mindenkinek van tehát egy
+            # konkrét, kiszámítható felső határa, amit elérve háttérbe szorul a normál
+            # versenyben, hogy senki ne halmozhasson korlátlanul mások rovására.
+            mindenkeppen_szam = len(MINDENKEPPEN_SZERETNE.get(name, []))
+            hatekony_keres = req if req else (mindenkeppen_szam if mindenkeppen_szam else round(target_weight[name]))
             kertet_mar_tulteljesitette = hatekony_keres > 0 and assigned_count[name] >= hatekony_keres
             bonus = -1.5 if regi_szarazsag else (-1.0 if kert_meg_nincs_meg else (-0.3 if pref == "Szeretne" else 0.0))
             # Ha valakinek a hónap HÁTRALÉVŐ részében van még ki nem elégített, saját maga
