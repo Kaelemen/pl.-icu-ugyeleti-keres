@@ -661,6 +661,8 @@ for d in range(num_days):
                     continue
                 if name != current and would_exceed_havi_kvota(name):
                     continue
+                if name != current and foglalt_kapacitas_serulne(name, pref):
+                    continue
                 if name != current and ugyelet_tiltott(name, day_date):
                     continue
                 if name != current and would_exceed_resz_kapacitas(name, day_date):
@@ -809,6 +811,8 @@ def lancolt_hely_felszabaditasa(nev, tiltott_nevek, melyseg=0):
                 continue
             if alt_nap in MINDENKEPPEN_SZERETNE.get(foglalo, []):
                 continue  # az ő "mindenképp" napja - nem mozdítjuk el
+            if foglalo in HAVI_KERETESEK:
+                continue  # fix napos ("havi keretes") kiosztott napja - sosem mozdítjuk el
             eredmeny = lancolt_hely_felszabaditasa(foglalo, tiltott_nevek | {nev}, melyseg + 1)
             if eredmeny is None:
                 continue
@@ -849,6 +853,8 @@ for name, cat, hrs, req, tipus in staff:
             winner = schedule[d_idx].get(duty)
             if winner is None or winner == name:
                 continue
+            if winner in HAVI_KERETESEK:
+                continue  # fix napos ("havi keretes") kiosztott napja - sosem mozdítjuk el, még típust sem váltunk neki
             if hianyzo_nap in MINDENKEPPEN_SZERETNE.get(winner, []):
                 # A nyertes "mindenképp szeretném" napja - a napot magát nem vesszük el
                 # tőle, de ha UGYANAZON a napon egy MÁSIK ügyelettípusra is jogosult, és az
@@ -1003,6 +1009,8 @@ for name, cat, hrs, req, tipus in staff:
 # felszabadítva ezzel a helyet a kifejezetten kért napra.
 # ---------------------------------------------------------------------------
 for name, cat, hrs, req, tipus in staff:
+    if name in HAVI_KERETESEK:
+        continue  # fix napos ("havi keretes") kiosztott napjait sosem mozdítjuk el
     sajat_szeret = kivansagok.get(name, {}).get("szeret", [])
     if not sajat_szeret:
         continue
