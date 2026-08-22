@@ -897,6 +897,99 @@ for name, cat, hrs, req, tipus in staff:
                 break
 
 # ---------------------------------------------------------------------------
+# Saját pihenőidő-ütközés feloldása: ha valakinek egy kért ("szeretném") napja azért
+# maradt le, mert PONTOSAN a saját másik (már kiosztott) napjával ütközik a pihenőidő
+# szabály miatt, megnézzük, hogy azt az ütköző napot át tudja-e venni valaki más -
+# felszabadítva ezzel a helyet a kifejezetten kért napra.
+# ---------------------------------------------------------------------------
+for name, cat, hrs, req, tipus in staff:
+    sajat_szeret = kivansagok.get(name, {}).get("szeret", [])
+    if not sajat_szeret:
+        continue
+    sajat_duty_napok_most = {(dd - first_day).days + 1 for dd in duty_dates[name] if dd >= first_day}
+    for hianyzo_nap in sajat_szeret:
+        if hianyzo_nap in sajat_duty_napok_most:
+            continue
+        d_idx = hianyzo_nap - 1
+        day_date_h = first_day + datetime.timedelta(days=d_idx)
+        van_szabad_szerep_pu = any(
+            schedule[d_idx].get(duty) is None and eligible(cat, duty)
+            and not (duty == "Stroke" and day_date_h.weekday() == 5 and SZOMBAT_NINCS_STROKE)
+            for duty in duty_types
+        )
+        if not van_szabad_szerep_pu:
+            continue  # a hely már foglalt - ez az ütközés-feloldás dolga, nem ez a lépés
+        if name in today_assigned_by_day[d_idx]:
+            continue
+        if not piheno_utkozik(name, day_date_h):
+            continue  # nem pihenőidő-ütközés az oka a lemaradásnak
+        utkozo_datumok = [dd for dd in duty_dates[name]
+                           if dd != day_date_h and dd >= first_day and abs((day_date_h - dd).days) <= MIN_PIHENO]
+        for utkozo_datum in utkozo_datumok:
+            u_d_idx = (utkozo_datum - first_day).days
+            u_nap = u_d_idx + 1
+            if u_nap in MINDENKEPPEN_SZERETNE.get(name, []):
+                continue  # a saját "mindenképp" napját sosem adjuk fel egy másik kért napért
+            u_duty = next((dt for dt in duty_types if schedule[u_d_idx].get(dt) == name), None)
+            if u_duty is None:
+                continue
+            legjobb_pu = None
+            for alt_name, alt_cat, alt_hrs, alt_req, alt_tipus in staff:
+                if alt_name == name or not eligible(alt_cat, u_duty):
+                    continue
+                if alt_name in today_assigned_by_day[u_d_idx]:
+                    continue
+                alt_pref_pu = prefs.get((alt_name, utkozo_datum))
+                if alt_pref_pu in ("Szabadság", "Nem szeretne"):
+                    continue
+                if (u_nap) in NYOLC_ORA_NAPPAL.get(alt_name, []) and u_nap not in kivansagok.get(alt_name, {}).get("szeret", []):
+                    continue
+                if piheno_utkozik(alt_name, utkozo_datum):
+                    continue
+                if would_exceed_havi_kvota(alt_name) or foglalt_kapacitas_serulne(alt_name, alt_pref_pu):
+                    continue
+                if ugyelet_tiltott(alt_name, utkozo_datum):
+                    continue
+                if parban_tiltott_utkozik(alt_name, utkozo_datum, today_assigned_by_day[u_d_idx]):
+                    continue
+                if fel_allas_tullepne(alt_name, alt_req):
+                    continue
+                if would_exceed_resz_kapacitas(alt_name, utkozo_datum):
+                    continue
+                alt_ratio_pu = assigned_count[alt_name] / target_weight[alt_name]
+                if legjobb_pu is None or alt_ratio_pu < (assigned_count[legjobb_pu] / target_weight[legjobb_pu]):
+                    legjobb_pu = alt_name
+            if legjobb_pu is None:
+                continue
+            # végrehajtjuk: 'name' elveszíti az ütköző napot, azt 'legjobb_pu' kapja,
+            # majd 'name' felkerül a kért (eddig lemaradt) napra
+            schedule[u_d_idx][u_duty] = legjobb_pu
+            today_assigned_by_day[u_d_idx].discard(name)
+            today_assigned_by_day[u_d_idx].add(legjobb_pu)
+            assigned_count[name] -= 1
+            assigned_count[legjobb_pu] += 1
+            duty_dates[name].discard(utkozo_datum)
+            duty_dates[legjobb_pu].add(utkozo_datum)
+            if name in RESZ_NAPI_ORASZAMOS:
+                kotelezo_ora_used[name] -= kotelezo_delta_ha_ma_ugyel(name, utkozo_datum)
+            if legjobb_pu in RESZ_NAPI_ORASZAMOS:
+                kotelezo_ora_used[legjobb_pu] += kotelezo_delta_ha_ma_ugyel(legjobb_pu, utkozo_datum)
+
+            for duty in duty_types:
+                if duty == "Stroke" and day_date_h.weekday() == 5 and SZOMBAT_NINCS_STROKE:
+                    continue
+                if schedule[d_idx].get(duty) is not None or not eligible(cat, duty):
+                    continue
+                schedule[d_idx][duty] = name
+                today_assigned_by_day[d_idx].add(name)
+                assigned_count[name] += 1
+                duty_dates[name].add(day_date_h)
+                if name in RESZ_NAPI_ORASZAMOS:
+                    kotelezo_ora_used[name] += kotelezo_delta_ha_ma_ugyel(name, day_date_h)
+                break
+            break
+
+# ---------------------------------------------------------------------------
 # lelépő nap: bármelyik duty utáni nap MINDENKINÉL (napi és havi keretesnél is)
 # ---------------------------------------------------------------------------
 worked_days = {name: set() for name, *_ in staff}
