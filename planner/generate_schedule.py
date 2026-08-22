@@ -339,8 +339,8 @@ for _nev in ELOZO_HONAP_LELEPOK:
     if _nev in duty_dates:
         duty_dates[_nev].add(first_day - datetime.timedelta(days=1))
 
-def piheno_utkozik(name, day_date):
-    return any(abs((day_date - dd).days) <= MIN_PIHENO for dd in duty_dates[name])
+def piheno_utkozik(name, day_date, kivetel_datum=None):
+    return any(abs((day_date - dd).days) <= MIN_PIHENO for dd in duty_dates[name] if dd != kivetel_datum)
 
 
 def would_exceed_havi_kvota(name, extra_duties=1):
@@ -772,14 +772,15 @@ for name in sorted(assigned_count.keys(), key=lambda n: -assigned_count[n]):
 # helyet. Sikertelenség esetén None-t ad vissza, és semmit nem módosít.
 LANC_MAX_MELYSEG = 3
 
-def lancolt_hely_felszabaditasa(nev, tiltott_nevek, melyseg=0):
+def lancolt_hely_felszabaditasa(nev, tiltott_nevek, elhagyando_datum, melyseg=0):
     if melyseg >= LANC_MAX_MELYSEG:
         return None
     nev_cat = cat_of.get(nev)
     nev_req = next((r for n, _, _, r, _ in staff if n == nev), None)
-    nev_szeret = kivansagok.get(nev, {}).get("szeret", [])
-    if not nev_szeret:
-        return None
+    nev_szeret_sajat = kivansagok.get(nev, {}).get("szeret", [])
+    # Ha nincs egyáltalán saját preferenciája, "rugalmasnak" tekintjük - bármelyik szabályos
+    # napra próbáljuk mozgatni, nem csak a (nem létező) kedvenc napjaira.
+    nev_szeret = nev_szeret_sajat if nev_szeret_sajat else list(range(1, num_days + 1))
     nev_duty_napok = {(dd - first_day).days + 1 for dd in duty_dates[nev] if dd >= first_day}
     for alt_nap in nev_szeret:
         if alt_nap in nev_duty_napok:
@@ -793,7 +794,7 @@ def lancolt_hely_felszabaditasa(nev, tiltott_nevek, melyseg=0):
             continue
         if alt_nap in NYOLC_ORA_NAPPAL.get(nev, []) and alt_nap not in nev_szeret:
             continue
-        if piheno_utkozik(nev, alt_day_date) or would_exceed_havi_kvota(nev) \
+        if piheno_utkozik(nev, alt_day_date, kivetel_datum=elhagyando_datum) or would_exceed_havi_kvota(nev) \
                 or foglalt_kapacitas_serulne(nev, nev_pref_alt) or ugyelet_tiltott(nev, alt_day_date) \
                 or fel_allas_tullepne(nev, nev_req) or would_exceed_resz_kapacitas(nev, alt_day_date):
             continue
@@ -813,7 +814,7 @@ def lancolt_hely_felszabaditasa(nev, tiltott_nevek, melyseg=0):
                 continue  # az ő "mindenképp" napja - nem mozdítjuk el
             if foglalo in HAVI_KERETESEK:
                 continue  # fix napos ("havi keretes") kiosztott napja - sosem mozdítjuk el
-            eredmeny = lancolt_hely_felszabaditasa(foglalo, tiltott_nevek | {nev}, melyseg + 1)
+            eredmeny = lancolt_hely_felszabaditasa(foglalo, tiltott_nevek | {nev}, alt_day_date, melyseg + 1)
             if eredmeny is None:
                 continue
             cel_d_idx, cel_duty = eredmeny
@@ -907,6 +908,8 @@ for name, cat, hrs, req, tipus in staff:
                 for alt_duty in duty_types:
                     if not eligible(winner_cat, alt_duty):
                         continue
+                    if alt_duty == "Stroke" and alt_day_date.weekday() == 5 and SZOMBAT_NINCS_STROKE:
+                        continue
                     if schedule[alt_d_idx].get(alt_duty) is not None:
                         continue
                     if winner in today_assigned_by_day[alt_d_idx]:
@@ -916,7 +919,7 @@ for name, cat, hrs, req, tipus in staff:
                         continue
                     if (alt_nap) in NYOLC_ORA_NAPPAL.get(winner, []) and alt_nap not in winner_sajat_szeret:
                         continue
-                    if piheno_utkozik(winner, alt_day_date):
+                    if piheno_utkozik(winner, alt_day_date, kivetel_datum=day_date_h):
                         continue
                     if would_exceed_havi_kvota(winner):
                         continue
@@ -978,7 +981,7 @@ for name, cat, hrs, req, tipus in staff:
                         and not foglalt_kapacitas_serulne(name, name_pref_lc) and not ugyelet_tiltott(name, day_date_h) \
                         and not fel_allas_tullepne(name, req) and not would_exceed_resz_kapacitas(name, day_date_h) \
                         and not parban_tiltott_utkozik(name, day_date_h, today_assigned_by_day[d_idx] - {winner}):
-                    eredmeny_lc = lancolt_hely_felszabaditasa(winner, {name, winner})
+                    eredmeny_lc = lancolt_hely_felszabaditasa(winner, {name, winner}, day_date_h)
                     if eredmeny_lc is not None:
                         cel_d_idx_lc, cel_duty_lc = eredmeny_lc
                         cel_day_date_lc = first_day + datetime.timedelta(days=cel_d_idx_lc)
