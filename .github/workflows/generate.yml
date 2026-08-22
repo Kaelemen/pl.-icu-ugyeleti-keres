@@ -36,6 +36,20 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
+      - name: SORREND ellenőrzése
+        working-directory: planner
+        run: python3 verify_sorszam2.py > sorszam_eredmeny2.txt; cat sorszam_eredmeny2.txt
+
+      - name: SORREND commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          git add planner/sorszam_eredmeny2.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Sorszam ellenorzes 2"
+            git push
+          fi
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
