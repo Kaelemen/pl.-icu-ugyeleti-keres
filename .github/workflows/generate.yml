@@ -36,20 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: JELSZOLISTA lekerdezese
-        working-directory: planner
-        run: pip install --quiet requests && python3 list_jelszavak.py > jelszo_lista.txt; cat jelszo_lista.txt
-
-      - name: JELSZOLISTA commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/jelszo_lista.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Jelszolista lekerdezes"
-            git push
-          fi
-
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
