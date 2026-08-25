@@ -36,6 +36,10 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
+      - name: JELSZO MIGRACIO futtatasa
+        working-directory: planner
+        run: pip install --quiet requests && python3 migracio_jelszo.py
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
