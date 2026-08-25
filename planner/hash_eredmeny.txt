@@ -1,0 +1,19 @@
+Status: 404
+{
+  "error": {
+    "code": 404,
+    "message": "Document \"projects/icu-ugyeleti-keres/databases/(default)/documents/jelszavak/dddcb9058dfeaea53a70e6002a365a03ef2c499bec0804be63decacc11969849\" not found.",
+    "status": "NOT_FOUND"
+  }
+}
+
+
+--- Osszes bejegyzes listaja ---
+  11cf3d6fcd7ce2e36d85ce0fa1b9629400c46a86649ba8a34e54ef2bdd8e76d7 -> Kelemen József  
+  41e59b9fb0508931c52140d952092564295533622894b9f554dfcfcdb6521cf2 -> Szász Kornélia  
+  7605afb30325fa2369bbcb7363dabe768030b5cb5e7f287bdab110acdffaecfb -> Kajner Krisztina  
+  8b652105ce2a3301ff4a7968badf1029037ba36ddb93af20fc5ab576c90c676a -> Karczub János  
+  9d02ecba58e6173931efe0eed3db9a234bf3268dda50bb13fcbcae8bb48f6de6 -> Katona József  
+  a136304500134f0d114bcdc3f50e8acf8382d09f0489dea2b22c5bb15541d922 -> Enyedi Marcián  
+  a69f465613c8f69a0a3bce75ef6852fa1e10ffdcfad145e8b2384240d3f6d58c -> Daku Zsuzsa  
+  bbe20e801fd80153c233cac93b29e1dde6f74fa428aa7d9b8377a8d1593d63ce -> Sorbán József  
