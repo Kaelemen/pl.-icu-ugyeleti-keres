@@ -36,20 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: JELSZO MIGRACIO ELLENORZES
-        working-directory: planner
-        run: python3 verify_migracio.py > migracio_eredmeny.txt; cat migracio_eredmeny.txt
-
-      - name: ELLENORZES commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/migracio_eredmeny.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Migracio ellenorzes eredmenye"
-            git push
-          fi
-
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
