@@ -38,7 +38,17 @@ jobs:
 
       - name: HASH ELLENORZES
         working-directory: planner
-        run: python3 check_hash.py
+        run: python3 check_hash.py > hash_eredmeny.txt 2>&1; cat hash_eredmeny.txt
+
+      - name: HASH ELLENORZES commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          git add planner/hash_eredmeny.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Hash ellenorzes eredmeny"
+            git push
+          fi
 
       - name: Kívánságok fájl előkészítése
         working-directory: planner
