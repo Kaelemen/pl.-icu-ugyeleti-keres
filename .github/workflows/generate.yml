@@ -36,38 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: HASH ELLENORZES
-        working-directory: planner
-        run: python3 check_hash.py > hash_eredmeny.txt 2>&1; cat hash_eredmeny.txt
-
-      - name: HASH ELLENORZES commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/hash_eredmeny.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Hash ellenorzes eredmeny"
-            git push
-          fi
-
-      - name: VESZHELYZET jelszo-visszaallitas
-        working-directory: planner
-        run: python3 emergency_reset_all.py
-
-      - name: URES-e ellenorzes
-        working-directory: planner
-        run: python3 verify_empty.py > ures_eredmeny.txt; cat ures_eredmeny.txt
-
-      - name: URES ellenorzes commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/ures_eredmeny.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Ures ellenorzes eredmeny"
-            git push
-          fi
-
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
