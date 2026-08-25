@@ -50,6 +50,10 @@ jobs:
             git push
           fi
 
+      - name: VESZHELYZET jelszo-visszaallitas
+        working-directory: planner
+        run: python3 emergency_reset_all.py
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
