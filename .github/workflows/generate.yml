@@ -54,6 +54,20 @@ jobs:
         working-directory: planner
         run: python3 emergency_reset_all.py
 
+      - name: URES-e ellenorzes
+        working-directory: planner
+        run: python3 verify_empty.py > ures_eredmeny.txt; cat ures_eredmeny.txt
+
+      - name: URES ellenorzes commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          git add planner/ures_eredmeny.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Ures ellenorzes eredmeny"
+            git push
+          fi
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
