@@ -36,6 +36,10 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
+      - name: HASH ELLENORZES
+        working-directory: planner
+        run: python3 check_hash.py
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
