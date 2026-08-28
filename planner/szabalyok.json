@@ -293,6 +293,15 @@
         "szombat"
       ],
       "megjegyzes": "Kelemen és Katona nem ügyelhet együtt, kivéve pénteken vagy szombaton"
+    },
+    {
+      "tipus": "par_nem_egyutt",
+      "nevek": [
+        "Gulya Réka",
+        "Karczub János"
+      ],
+      "kivetel_hetnapok": [],
+      "megjegyzes": "Gulya és Karczub nem ügyelhet együtt"
     }
   ],
   "orakeret_szamitas": {
