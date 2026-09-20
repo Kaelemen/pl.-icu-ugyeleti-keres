@@ -13,6 +13,10 @@ def fs_ertek(v):
         return int(v["integerValue"])
     if "booleanValue" in v:
         return v["booleanValue"]
+    if "doubleValue" in v:
+        return v["doubleValue"]
+    if "nullValue" in v:
+        return None
     return None
 
 

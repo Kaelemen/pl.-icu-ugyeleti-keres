@@ -36,24 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: DEBUG PATCH
-        working-directory: planner
-        run: pip install --quiet requests && python3 debug_patch.py > debug_eredmeny.txt 2>&1; cat debug_eredmeny.txt
-
-      - name: DEBUG commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/debug_eredmeny.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "debug"
-            git push
-          fi
-
-      - name: NAPI MUNKAIDO JAVITAS
-        working-directory: planner
-        run: pip install --quiet requests && python3 fix_napi_munkaido.py
-
       - name: OKTOBERI KIVANSAGOK EXPORT
         working-directory: planner
         run: pip install --quiet requests && python3 build_oktober_kivansagok.py
