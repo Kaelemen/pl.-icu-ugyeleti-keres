@@ -36,6 +36,10 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
+      - name: NAPI MUNKAIDO JAVITAS
+        working-directory: planner
+        run: pip install --quiet requests && python3 fix_napi_munkaido.py
+
       - name: OKTOBERI KIVANSAGOK EXPORT
         working-directory: planner
         run: pip install --quiet requests && python3 build_oktober_kivansagok.py
