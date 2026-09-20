@@ -182,7 +182,11 @@ for szab in SZAB["szemelyi_megkotesek"]:
 # (pl. Korompai Máté: rendes_nap_csak_hetente).
 CSAK_JELOLT_NAPOKON_KAPACITAS_MIATT = set()  # ide csak a részmunkaidő-napi-óraszám miatt automatikusan bekerültek
 for _d in SZAB["dolgozok"]:
-    if _d["szerzodes_tipus"] == "Részmunkaidő - napi óraszám" and _d["nev"] not in RENDES_NAP_CSAK_HETENTE:
+    if (_d["szerzodes_tipus"] == "Részmunkaidő - napi óraszám" and _d["nev"] not in RENDES_NAP_CSAK_HETENTE
+            and "nem_dolgozik_weekday" not in HETI_FIX_ESEMENY.get(_d["nev"], {})):
+        # akinek van heti fix "nem dolgozik" mintája (pl. Zöldréti: szerdán nincs bent), annak
+        # már MAGA ez a minta határozza meg a rendes jelenlétét - nem "csak jelölt napokon
+        # dolgozik" típusú, hanem rendes, mindennapos munkarendű (a kivétel-napok kivételével).
         CSAK_JELOLT_NAPOKON.add(_d["nev"])
         CSAK_JELOLT_NAPOKON_KAPACITAS_MIATT.add(_d["nev"])
 
