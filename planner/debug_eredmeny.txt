@@ -1,15 +1,24 @@
 doc_id: Zöldréti_Anikó
-teljes dokumentum: {'name': 'projects/icu-ugyeleti-keres/databases/(default)/documents/dolgozok/Zöldréti_Anikó', 'fields': {'nev': {'stringValue': 'Zöldréti Anikó'}, 'kategoria': {'stringValue': 'I'}, 'napi_munkaido': {'doubleValue': 6.4}, 'sorszam': {'integerValue': '15'}, 'szerzodes_tipus': {'stringValue': 'Részmunkaidő - napi óraszám'}, 'tipus': {'stringValue': 'Szakorvos'}, 'havi_oraszam': {'nullValue': None}, 'kulsos_gyakorlat_erintett': {'booleanValue': False}}, 'createTime': '2026-08-16T17:45:55.586064Z', 'updateTime': '2026-08-18T20:50:52.167265Z'}
+teljes dokumentum: {'name': 'projects/icu-ugyeleti-keres/databases/(default)/documents/dolgozok/Zöldréti_Anikó', 'fields': {'napi_munkaido': {'doubleValue': 6.4}, 'nev': {'stringValue': 'Zöldréti Anikó'}, 'havi_oraszam': {'nullValue': None}, 'sorszam': {'integerValue': '15'}, 'kategoria': {'stringValue': 'I'}, 'kulsos_gyakorlat_erintett': {'booleanValue': False}, 'tipus': {'stringValue': 'Szakorvos'}, 'szerzodes_tipus': {'stringValue': 'Részmunkaidő - napi óraszám'}}, 'createTime': '2026-08-16T17:45:55.586064Z', 'updateTime': '2026-08-18T20:50:52.167265Z'}
 
 PATCH statusz: 200
 PATCH valasz: {
   "name": "projects/icu-ugyeleti-keres/databases/(default)/documents/dolgozok/Zöldréti_Anikó",
   "fields": {
-    "napi_munkaido": {
-      "doubleValue": 6.4
+    "sorszam": {
+      "integerValue": "15"
+    },
+    "nev": {
+      "stringValue": "Zöldréti Anikó"
     },
     "kulsos_gyakorlat_erintett": {
       "booleanValue": false
+    },
+    "napi_munkaido": {
+      "doubleValue": 6.4
+    },
+    "kategoria": {
+      "stringValue": "I"
     },
     "szerzodes_tipus": {
       "stringValue": "Részmunkaidő - napi óraszám"
@@ -17,17 +26,8 @@ PATCH valasz: {
     "tipus": {
       "stringValue": "Szakorvos"
     },
-    "nev": {
-      "stringValue": "Zöldréti Anikó"
-    },
-    "sorszam": {
-      "integerValue": "15"
-    },
     "havi_oraszam": {
       "nullValue": null
-    },
-    "kategoria": {
-      "stringValue": "I"
     }
   },
   "createTime": "2026-08-16T17:45:55.586064Z",
@@ -38,26 +38,26 @@ PATCH valasz: {
 Ujraolvasas: {
   "name": "projects/icu-ugyeleti-keres/databases/(default)/documents/dolgozok/Zöldréti_Anikó",
   "fields": {
-    "sorszam": {
-      "integerValue": "15"
+    "nev": {
+      "stringValue": "Zöldréti Anikó"
     },
     "tipus": {
       "stringValue": "Szakorvos"
     },
-    "nev": {
-      "stringValue": "Zöldréti Anikó"
-    },
-    "napi_munkaido": {
-      "doubleValue": 6.4
-    },
-    "szerzodes_tipus": {
-      "stringValue": "Részmunkaidő - napi óraszám"
+    "kategoria": {
+      "stringValue": "I"
     },
     "kulsos_gyakorlat_erintett": {
       "booleanValue": false
     },
-    "kategoria": {
-      "stringValue": "I"
+    "sorszam": {
+      "integerValue": "15"
+    },
+    "szerzodes_tipus": {
+      "stringValue": "Részmunkaidő - napi óraszám"
+    },
+    "napi_munkaido": {
+      "doubleValue": 6.4
     },
     "havi_oraszam": {
       "nullValue": null
