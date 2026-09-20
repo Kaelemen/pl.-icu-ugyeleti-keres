@@ -1,0 +1,16 @@
+Osszesen 43 kereses dokumentum
+
+--- TALALAT ---
+  szeretne: 1-3,8,10-12,15-19,22-25
+  nem_szeretne: 5-7,9,13-14,20-21,31
+  megjegyzes: 4.én ugyelnék; hetfőn dokihoz megyek
+  mindenkeppen_szeretne: 4
+  kulsos_gyakorlat: None
+  beadva: 2026-09-17T07:15:52.304Z
+  nincs_keres: False
+  szabadsag: 26-30
+  nyolc_ora_nappal: 
+  nev: Zöldréti Anikó
+  kert_ugyeletszam: 4
+  ev: 2026
+  honap: 10
