@@ -36,6 +36,20 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
+      - name: ZOLDRETI ELLENORZES
+        working-directory: planner
+        run: pip install --quiet requests && python3 check_zoldreti.py > zoldreti_eredmeny.txt 2>&1; cat zoldreti_eredmeny.txt
+
+      - name: ZOLDRETI ELLENORZES commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          git add planner/zoldreti_eredmeny.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Zoldreti ellenorzes eredmeny"
+            git push
+          fi
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
