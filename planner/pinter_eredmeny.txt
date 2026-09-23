@@ -1,0 +1,36 @@
+Osszesen 43 kereses dokumentum
+
+Pinterhez kapcsolodo dokumentumok: 2
+
+--- dokumentum ID: keres:2026-09:Pintér_Enikő ---
+  beadva: 2026-08-18T13:38:04.296Z
+  szabadsag: 
+  mindenkeppen_szeretne: 5,9,16,23
+  admin_rogzitette: True
+  nyolc_ora_nappal: 7-8,14-15,21-22
+  ev: 2026
+  nincs_keres: False
+  szeretne: 
+  honap: 9
+  kert_ugyeletszam: None
+  nem_szeretne: 
+  nev: Pintér Enikő
+  kulsos_gyakorlat: None
+  megjegyzes: 
+
+--- dokumentum ID: keres:2026-10:Pintér_Enikő ---
+  nincs_keres: False
+  nev: Pintér Enikő
+  kulsos_gyakorlat: None
+  honap: 10
+  kert_ugyeletszam: 4
+  szabadsag: 
+  mindenkeppen_szeretne: 3,7,21,28
+  beadva: 2026-09-23T12:47:58.842Z
+  megjegyzes: 
+  nyolc_ora_nappal: 6,13,19-20,26-27
+  szeretne: 
+  ev: 2026
+  admin_rogzitette: True
+  nem_szeretne: 
+
