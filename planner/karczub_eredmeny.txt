@@ -1,0 +1,35 @@
+Osszesen 43 kereses dokumentum
+
+Karczubhoz kapcsolodo dokumentumok: 2
+
+--- dokumentum ID: keres:2026-09:Karczub_János ---
+  honap: 9
+  ev: 2026
+  nyolc_ora_nappal: 
+  beadva: 2026-08-16T15:24:45.994Z
+  megjegyzes: 
+  nincs_keres: False
+  szabadsag: 11-13,19
+  nem_szeretne: 15-18
+  szeretne: 
+  kert_ugyeletszam: 8
+  admin_rogzitette: True
+  nev: Karczub János
+  kulsos_gyakorlat: True
+
+--- dokumentum ID: keres:2026-10:Karczub_János ---
+  nincs_keres: False
+  mindenkeppen_szeretne: 4,17,23,25
+  beadva: 2026-09-20T11:02:21.195Z
+  nev: Karczub János
+  kert_ugyeletszam: 8
+  admin_rogzitette: True
+  kulsos_gyakorlat: True
+  szabadsag: 1-2
+  megjegyzes: 
+  nyolc_ora_nappal: 
+  ev: 2026
+  nem_szeretne: 10-11
+  honap: 10
+  szeretne: 3,5-9,12-16,18-22,24,26-31
+
