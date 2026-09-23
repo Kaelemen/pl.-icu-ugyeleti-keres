@@ -36,34 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: OKTOBERI KIVANSAGOK EXPORT
-        working-directory: planner
-        run: pip install --quiet requests && python3 build_oktober_kivansagok.py
-
-      - name: OKTOBERI EXPORT commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/kivansagok_2026_10.json || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Oktoberi kivansagok export"
-            git push
-          fi
-
-      - name: OKTOBERI KIVANSAGOK EXPORT (friss)
-        working-directory: planner
-        run: pip install --quiet requests && python3 build_oktober_kivansagok.py
-
-      - name: OKTOBERI EXPORT commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/kivansagok_2026_10.json || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Friss oktoberi export - Pinter ellenorzeshez"
-            git push
-          fi
-
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
