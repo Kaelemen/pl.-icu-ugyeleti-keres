@@ -50,17 +50,17 @@ jobs:
             git push
           fi
 
-      - name: PINTER ELLENORZES
+      - name: OKTOBERI KIVANSAGOK EXPORT (friss)
         working-directory: planner
-        run: pip install --quiet requests && python3 check_pinter.py > pinter_eredmeny.txt 2>&1; cat pinter_eredmeny.txt
+        run: pip install --quiet requests && python3 build_oktober_kivansagok.py
 
-      - name: PINTER ELLENORZES commit
+      - name: OKTOBERI EXPORT commit
         run: |
           git config user.name "Deploy Bot"
           git config user.email "deploy@example.com"
-          git add planner/pinter_eredmeny.txt || true
+          git add planner/kivansagok_2026_10.json || true
           if ! git diff --cached --quiet; then
-            git commit -m "Pinter ellenorzes eredmeny"
+            git commit -m "Friss oktoberi export - Pinter ellenorzeshez"
             git push
           fi
 
