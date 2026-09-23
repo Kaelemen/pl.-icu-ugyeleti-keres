@@ -1451,6 +1451,133 @@ szabadsag_hetkoznap_count = {name: 0 for name in staff_order}
 kulsos_hetkoznap_count = {name: 0 for name in staff_order}  # rezidens külsős gyakorlaton töltött hétköznapja (8 óra/nap jóváírás)
 visszahivas_count = {name: 0 for name in REZIDENSEK}
 napi_rate_of = {d["nev"]: d["napi_munkaido"] for d in SZAB["dolgozok"]}
+
+# ---------------------------------------------------------------------------
+# Műtői jelenlét-hiány minimalizálása: ha valaki ügyeletet kap, a KÖVETKEZŐ napon
+# lelép (nem számít jelenlétnek). Ha az a nap amúgy is kritikusan alacsony
+# létszámú lenne, próbáljuk meg úgy megválasztani, KI kapja az előző napi
+# ügyeletet, hogy lehetőleg olyasvalaki lépjen le, aki a lelépés NÉLKÜL is
+# hiányozna aznap (pl. szabadságon van, heti fix napja miatt amúgy sincs bent,
+# vagy "csak jelölt napokon dolgozik" és nem is kérte azt a napot) - így a
+# lelépése nem okoz PLUSZ jelenlét-veszteséget.
+def jelenlet_lenne_ha_nincs_ugyelete(name, day_date):
+    """Igazat ad vissza, ha 'name' - a duty-tól/lelépéstől függetlenül - normál esetben
+    jelenlétnek (\"m\" vagy hasonló, jelenlétet adó) számítana ezen a napon."""
+    d_idx = (day_date - first_day).days
+    if is_szabadsag(name, day_date):
+        return False
+    if day_date.weekday() >= 5:
+        return False
+    if (name in CSAK_JELOLT_NAPOKON and prefs.get((name, day_date)) == "Nem szeretne"
+            and (d_idx + 1) not in CSAK_UGYELET_TILTAS_NAPOK.get(name, set())):
+        return False
+    if name in RENDES_NAP_CSAK_HETENTE and day_date.weekday() not in RENDES_NAP_CSAK_HETENTE[name]:
+        return False
+    if jelenlet_tiltott(name, day_date):
+        return False
+    if nem_dolgozik_hetente_ma(name, day_date):
+        return False
+    if name in RESZ_NAPI_ORASZAMOS and not kivansagok[name]["szeret"]:
+        return False
+    if name in KULSOS_GYAKORLATON:
+        return False
+    if keret_of(name) != "Napi":
+        return False
+    return True
+
+
+def durva_jelenlet_becsles(d_idx):
+    """Egyszerűsített, gyors becslés - hányan lennének jelen a d_idx. napon a JELENLEGI
+    schedule alapján (csak a fő létszám-tényezőket nézi, nem az O1/O2/heti-fix extrákat -
+    ennyi elég a KRITIKUS napok azonosításához)."""
+    day_date_be = first_day + datetime.timedelta(days=d_idx)
+    if day_date_be.weekday() >= 5:
+        return 999  # hétvégén nem releváns a műtői minimum
+    szamlalo = 0
+    for nm, *_ in staff:
+        if nm in T_KATEGORIA_NEVEK:
+            continue
+        if is_lelepo(nm, day_date_be):
+            continue
+        if jelenlet_lenne_ha_nincs_ugyelete(nm, day_date_be):
+            szamlalo += 1
+        elif nm in duty_dates and day_date_be in duty_dates[nm]:
+            szamlalo += 1  # aznap maga ügyel - az is jelenlétnek számít
+    return szamlalo
+
+
+_napi_sorrend = sorted(range(num_days - 1), key=lambda x: durva_jelenlet_becsles(x + 1))
+for _d_idx in _napi_sorrend:
+    _mai_hiany = MUTO_PADLO - durva_jelenlet_becsles(_d_idx + 1)
+    if _mai_hiany <= 0:
+        continue
+    _elozo_datum = first_day + datetime.timedelta(days=_d_idx)
+    _mai_datum = first_day + datetime.timedelta(days=_d_idx + 1)
+    for _duty in duty_types:
+        _jelenlegi = schedule[_d_idx].get(_duty)
+        if _jelenlegi is None:
+            continue
+        if _jelenlegi in HAVI_KERETESEK:
+            continue  # fix napos ügyeletét sosem mozdítjuk
+        if (_d_idx + 1) in MINDENKEPPEN_SZERETNE.get(_jelenlegi, []):
+            continue  # "mindenképp" napját sosem vesszük el
+        if not jelenlet_lenne_ha_nincs_ugyelete(_jelenlegi, _mai_datum):
+            continue  # a jelenlegi ügyeletes lelépése amúgy sem kerül semmibe - rendben van
+        # keressünk egy alternatív embert az ELŐZŐ napi ügyeletre, akinek a lelépése
+        # NEM venné el egy amúgy is meglévő jelenléti napját.
+        _legjobb = None
+        for _alt, _alt_cat, _alt_hrs, _alt_req, _alt_tipus in staff:
+            if _alt == _jelenlegi:
+                continue
+            if not eligible(_alt_cat, _duty):
+                continue
+            if jelenlet_lenne_ha_nincs_ugyelete(_alt, _mai_datum):
+                continue  # neki IS hiányozna a jelenléte - nem jobb választás
+            if _alt in today_assigned_by_day[_d_idx]:
+                continue
+            if _alt in HAVI_KERETESEK:
+                continue
+            _alt_pref = prefs.get((_alt, _elozo_datum))
+            if _alt_pref in ("Szabadság",):
+                continue
+            if (_d_idx + 1) in NYOLC_ORA_NAPPAL.get(_alt, []) and (_d_idx + 1) not in kivansagok.get(_alt, {}).get("szeret", []):
+                continue
+            if piheno_utkozik(_alt, _elozo_datum, kivetel_datum=_mai_datum):
+                continue
+            if would_exceed_havi_kvota(_alt):
+                continue
+            if foglalt_kapacitas_serulne(_alt, _alt_pref):
+                continue
+            if ugyelet_tiltott(_alt, _elozo_datum):
+                continue
+            if parban_tiltott_utkozik(_alt, _elozo_datum, today_assigned_by_day[_d_idx] - {_jelenlegi}):
+                continue
+            if fel_allas_tullepne(_alt, _alt_req):
+                continue
+            if would_exceed_resz_kapacitas(_alt, _elozo_datum):
+                continue
+            _legjobb = _alt
+            break
+        if _legjobb is None:
+            continue
+        # végrehajtjuk a cserét
+        schedule[_d_idx][_duty] = _legjobb
+        today_assigned_by_day[_d_idx].discard(_jelenlegi)
+        today_assigned_by_day[_d_idx].add(_legjobb)
+        assigned_count[_jelenlegi] -= 1
+        assigned_count[_legjobb] += 1
+        duty_dates[_jelenlegi].discard(_elozo_datum)
+        duty_dates[_legjobb].add(_elozo_datum)
+        if _jelenlegi in RESZ_NAPI_ORASZAMOS:
+            kotelezo_ora_used[_jelenlegi] -= kotelezo_delta_ha_ma_ugyel(_jelenlegi, _elozo_datum)
+        if _legjobb in RESZ_NAPI_ORASZAMOS:
+            kotelezo_ora_used[_legjobb] += kotelezo_delta_ha_ma_ugyel(_legjobb, _elozo_datum)
+        # Ha a mai hiány így már megoldódott, nem kell tovább próbálkozni ezen a napon -
+        # de ha még mindig hiány van (több ügyeletes lelépése is érintette), megpróbáljuk
+        # a másik ügyelettípust is ugyanerre a napra.
+        if MUTO_PADLO - durva_jelenlet_becsles(_d_idx + 1) <= 0:
+            break
+
 raw_present_count_by_day = {}  # d (0-alapú) -> jelenlévők száma aznap, a fő ciklusból
 
 for d in range(num_days):
