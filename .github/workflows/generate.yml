@@ -50,6 +50,20 @@ jobs:
             git push
           fi
 
+      - name: KARCZUB ELLENORZES
+        working-directory: planner
+        run: pip install --quiet requests && python3 check_karczub.py > karczub_eredmeny.txt 2>&1; cat karczub_eredmeny.txt
+
+      - name: KARCZUB ELLENORZES commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          git add planner/karczub_eredmeny.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Karczub ellenorzes eredmeny"
+            git push
+          fi
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
