@@ -36,34 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: OKTOBERI KIVANSAGOK EXPORT
-        working-directory: planner
-        run: pip install --quiet requests && python3 build_oktober_kivansagok.py
-
-      - name: OKTOBERI EXPORT commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/kivansagok_2026_10.json || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Friss oktoberi export"
-            git push
-          fi
-
-      - name: KARCZUB ELLENORZES
-        working-directory: planner
-        run: pip install --quiet requests && python3 check_karczub.py > karczub_eredmeny.txt 2>&1; cat karczub_eredmeny.txt
-
-      - name: KARCZUB ELLENORZES commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/karczub_eredmeny.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Karczub ellenorzes eredmeny"
-            git push
-          fi
-
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
@@ -74,6 +46,29 @@ jobs:
             echo "KIV_FAJL=kivansagok_input.json" >> $GITHUB_ENV
           else
             echo "KIV_FAJL=${{ github.event.inputs.kivansagok_fajl }}" >> $GITHUB_ENV
+          fi
+
+      - name: Kívánságok frissítése élőben a Firestore-ból
+        working-directory: planner
+        run: |
+          pip install --quiet requests
+          if [ "$KIV_FAJL" != "kivansagok_input.json" ]; then
+            python3 export_friss_kivansagok.py "$KIV_FAJL"
+          else
+            echo "Kézzel beillesztett JSON - a Firestore-frissítés kihagyva, a beillesztett tartalom változatlanul marad."
+          fi
+
+      - name: Friss export mentése a repóba
+        working-directory: planner
+        run: |
+          git config --global user.name "Deploy Bot"
+          git config --global user.email "deploy@example.com"
+          if [ "$KIV_FAJL" != "kivansagok_input.json" ]; then
+            git add "$KIV_FAJL" || true
+            if ! git diff --cached --quiet; then
+              git commit -m "Automatikus friss kívánságok export generálás előtt"
+              git push
+            fi
           fi
 
       - name: Sablon felépítése
@@ -113,4 +108,3 @@ jobs:
             planner/ICU_beosztas_nyomtathato.xlsx
             planner/javasolt_kivetelek_osszevont.json
           retention-days: 30
-
