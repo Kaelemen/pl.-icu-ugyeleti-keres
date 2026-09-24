@@ -36,20 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: BALOGH ELLENORZES
-        working-directory: planner
-        run: pip install --quiet requests && python3 check_balogh.py > balogh_eredmeny.txt 2>&1; cat balogh_eredmeny.txt
-
-      - name: BALOGH ELLENORZES commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/balogh_eredmeny.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Balogh ellenorzes eredmeny"
-            git push
-          fi
-
       - name: BALOGH ORASZAM FRISSITES
         working-directory: planner
         run: pip install --quiet requests && python3 update_balogh_oraszam.py
