@@ -1549,7 +1549,7 @@ for _kor in range(_MAX_KOR):
                 if _alt in HAVI_KERETESEK:
                     continue
                 _alt_pref = prefs.get((_alt, _elozo_datum))
-                if _alt_pref in ("Szabadság",):
+                if _alt_pref in ("Szabadság", "Nem szeretne"):
                     continue
                 if (_d_idx + 1) in NYOLC_ORA_NAPPAL.get(_alt, []) and (_d_idx + 1) not in kivansagok.get(_alt, {}).get("szeret", []):
                     continue
