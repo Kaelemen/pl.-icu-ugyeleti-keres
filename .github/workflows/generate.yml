@@ -36,6 +36,10 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
+      - name: EVES SZABADSAG IMPORT
+        working-directory: planner
+        run: pip install --quiet requests && python3 import_eves_szabadsag.py
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
