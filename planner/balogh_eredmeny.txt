@@ -1,0 +1,43 @@
+doc_id: Balogh_László
+  havi_oraszam: None
+  tipus: Szakorvos
+  kategoria: I
+  szerzodes_tipus: Részmunkaidő - napi óraszám
+  nev: Balogh László
+  sorszam: 6
+  kulsos_gyakorlat_erintett: False
+  napi_munkaido: 3.2
+
+--- Balogh keresei ---
+
+--- keres:2026-09:Balogh_László ---
+  beadva: 2026-08-18T14:58:41.884Z
+  nincs_keres: False
+  nem_szeretne: 24
+  mindenkeppen_szeretne: 
+  szeretne: 
+  kert_ugyeletszam: 3
+  nev: Balogh László
+  kulsos_gyakorlat: None
+  ev: 2026
+  admin_rogzitette: True
+  megjegyzes: 
+  honap: 9
+  szabadsag: 
+  nyolc_ora_nappal: 
+
+--- keres:2026-10:Balogh_László ---
+  beadva: 2026-09-14T05:14:35.445Z
+  nem_szeretne: 16-18,25,31
+  szeretne: 2-14,19-24
+  honap: 10
+  szabadsag: 26-30
+  megjegyzes: Ha sikerül megírniuk a 36 órás szerződésem, akkor lesz havi 2 puffer napom, az egyiket 16 péntekre kérném, a másikat rád bízom :)
+Köszönöm!
+  nev: Balogh László
+  nyolc_ora_nappal: 1,15
+  ev: 2026
+  nincs_keres: False
+  mindenkeppen_szeretne: 
+  kulsos_gyakorlat: None
+  kert_ugyeletszam: 4
