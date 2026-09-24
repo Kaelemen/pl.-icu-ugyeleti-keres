@@ -1381,9 +1381,14 @@ for d in range(num_days):
             uzenetek.append("Pihenőidő (min. 2 nap) megsértve! ")
             break
     duty_col_nev = {"Intenzív": intenziv_nm, "Stroke": stroke_nm, "Aneszt": aneszt_nm}
+    _ures_pozicio = []
     for duty_nev_ures, nm_ures in duty_col_nev.items():
         if nm_ures is None and not (duty_nev_ures == "Stroke" and day_date.weekday() == 5 and SZOMBAT_NINCS_STROKE):
+            _ures_pozicio.append(duty_nev_ures)
             uzenetek.append(f"Nincs betöltve: {duty_nev_ures}! ")
+    _elvart_pozicio_szam = 2 if (day_date.weekday() == 5 and SZOMBAT_NINCS_STROKE) else 3
+    if len(_ures_pozicio) >= _elvart_pozicio_szam:
+        uzenetek.insert(0, "‼️ FIGYELEM: EZEN A NAPON SENKI SINCS ÜGYELETBEN! ")
     for duty_nev, nm in duty_col_nev.items():
         if nm and prefs.get((nm, day_date)) == "Szabadság":
             uzenetek.append(f"{nm} szabadságon van ({duty_nev})! ")
@@ -2036,6 +2041,17 @@ for name in staff_order:
 
 wb.save(KIMENET_PATH)
 print("saved", KIMENET_PATH, f"(seed={SEED})")
+
+_teljes_napos_kiesesek = []
+for _d in range(num_days):
+    _dd = first_day + datetime.timedelta(days=_d)
+    _elvart = 2 if (_dd.weekday() == 5 and SZOMBAT_NINCS_STROKE) else 3
+    _betoltott = sum(1 for _t in duty_types if schedule[_d].get(_t))
+    if _betoltott == 0 and _elvart > 0:
+        _teljes_napos_kiesesek.append(_d + 1)
+if _teljes_napos_kiesesek:
+    print(f"\n‼️  FIGYELEM - EZEKEN A NAPOKON SENKI SINCS ÜGYELETBEN: {_teljes_napos_kiesesek}")
+    print("   Nézd meg a javasolt kivételek listáját ezekre a napokra - valamelyiket jóvá kell hagyni!\n")
 
 if JAVASOLT_KIVETELEK:
     kivetel_kimenet = KIMENET_PATH.rsplit(".", 1)[0] + "_javasolt_kivetelek.json"
