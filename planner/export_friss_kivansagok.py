@@ -91,6 +91,23 @@ def main(celzott_fajlnev):
     except Exception:
         pass
 
+    # 5. eves_szabadsag - az eves szabadsagtervezobol azok a napok, amik a celzott
+    # honapra esnek, minden dolgozonal osszefuzve a havi kereses sajat szabadsag-napjaival.
+    eves_szabadsag_honapra = {}
+    try:
+        r = requests.get(f"{BASE}/eves_szabadsag", params={"key": API_KEY, "pageSize": 200}, timeout=30)
+        if r.status_code == 200:
+            honap_elotag = f"{cel_ev}-{cel_honap:02d}-"
+            for doc in r.json().get("documents", []):
+                fields = fs_doc_to_dict(doc["fields"])
+                nev = fields.get("nev")
+                napok = fields.get("napok") or []
+                honapra_eso = sorted(int(nap.split("-")[2]) for nap in napok if nap.startswith(honap_elotag))
+                if nev and honapra_eso:
+                    eves_szabadsag_honapra[nev] = honapra_eso
+    except Exception:
+        pass
+
     kivansagok = {}
     nyolc_ora_nappal = {}
     mindenkeppen_szeretne = {}
@@ -100,8 +117,9 @@ def main(celzott_fajlnev):
             continue
         nev = req["nev"]
         szeret_napok = set(parse_nap_lista(req.get("szeretne"))) | set(parse_nap_lista(req.get("mindenkeppen_szeretne")))
+        szabadsag_napok = set(parse_nap_lista(req.get("szabadsag"))) | set(eves_szabadsag_honapra.get(nev, []))
         kivansagok[nev] = {
-            "szabadsag": parse_nap_lista(req.get("szabadsag")),
+            "szabadsag": sorted(szabadsag_napok),
             "nem": parse_nap_lista(req.get("nem_szeretne")),
             "szeret": sorted(szeret_napok),
         }
@@ -111,6 +129,13 @@ def main(celzott_fajlnev):
             mindenkeppen_szeretne[nev] = parse_nap_lista(req.get("mindenkeppen_szeretne"))
         if req.get("kert_ugyeletszam"):
             kert_ugyeletszam[nev] = req["kert_ugyeletszam"]
+
+    # Azok, akiknek van éves szabadság-napjuk erre a hónapra, de egyáltalán nem küldtek be
+    # havi kérést (vagy azt jelezték, hogy nincs kérésük) - nekik is fel kell venni legalább
+    # a szabadság-napjaikat, különben a generálás nem tudna róla.
+    for nev, honapra_eso in eves_szabadsag_honapra.items():
+        if nev not in kivansagok:
+            kivansagok[nev] = {"szabadsag": honapra_eso, "nem": [], "szeret": []}
 
     kulsos_gyakorlaton = [req["nev"] for req in celzott_keresek if req.get("kulsos_gyakorlat") is True]
 
