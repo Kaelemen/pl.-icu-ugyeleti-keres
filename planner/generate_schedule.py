@@ -220,7 +220,7 @@ for name in CSAK_JELOLT_NAPOKON:
     info = RESZMUNKAIDO_TOL.get(name)
     if info and "jelenlet" in info.get("erinti", ()):
         continue
-    covered = set(p["szabadsag"]) | set(p["szeret"]) | set(p["nem"])
+    covered = set(p["szabadsag"]) | set(p["szeret"]) | set(p["nem"]) | set(NYOLC_ORA_NAPPAL.get(name, []))
     for d in range(1, num_days + 1):
         if d not in covered:
             p["nem"].append(d)
