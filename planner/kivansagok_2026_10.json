@@ -614,223 +614,223 @@
   "elozo_honap_tulora": {},
   "dolgozok": [
     {
-      "napi_munkaido": 8,
-      "szerzodes_tipus": "Teljes állás",
-      "nev": "Kelemen József",
-      "havi_oraszam": null,
-      "kategoria": "I",
       "sorszam": 0,
-      "kulsos_gyakorlat_erintett": false,
-      "tipus": "Szakorvos"
-    },
-    {
-      "sorszam": 1,
-      "szerzodes_tipus": "Teljes állás",
       "kategoria": "I",
-      "nev": "Katona József",
-      "havi_oraszam": null,
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8,
       "kulsos_gyakorlat_erintett": false,
       "tipus": "Szakorvos",
-      "napi_munkaido": 8
-    },
-    {
-      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
-      "tipus": "Szakorvos",
-      "napi_munkaido": 4,
-      "kategoria": "A",
-      "kulsos_gyakorlat_erintett": false,
-      "nev": "Berek Sarolta",
-      "sorszam": 2,
+      "nev": "Kelemen József",
       "havi_oraszam": null
     },
     {
-      "tipus": "Szakorvos",
-      "napi_munkaido": 4,
       "kategoria": "I",
+      "tipus": "Szakorvos",
       "kulsos_gyakorlat_erintett": false,
+      "sorszam": 1,
+      "napi_munkaido": 8,
+      "havi_oraszam": null,
+      "szerzodes_tipus": "Teljes állás",
+      "nev": "Katona József"
+    },
+    {
+      "tipus": "Szakorvos",
+      "kulsos_gyakorlat_erintett": false,
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "kategoria": "A",
+      "havi_oraszam": null,
+      "sorszam": 2,
+      "nev": "Berek Sarolta",
+      "napi_munkaido": 4
+    },
+    {
       "sorszam": 3,
+      "tipus": "Szakorvos",
       "havi_oraszam": null,
+      "kategoria": "I",
+      "nev": "Gulya Réka",
+      "kulsos_gyakorlat_erintett": false,
       "szerzodes_tipus": "Részmunkaidő - napi óraszám",
-      "nev": "Gulya Réka"
+      "napi_munkaido": 4
     },
     {
-      "szerzodes_tipus": "Teljes állás",
-      "havi_oraszam": null,
-      "kulsos_gyakorlat_erintett": false,
+      "napi_munkaido": 8,
       "nev": "Kovácsevics József",
-      "napi_munkaido": 8,
+      "tipus": "Szakorvos",
       "kategoria": "A",
+      "kulsos_gyakorlat_erintett": false,
+      "havi_oraszam": null,
       "sorszam": 4,
-      "tipus": "Szakorvos"
+      "szerzodes_tipus": "Teljes állás"
     },
     {
-      "kulsos_gyakorlat_erintett": false,
-      "havi_oraszam": null,
+      "sorszam": 5,
       "kategoria": "I",
-      "szerzodes_tipus": "Teljes állás",
       "nev": "Róbert Beáta",
-      "napi_munkaido": 8,
-      "tipus": "Szakorvos",
-      "sorszam": 5
-    },
-    {
-      "kulsos_gyakorlat_erintett": false,
-      "napi_munkaido": 7.2,
-      "havi_oraszam": null,
-      "sorszam": 6,
-      "kategoria": "I",
-      "nev": "Balogh László",
-      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
-      "tipus": "Szakorvos"
-    },
-    {
-      "napi_munkaido": 8,
       "szerzodes_tipus": "Teljes állás",
-      "tipus": "Szakorvos",
-      "kategoria": "I",
+      "napi_munkaido": 8,
+      "kulsos_gyakorlat_erintett": false,
       "havi_oraszam": null,
-      "kulsos_gyakorlat_erintett": false,
-      "sorszam": 7,
-      "nev": "Berkes Tíbor"
-    },
-    {
-      "nev": "Hajnal Csilla",
-      "havi_oraszam": 72,
-      "tipus": "Szakorvos",
-      "napi_munkaido": 2.3,
-      "kategoria": "A",
-      "kulsos_gyakorlat_erintett": false,
-      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
-      "sorszam": 8
-    },
-    {
-      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
-      "napi_munkaido": 4,
-      "kategoria": "I",
-      "nev": "Kajner Krisztina",
-      "havi_oraszam": null,
-      "kulsos_gyakorlat_erintett": false,
-      "sorszam": 9,
       "tipus": "Szakorvos"
     },
     {
-      "napi_munkaido": 5,
-      "kategoria": "A",
+      "napi_munkaido": 7.2,
+      "sorszam": 6,
+      "kulsos_gyakorlat_erintett": false,
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
       "havi_oraszam": null,
       "tipus": "Szakorvos",
-      "nev": "Korompai Máté",
-      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
-      "sorszam": 10,
+      "kategoria": "I",
+      "nev": "Balogh László"
+    },
+    {
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8,
+      "tipus": "Szakorvos",
+      "nev": "Berkes Tíbor",
+      "kulsos_gyakorlat_erintett": false,
+      "havi_oraszam": null,
+      "sorszam": 7,
+      "kategoria": "I"
+    },
+    {
+      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
+      "sorszam": 8,
+      "tipus": "Szakorvos",
+      "havi_oraszam": 72,
+      "napi_munkaido": 2.3,
+      "nev": "Hajnal Csilla",
+      "kategoria": "A",
       "kulsos_gyakorlat_erintett": false
     },
     {
-      "sorszam": 11,
-      "kulsos_gyakorlat_erintett": false,
-      "napi_munkaido": 4.6,
+      "havi_oraszam": null,
       "tipus": "Szakorvos",
-      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
-      "havi_oraszam": 144,
-      "kategoria": "A",
-      "nev": "Pintér Enikő"
+      "napi_munkaido": 4,
+      "sorszam": 9,
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "kulsos_gyakorlat_erintett": false,
+      "kategoria": "I",
+      "nev": "Kajner Krisztina"
     },
     {
-      "nev": "Sorbán József",
-      "kategoria": "I",
+      "kategoria": "A",
+      "sorszam": 10,
       "szerzodes_tipus": "Részmunkaidő - napi óraszám",
-      "havi_oraszam": null,
+      "napi_munkaido": 5,
+      "tipus": "Szakorvos",
+      "nev": "Korompai Máté",
       "kulsos_gyakorlat_erintett": false,
+      "havi_oraszam": null
+    },
+    {
+      "napi_munkaido": 4.6,
+      "nev": "Pintér Enikő",
+      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
+      "kulsos_gyakorlat_erintett": false,
+      "sorszam": 11,
+      "kategoria": "A",
+      "havi_oraszam": 144,
+      "tipus": "Szakorvos"
+    },
+    {
       "tipus": "Szakorvos",
       "sorszam": 12,
-      "napi_munkaido": 1.52
-    },
-    {
-      "kulsos_gyakorlat_erintett": false,
-      "havi_oraszam": 72,
-      "napi_munkaido": 2.3,
-      "tipus": "Szakorvos",
-      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
-      "kategoria": "A",
-      "nev": "Szász Kornélia",
-      "sorszam": 13
-    },
-    {
-      "kulsos_gyakorlat_erintett": false,
-      "kategoria": "A",
       "szerzodes_tipus": "Részmunkaidő - napi óraszám",
       "havi_oraszam": null,
-      "tipus": "Szakorvos",
-      "nev": "Sztermen Márton",
-      "sorszam": 14,
-      "napi_munkaido": 1.84
+      "nev": "Sorbán József",
+      "kategoria": "I",
+      "napi_munkaido": 1.52,
+      "kulsos_gyakorlat_erintett": false
     },
     {
+      "kategoria": "A",
+      "tipus": "Szakorvos",
+      "nev": "Szász Kornélia",
+      "napi_munkaido": 2.3,
+      "kulsos_gyakorlat_erintett": false,
+      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
+      "sorszam": 13,
+      "havi_oraszam": 72
+    },
+    {
+      "kulsos_gyakorlat_erintett": false,
       "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "nev": "Sztermen Márton",
+      "sorszam": 14,
+      "kategoria": "A",
+      "havi_oraszam": null,
+      "napi_munkaido": 1.84,
+      "tipus": "Szakorvos"
+    },
+    {
+      "sorszam": 15,
       "nev": "Zöldréti Anikó",
       "tipus": "Szakorvos",
       "havi_oraszam": null,
-      "kulsos_gyakorlat_erintett": false,
       "kategoria": "I",
       "napi_munkaido": 6.4,
-      "sorszam": 15
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "kulsos_gyakorlat_erintett": false
     },
     {
-      "szerzodes_tipus": "Teljes állás",
-      "napi_munkaido": 8,
+      "tipus": "Rezidens",
       "kulsos_gyakorlat_erintett": false,
       "sorszam": 16,
-      "havi_oraszam": null,
-      "tipus": "Rezidens",
+      "napi_munkaido": 8,
+      "szerzodes_tipus": "Teljes állás",
+      "nev": "Daku Zsuzsa",
       "kategoria": "I",
-      "nev": "Daku Zsuzsa"
+      "havi_oraszam": null
+    },
+    {
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "kulsos_gyakorlat_erintett": true,
+      "nev": "Karczub János",
+      "napi_munkaido": 8,
+      "tipus": "Rezidens",
+      "sorszam": 17,
+      "havi_oraszam": null
+    },
+    {
+      "nev": "Lambertus Iván",
+      "havi_oraszam": null,
+      "napi_munkaido": 8,
+      "szerzodes_tipus": "Teljes állás",
+      "kategoria": "A",
+      "kulsos_gyakorlat_erintett": true,
+      "sorszam": 18,
+      "tipus": "Rezidens"
+    },
+    {
+      "napi_munkaido": 8,
+      "nev": "Enyedi Marcián",
+      "kulsos_gyakorlat_erintett": true,
+      "havi_oraszam": null,
+      "kategoria": "A",
+      "szerzodes_tipus": "Teljes állás",
+      "sorszam": 19,
+      "tipus": "Rezidens"
     },
     {
       "havi_oraszam": null,
+      "sorszam": 20,
+      "nev": "Rákóczi Réka",
       "napi_munkaido": 8,
-      "sorszam": 17,
-      "kategoria": "I",
+      "kategoria": "A",
       "szerzodes_tipus": "Teljes állás",
-      "nev": "Karczub János",
       "kulsos_gyakorlat_erintett": true,
       "tipus": "Rezidens"
     },
     {
-      "kategoria": "A",
-      "sorszam": 18,
-      "kulsos_gyakorlat_erintett": true,
-      "nev": "Lambertus Iván",
+      "szerzodes_tipus": "Teljes állás",
       "havi_oraszam": null,
       "napi_munkaido": 8,
-      "tipus": "Rezidens",
-      "szerzodes_tipus": "Teljes állás"
-    },
-    {
-      "havi_oraszam": null,
-      "napi_munkaido": 8,
-      "tipus": "Rezidens",
-      "sorszam": 19,
-      "nev": "Enyedi Marcián",
-      "kategoria": "A",
-      "szerzodes_tipus": "Teljes állás",
-      "kulsos_gyakorlat_erintett": true
-    },
-    {
-      "kategoria": "A",
-      "sorszam": 20,
-      "szerzodes_tipus": "Teljes állás",
-      "kulsos_gyakorlat_erintett": true,
-      "havi_oraszam": null,
-      "nev": "Rákóczi Réka",
-      "tipus": "Rezidens",
-      "napi_munkaido": 8
-    },
-    {
+      "kategoria": "T",
+      "kulsos_gyakorlat_erintett": false,
       "nev": "Gebei László",
       "tipus": "Rezidens",
-      "kulsos_gyakorlat_erintett": false,
-      "szerzodes_tipus": "Teljes állás",
-      "kategoria": "T",
-      "havi_oraszam": null,
-      "napi_munkaido": 8,
       "sorszam": 21
     }
   ]
