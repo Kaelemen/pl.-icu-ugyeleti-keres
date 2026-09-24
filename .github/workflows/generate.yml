@@ -36,20 +36,6 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: BEREK UJRAELLENORZES
-        working-directory: planner
-        run: pip install --quiet requests && python3 recheck_berek.py > berek_ujra.txt 2>&1; cat berek_ujra.txt
-
-      - name: BEREK UJRAELLENORZES commit
-        run: |
-          git config user.name "Deploy Bot"
-          git config user.email "deploy@example.com"
-          git add planner/berek_ujra.txt || true
-          if ! git diff --cached --quiet; then
-            git commit -m "Berek ujraellenorzes"
-            git push
-          fi
-
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
