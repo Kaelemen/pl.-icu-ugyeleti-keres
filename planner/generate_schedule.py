@@ -1381,6 +1381,9 @@ for d in range(num_days):
             uzenetek.append("Pihenőidő (min. 2 nap) megsértve! ")
             break
     duty_col_nev = {"Intenzív": intenziv_nm, "Stroke": stroke_nm, "Aneszt": aneszt_nm}
+    for duty_nev_ures, nm_ures in duty_col_nev.items():
+        if nm_ures is None and not (duty_nev_ures == "Stroke" and day_date.weekday() == 5 and SZOMBAT_NINCS_STROKE):
+            uzenetek.append(f"Nincs betöltve: {duty_nev_ures}! ")
     for duty_nev, nm in duty_col_nev.items():
         if nm and prefs.get((nm, day_date)) == "Szabadság":
             uzenetek.append(f"{nm} szabadságon van ({duty_nev})! ")
