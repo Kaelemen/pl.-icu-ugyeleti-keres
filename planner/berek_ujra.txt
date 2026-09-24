@@ -1,0 +1,14 @@
+--- keres:2026-10:Berek_Sarolta ---
+  megjegyzes: 
+  szabadsag: 
+  kert_ugyeletszam: None
+  mindenkeppen_szeretne: 
+  kulsos_gyakorlat: None
+  nev: Berek Sarolta
+  nem_szeretne: 1,7-8,14-15,19-20,22,29
+  beadva: 2026-09-16T11:09:59.208Z
+  honap: 10
+  ev: 2026
+  nyolc_ora_nappal: 2,5-6,9,12-13,21,26-28,30
+  szeretne: 4,25
+  nincs_keres: False
