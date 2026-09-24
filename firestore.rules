@@ -22,5 +22,8 @@ service cloud.firestore {
     match /biometrikus_dontesek/{docId} {
       allow read, write: if true;
     }
+    match /eves_szabadsag/{docId} {
+      allow read, write: if true;
+    }
   }
 }
