@@ -50,6 +50,10 @@ jobs:
             git push
           fi
 
+      - name: BALOGH ORASZAM FRISSITES
+        working-directory: planner
+        run: pip install --quiet requests && python3 update_balogh_oraszam.py
+
       - name: Kívánságok fájl előkészítése
         working-directory: planner
         env:
