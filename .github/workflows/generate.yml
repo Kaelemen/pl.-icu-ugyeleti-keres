@@ -43,13 +43,26 @@ jobs:
           python3 verify_eves_szabadsag.py > eves_szab_ellenorzes.txt 2>&1 || true
           cat eves_szab_ellenorzes.txt
 
+      - name: EVES SZABADSAG IMPORT
+        working-directory: planner
+        run: |
+          pip install --quiet requests
+          python3 import_eves_szabadsag.py > eves_szab_import_eredmeny.txt 2>&1 || true
+          cat eves_szab_import_eredmeny.txt
+
+      - name: EVES SZABADSAG UJRA-ELLENORZES
+        working-directory: planner
+        run: |
+          python3 verify_eves_szabadsag.py > eves_szab_ellenorzes2.txt 2>&1 || true
+          cat eves_szab_ellenorzes2.txt
+
       - name: EVES SZABADSAG ELLENORZES commit
         run: |
           git config user.name "Deploy Bot"
           git config user.email "deploy@example.com"
-          git add planner/eves_szab_ellenorzes.txt || true
+          git add planner/eves_szab_ellenorzes.txt planner/eves_szab_import_eredmeny.txt planner/eves_szab_ellenorzes2.txt || true
           if ! git diff --cached --quiet; then
-            git commit -m "Eves szabadsag ellenorzes"
+            git commit -m "Eves szabadsag ellenorzes es import"
             git push
           fi
 
