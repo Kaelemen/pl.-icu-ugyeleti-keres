@@ -36,9 +36,19 @@ jobs:
       - name: Függőségek telepítése
         run: pip install -r planner/requirements.txt
 
-      - name: EVES SZABADSAG IMPORT
+      - name: EVES SZABADSAG ELLENORZES
         working-directory: planner
-        run: pip install --quiet requests && python3 import_eves_szabadsag.py
+        run: python3 verify_eves_szabadsag.py > eves_szab_ellenorzes.txt 2>&1; cat eves_szab_ellenorzes.txt
+
+      - name: EVES SZABADSAG ELLENORZES commit
+        run: |
+          git config user.name "Deploy Bot"
+          git config user.email "deploy@example.com"
+          git add planner/eves_szab_ellenorzes.txt || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Eves szabadsag ellenorzes"
+            git push
+          fi
 
       - name: Kívánságok fájl előkészítése
         working-directory: planner
