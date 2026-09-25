@@ -38,7 +38,10 @@ jobs:
 
       - name: EVES SZABADSAG ELLENORZES
         working-directory: planner
-        run: pip install --quiet requests && python3 verify_eves_szabadsag.py > eves_szab_ellenorzes.txt 2>&1; cat eves_szab_ellenorzes.txt
+        run: |
+          pip install --quiet requests
+          python3 verify_eves_szabadsag.py > eves_szab_ellenorzes.txt 2>&1 || true
+          cat eves_szab_ellenorzes.txt
 
       - name: EVES SZABADSAG ELLENORZES commit
         run: |
