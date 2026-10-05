@@ -1,0 +1,696 @@
+{
+  "keresek": [
+    {
+      "id": "keres:2026-10:Balogh_László",
+      "mindenkeppen_szeretne": "",
+      "ev": 2026,
+      "nem_szeretne": "16-18,25,31",
+      "szabadsag": "26-30",
+      "szeretne": "2-14,19-24",
+      "nincs_keres": false,
+      "megjegyzes": "Ha sikerül megírniuk a 36 órás szerződésem, akkor lesz havi 2 puffer napom, az egyiket 16 péntekre kérném, a másikat rád bízom :)\nKöszönöm!",
+      "honap": 10,
+      "kert_ugyeletszam": 4,
+      "kulsos_gyakorlat": null,
+      "nev": "Balogh László",
+      "nyolc_ora_nappal": "1,15",
+      "beadva": "2026-09-14T05:14:35.445Z"
+    },
+    {
+      "id": "keres:2026-10:Berek_Sarolta",
+      "kulsos_gyakorlat": null,
+      "ev": 2026,
+      "nem_szeretne": "1,7-8,14-15,19-20,22,29",
+      "nyolc_ora_nappal": "2,5-6,9,12-13,21,26-28,30",
+      "nev": "Berek Sarolta",
+      "beadva": "2026-09-16T11:09:59.208Z",
+      "szeretne": "4,25",
+      "honap": 10,
+      "mindenkeppen_szeretne": "",
+      "kert_ugyeletszam": null,
+      "nincs_keres": false,
+      "szabadsag": "",
+      "megjegyzes": ""
+    },
+    {
+      "id": "keres:2026-10:Berkes_Tíbor",
+      "beadva": "2026-09-11T17:37:42.108Z",
+      "nev": "Berkes Tíbor",
+      "mindenkeppen_szeretne": "8,28",
+      "kert_ugyeletszam": null,
+      "megjegyzes": "Okt. 28-án csak délután tudok jönni",
+      "nincs_keres": false,
+      "szeretne": "",
+      "honap": 10,
+      "nyolc_ora_nappal": "",
+      "szabadsag": "",
+      "admin_rogzitette": true,
+      "ev": 2026,
+      "nem_szeretne": "",
+      "kulsos_gyakorlat": null
+    },
+    {
+      "id": "keres:2026-10:Daku_Zsuzsa",
+      "ev": 2026,
+      "szeretne": "1-8,12-16",
+      "kulsos_gyakorlat": null,
+      "beadva": "2026-09-20T09:57:56.478Z",
+      "nev": "Daku Zsuzsa",
+      "nyolc_ora_nappal": "",
+      "nem_szeretne": "9-10",
+      "megjegyzes": "Hónap utolsó két hetében szabadságra szeretnék menni.",
+      "szabadsag": "17-31",
+      "nincs_keres": false,
+      "mindenkeppen_szeretne": "",
+      "honap": 10,
+      "kert_ugyeletszam": 3
+    },
+    {
+      "id": "keres:2026-10:Enyedi_Marcián",
+      "nem_szeretne": "10-11",
+      "mindenkeppen_szeretne": "",
+      "honap": 10,
+      "kulsos_gyakorlat": false,
+      "nyolc_ora_nappal": "",
+      "nincs_keres": false,
+      "megjegyzes": "",
+      "beadva": "2026-09-12T05:41:16.158Z",
+      "ev": 2026,
+      "nev": "Enyedi Marcián",
+      "kert_ugyeletszam": 4,
+      "szeretne": "12,16,28",
+      "szabadsag": "17-27"
+    },
+    {
+      "id": "keres:2026-10:Gebei_László",
+      "kert_ugyeletszam": null,
+      "nincs_keres": true,
+      "szabadsag": "",
+      "szeretne": "",
+      "beadva": "2026-09-19T14:58:04.713Z",
+      "admin_rogzitette": true,
+      "nev": "Gebei László",
+      "nyolc_ora_nappal": "",
+      "kulsos_gyakorlat": null,
+      "nem_szeretne": "",
+      "ev": 2026,
+      "megjegyzes": "",
+      "honap": 10,
+      "mindenkeppen_szeretne": ""
+    },
+    {
+      "id": "keres:2026-10:Gulya_Réka",
+      "szeretne": "",
+      "nem_szeretne": "",
+      "nyolc_ora_nappal": "",
+      "szabadsag": "",
+      "kulsos_gyakorlat": null,
+      "beadva": "2026-09-17T07:39:21.391Z",
+      "mindenkeppen_szeretne": "",
+      "nev": "Gulya Réka",
+      "ev": 2026,
+      "kert_ugyeletszam": 3,
+      "megjegyzes": "Túlóra függvènyeben 10 vagy 11 napot jövök a hónap màsodik felèben\nNincs kérésem",
+      "nincs_keres": false,
+      "honap": 10
+    },
+    {
+      "id": "keres:2026-10:Hajnal_Csilla",
+      "kulsos_gyakorlat": null,
+      "szeretne": "9-10,16-17",
+      "nincs_keres": false,
+      "honap": 10,
+      "nyolc_ora_nappal": "",
+      "mindenkeppen_szeretne": "30",
+      "nem_szeretne": "",
+      "megjegyzes": "",
+      "beadva": "2026-09-11T11:59:12.362Z",
+      "nev": "Hajnal Csilla",
+      "ev": 2026,
+      "kert_ugyeletszam": 3,
+      "szabadsag": ""
+    },
+    {
+      "id": "keres:2026-10:Kajner_Krisztina",
+      "mindenkeppen_szeretne": "2,27",
+      "nem_szeretne": "23-25",
+      "honap": 10,
+      "kulsos_gyakorlat": null,
+      "beadva": "2026-09-24T07:19:59.290Z",
+      "nyolc_ora_nappal": "9,16,19,21,26",
+      "szeretne": "12,17,30-31",
+      "admin_rogzitette": true,
+      "szabadsag": "5",
+      "megjegyzes": "Ha lehetséges 1 péntek, 1 szombat és 1 nem pénteki hétköznapot szeretnék. Köszönöm",
+      "nev": "Kajner Krisztina",
+      "nincs_keres": false,
+      "ev": 2026,
+      "kert_ugyeletszam": null
+    },
+    {
+      "id": "keres:2026-10:Karczub_János",
+      "megjegyzes": "",
+      "ev": 2026,
+      "honap": 10,
+      "kert_ugyeletszam": 8,
+      "nem_szeretne": "10-11",
+      "beadva": "2026-09-23T13:39:35.382Z",
+      "szeretne": "3,5-9,12-16,18-22,24,26-31",
+      "nev": "Karczub János",
+      "nyolc_ora_nappal": "",
+      "szabadsag": "1-2",
+      "admin_rogzitette": true,
+      "nincs_keres": false,
+      "mindenkeppen_szeretne": "17,23,25",
+      "kulsos_gyakorlat": true
+    },
+    {
+      "id": "keres:2026-10:Katona_József",
+      "nincs_keres": false,
+      "kulsos_gyakorlat": null,
+      "beadva": "2026-09-13T19:28:05.633Z",
+      "honap": 10,
+      "megjegyzes": "Ha másként nem megy 23 jó ügyeletre.",
+      "ev": 2026,
+      "nyolc_ora_nappal": "",
+      "szeretne": "5,9-12,16-19,26,30-31",
+      "szabadsag": "",
+      "kert_ugyeletszam": 7,
+      "nem_szeretne": "2-4,13,23-25",
+      "mindenkeppen_szeretne": "7,14,21,28",
+      "nev": "Katona József"
+    },
+    {
+      "id": "keres:2026-10:Kelemen_József",
+      "nyolc_ora_nappal": "",
+      "szabadsag": "19-31",
+      "nincs_keres": false,
+      "mindenkeppen_szeretne": "",
+      "honap": 10,
+      "nem_szeretne": "1,6-7",
+      "nev": "Kelemen József",
+      "kulsos_gyakorlat": null,
+      "kert_ugyeletszam": null,
+      "ev": 2026,
+      "megjegyzes": "",
+      "szeretne": "",
+      "beadva": "2026-09-15T18:43:46.890Z"
+    },
+    {
+      "id": "keres:2026-10:Korompai_Máté",
+      "kert_ugyeletszam": 3,
+      "megjegyzes": "",
+      "szeretne": "1,8-10,18,20,22,27",
+      "beadva": "2026-09-10T12:30:35.683Z",
+      "nincs_keres": false,
+      "nem_szeretne": "2-5,7,11,17,23-25,30-31",
+      "honap": 10,
+      "nev": "Korompai Máté",
+      "nyolc_ora_nappal": "6,19,21,26,28-29",
+      "szabadsag": "12-16",
+      "mindenkeppen_szeretne": "",
+      "kulsos_gyakorlat": null,
+      "ev": 2026
+    },
+    {
+      "id": "keres:2026-10:Kovácsevics_József",
+      "nincs_keres": false,
+      "nev": "Kovácsevics József",
+      "kulsos_gyakorlat": null,
+      "nyolc_ora_nappal": "",
+      "szeretne": "",
+      "beadva": "2026-09-20T11:43:00.421Z",
+      "megjegyzes": "",
+      "mindenkeppen_szeretne": "",
+      "nem_szeretne": "1-3,15,23-25,29",
+      "honap": 10,
+      "ev": 2026,
+      "kert_ugyeletszam": null,
+      "szabadsag": ""
+    },
+    {
+      "id": "keres:2026-10:Lambertus_Iván",
+      "szabadsag": "6-11",
+      "honap": 10,
+      "ev": 2026,
+      "megjegyzes": "külsős gyak: 12-16. alapképzést záró egyhetes tanfolyam (elvileg online, 1 nap szerdai bejárással). \n\negy apró kérés: lehetne színtévesztő mód az oldalról? nem látom a piros-zöldet. ha nem, nem. egy próbát megér",
+      "kert_ugyeletszam": 4,
+      "nem_szeretne": "5,14-15,19-24",
+      "szeretne": "1-3,12-13,16-18,25-31",
+      "mindenkeppen_szeretne": "4",
+      "kulsos_gyakorlat": false,
+      "beadva": "2026-09-14T14:56:09.726Z",
+      "nev": "Lambertus Iván",
+      "nyolc_ora_nappal": "",
+      "nincs_keres": false
+    },
+    {
+      "id": "keres:2026-10:Pintér_Enikő",
+      "kert_ugyeletszam": 4,
+      "honap": 10,
+      "megjegyzes": "",
+      "beadva": "2026-09-23T12:47:58.842Z",
+      "nev": "Pintér Enikő",
+      "mindenkeppen_szeretne": "3,7,21,28",
+      "szabadsag": "",
+      "ev": 2026,
+      "admin_rogzitette": true,
+      "szeretne": "",
+      "nem_szeretne": "",
+      "nincs_keres": false,
+      "nyolc_ora_nappal": "6,13,19-20,26-27",
+      "kulsos_gyakorlat": null
+    },
+    {
+      "id": "keres:2026-10:Rákóczi_Réka",
+      "kulsos_gyakorlat": false,
+      "szeretne": "",
+      "ev": 2026,
+      "nyolc_ora_nappal": "",
+      "nem_szeretne": "",
+      "megjegyzes": "Mindenképp szeretnék ügyelni: október 5,26, többi mindegy \nSzabadság: október 7-14",
+      "mindenkeppen_szeretne": "5,26",
+      "nincs_keres": false,
+      "beadva": "2026-09-14T09:47:55.323Z",
+      "szabadsag": "7-14",
+      "honap": 10,
+      "nev": "Rákóczi Réka",
+      "kert_ugyeletszam": 6
+    },
+    {
+      "id": "keres:2026-10:Róbert_Beáta",
+      "nyolc_ora_nappal": "",
+      "szabadsag": "19-25",
+      "nev": "Róbert Beáta",
+      "honap": 10,
+      "mindenkeppen_szeretne": "15",
+      "nincs_keres": false,
+      "kulsos_gyakorlat": null,
+      "megjegyzes": "",
+      "nem_szeretne": "2,5-6,9-11,16-18,30-31",
+      "beadva": "2026-09-15T13:38:06.825Z",
+      "kert_ugyeletszam": 5,
+      "szeretne": "1,3-4,7-8,12-14,26-29",
+      "ev": 2026
+    },
+    {
+      "id": "keres:2026-10:Sorbán_József",
+      "megjegyzes": "",
+      "kulsos_gyakorlat": null,
+      "honap": 10,
+      "szeretne": "1,5-8,12-15",
+      "nyolc_ora_nappal": "",
+      "mindenkeppen_szeretne": "",
+      "szabadsag": "",
+      "nincs_keres": false,
+      "nev": "Sorbán József",
+      "nem_szeretne": "",
+      "ev": 2026,
+      "kert_ugyeletszam": 4,
+      "beadva": "2026-09-14T08:26:17.772Z"
+    },
+    {
+      "id": "keres:2026-10:Sztermen_Márton",
+      "nev": "Sztermen Márton",
+      "honap": 10,
+      "nincs_keres": false,
+      "szeretne": "5,18",
+      "kert_ugyeletszam": null,
+      "beadva": "2026-09-13T19:20:11.164Z",
+      "mindenkeppen_szeretne": "",
+      "kulsos_gyakorlat": null,
+      "megjegyzes": "",
+      "nyolc_ora_nappal": "8-9,15-16",
+      "ev": 2026,
+      "szabadsag": "",
+      "nem_szeretne": "19-31"
+    },
+    {
+      "id": "keres:2026-10:Szász_Kornélia",
+      "szabadsag": "",
+      "kulsos_gyakorlat": null,
+      "ev": 2026,
+      "beadva": "2026-09-11T07:32:13.643Z",
+      "nev": "Szász Kornélia",
+      "nyolc_ora_nappal": "2,9,30",
+      "nincs_keres": false,
+      "megjegyzes": "",
+      "szeretne": "",
+      "mindenkeppen_szeretne": "4,11",
+      "kert_ugyeletszam": null,
+      "nem_szeretne": "",
+      "honap": 10
+    },
+    {
+      "id": "keres:2026-10:Zöldréti_Anikó",
+      "kert_ugyeletszam": 4,
+      "megjegyzes": "4.én ugyelnék; hetfőn dokihoz megyek",
+      "honap": 10,
+      "mindenkeppen_szeretne": "4,6",
+      "szabadsag": "26-30",
+      "ev": 2026,
+      "admin_rogzitette": true,
+      "nem_szeretne": "5,7,9,13-14,20-21,31",
+      "beadva": "2026-09-24T06:26:50.589Z",
+      "nyolc_ora_nappal": "",
+      "nincs_keres": false,
+      "kulsos_gyakorlat": null,
+      "nev": "Zöldréti Anikó",
+      "szeretne": "1-3,8,10-12,15-19,22-25"
+    }
+  ],
+  "jelszavak": [
+    {
+      "id": "1cdb8996a51551167199d746db5912ea4a6d62955165ba3128badd563b497c08",
+      "nev": "Hajnal Csilla"
+    },
+    {
+      "id": "266123c9e17dc4b7a9742727cc189ec2656e0e5a0d913bebfa45761b4fecb126",
+      "nev": "Karczub János"
+    },
+    {
+      "id": "2cf860de7339fd1e2100794579b0fdcb63fea5e0ae734de20919844028261d28",
+      "nev": "Pintér Enikő"
+    },
+    {
+      "id": "3ab494d6ba1da0ed5ad5228af83255e6fb198951f43ce2ac503bda50358172ac",
+      "nev": "Lambertus Iván"
+    },
+    {
+      "id": "41e59b9fb0508931c52140d952092564295533622894b9f554dfcfcdb6521cf2",
+      "nev": "Szász Kornélia"
+    },
+    {
+      "id": "433e052888137b3196c4edf2921360a55e033ff8366da28207b03f4cc983d917",
+      "nev": "Zöldréti Anikó"
+    },
+    {
+      "id": "71e9d1f081199b67c4314b8c3e5de2095ee14518f0139bb84bd90fb5233d3279",
+      "nev": "Róbert Beáta"
+    },
+    {
+      "id": "7605afb30325fa2369bbcb7363dabe768030b5cb5e7f287bdab110acdffaecfb",
+      "nev": "Kajner Krisztina"
+    },
+    {
+      "id": "7c7914ec3c03419746f62d3e5644e4a6859fcf6dcbde5df4ea191460b051645d",
+      "nev": "Sztermen Márton"
+    },
+    {
+      "id": "8283398c40824eb052808d53569fcfa247f1906db7ef726e6a853acb0f327379",
+      "nev": "Katona József"
+    },
+    {
+      "id": "a136304500134f0d114bcdc3f50e8acf8382d09f0489dea2b22c5bb15541d922",
+      "nev": "Enyedi Marcián"
+    },
+    {
+      "id": "a69f465613c8f69a0a3bce75ef6852fa1e10ffdcfad145e8b2384240d3f6d58c",
+      "nev": "Daku Zsuzsa"
+    },
+    {
+      "id": "b1e5374f6611ef1ade7418722cb353194d0be74bb20ffc279ba9400618333a3d",
+      "nev": "Berkes Tíbor"
+    },
+    {
+      "id": "b3679dbd3d9bcabccb1c4202d1af2aeb16719a3ed5bf7eceb113d9f7b79747ea",
+      "nev": "Korompai Máté"
+    },
+    {
+      "id": "bbe20e801fd80153c233cac93b29e1dde6f74fa428aa7d9b8377a8d1593d63ce",
+      "nev": "Sorbán József"
+    },
+    {
+      "id": "c40f6576ba58c37adc1c9cf2efe4208604866b27f31e5a45552195e3dbe58e72",
+      "nev": "Balogh László"
+    },
+    {
+      "id": "cd6c2c6facde867537803ef4a5aa527168563cef08530fc30159c3e1ac214a63",
+      "nev": "Berek Sarolta"
+    },
+    {
+      "id": "d3b6f3e571d9021707994ccd96cdf9b42be52deeecaa66803f2c651b62c69e16",
+      "nev": "Rákóczi Réka"
+    },
+    {
+      "id": "dddcb9058dfeaea53a70e6002a365a03ef2c499bec0804be63decacc11969849",
+      "nev": "Kelemen József"
+    },
+    {
+      "id": "e4f3e8295f8d9e113eef201a8d954b8a4d24afe12d4915b909d56e4d878bacea",
+      "nev": "Gebei László"
+    },
+    {
+      "id": "e7d549075566f5da6770a075ce46ff1b01093bcaadd05210ec359afe6b6c766d",
+      "nev": "Kovácsevics József"
+    },
+    {
+      "id": "f3f97f78b27ea8e6d5ecc16e897dca5eae479fc58f7ef6d28f08bc87255d7f01",
+      "nev": "Gulya Réka"
+    }
+  ],
+  "dolgozok": [
+    {
+      "id": "Balogh_László",
+      "kategoria": "I",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "kulsos_gyakorlat_erintett": false,
+      "sorszam": 6,
+      "nev": "Balogh László",
+      "tipus": "Szakorvos",
+      "napi_munkaido": 7.2,
+      "havi_oraszam": null
+    },
+    {
+      "id": "Berek_Sarolta",
+      "tipus": "Szakorvos",
+      "nev": "Berek Sarolta",
+      "kategoria": "A",
+      "kulsos_gyakorlat_erintett": false,
+      "sorszam": 2,
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "havi_oraszam": null,
+      "napi_munkaido": 4
+    },
+    {
+      "id": "Berkes_Tíbor",
+      "tipus": "Szakorvos",
+      "sorszam": 7,
+      "kategoria": "I",
+      "kulsos_gyakorlat_erintett": false,
+      "nev": "Berkes Tíbor",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8,
+      "havi_oraszam": null
+    },
+    {
+      "id": "Daku_Zsuzsa",
+      "szerzodes_tipus": "Teljes állás",
+      "havi_oraszam": null,
+      "kulsos_gyakorlat_erintett": false,
+      "nev": "Daku Zsuzsa",
+      "sorszam": 16,
+      "tipus": "Rezidens",
+      "napi_munkaido": 8,
+      "kategoria": "I"
+    },
+    {
+      "id": "Enyedi_Marcián",
+      "kulsos_gyakorlat_erintett": true,
+      "szerzodes_tipus": "Teljes állás",
+      "havi_oraszam": null,
+      "nev": "Enyedi Marcián",
+      "tipus": "Rezidens",
+      "sorszam": 19,
+      "napi_munkaido": 8,
+      "kategoria": "A"
+    },
+    {
+      "id": "Gebei_László",
+      "kategoria": "T",
+      "kulsos_gyakorlat_erintett": false,
+      "nev": "Gebei László",
+      "havi_oraszam": null,
+      "sorszam": 21,
+      "szerzodes_tipus": "Teljes állás",
+      "tipus": "Rezidens",
+      "napi_munkaido": 8
+    },
+    {
+      "id": "Gulya_Réka",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "kulsos_gyakorlat_erintett": false,
+      "havi_oraszam": null,
+      "sorszam": 3,
+      "kategoria": "I",
+      "tipus": "Szakorvos",
+      "napi_munkaido": 4,
+      "nev": "Gulya Réka"
+    },
+    {
+      "id": "Hajnal_Csilla",
+      "tipus": "Szakorvos",
+      "napi_munkaido": 2.3,
+      "havi_oraszam": 72,
+      "sorszam": 8,
+      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
+      "kulsos_gyakorlat_erintett": false,
+      "nev": "Hajnal Csilla",
+      "kategoria": "A"
+    },
+    {
+      "id": "Kajner_Krisztina",
+      "napi_munkaido": 4,
+      "tipus": "Szakorvos",
+      "nev": "Kajner Krisztina",
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "kulsos_gyakorlat_erintett": false,
+      "havi_oraszam": null,
+      "kategoria": "I",
+      "sorszam": 9
+    },
+    {
+      "id": "Karczub_János",
+      "sorszam": 17,
+      "kulsos_gyakorlat_erintett": true,
+      "tipus": "Rezidens",
+      "kategoria": "I",
+      "nev": "Karczub János",
+      "napi_munkaido": 8,
+      "szerzodes_tipus": "Teljes állás",
+      "havi_oraszam": null
+    },
+    {
+      "id": "Katona_József",
+      "tipus": "Szakorvos",
+      "nev": "Katona József",
+      "sorszam": 1,
+      "napi_munkaido": 8,
+      "kulsos_gyakorlat_erintett": false,
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "havi_oraszam": null
+    },
+    {
+      "id": "Kelemen_József",
+      "kategoria": "I",
+      "szerzodes_tipus": "Teljes állás",
+      "kulsos_gyakorlat_erintett": false,
+      "tipus": "Szakorvos",
+      "nev": "Kelemen József",
+      "sorszam": 0,
+      "napi_munkaido": 8,
+      "havi_oraszam": null
+    },
+    {
+      "id": "Korompai_Máté",
+      "kategoria": "A",
+      "sorszam": 10,
+      "kulsos_gyakorlat_erintett": false,
+      "nev": "Korompai Máté",
+      "havi_oraszam": null,
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "tipus": "Szakorvos",
+      "napi_munkaido": 5
+    },
+    {
+      "id": "Kovácsevics_József",
+      "tipus": "Szakorvos",
+      "havi_oraszam": null,
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8,
+      "kulsos_gyakorlat_erintett": false,
+      "kategoria": "A",
+      "sorszam": 4,
+      "nev": "Kovácsevics József"
+    },
+    {
+      "id": "Lambertus_Iván",
+      "napi_munkaido": 8,
+      "tipus": "Rezidens",
+      "nev": "Lambertus Iván",
+      "havi_oraszam": null,
+      "szerzodes_tipus": "Teljes állás",
+      "kategoria": "A",
+      "sorszam": 18,
+      "kulsos_gyakorlat_erintett": true
+    },
+    {
+      "id": "Pintér_Enikő",
+      "napi_munkaido": 4.6,
+      "kulsos_gyakorlat_erintett": false,
+      "havi_oraszam": 144,
+      "sorszam": 11,
+      "nev": "Pintér Enikő",
+      "kategoria": "A",
+      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
+      "tipus": "Szakorvos"
+    },
+    {
+      "id": "Rákóczi_Réka",
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8,
+      "kategoria": "A",
+      "sorszam": 20,
+      "kulsos_gyakorlat_erintett": true,
+      "nev": "Rákóczi Réka",
+      "tipus": "Rezidens",
+      "havi_oraszam": null
+    },
+    {
+      "id": "Róbert_Beáta",
+      "kulsos_gyakorlat_erintett": false,
+      "sorszam": 5,
+      "nev": "Róbert Beáta",
+      "kategoria": "I",
+      "havi_oraszam": null,
+      "szerzodes_tipus": "Teljes állás",
+      "napi_munkaido": 8,
+      "tipus": "Szakorvos"
+    },
+    {
+      "id": "Sorbán_József",
+      "sorszam": 12,
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "kategoria": "I",
+      "havi_oraszam": null,
+      "napi_munkaido": 1.52,
+      "nev": "Sorbán József",
+      "kulsos_gyakorlat_erintett": false,
+      "tipus": "Szakorvos"
+    },
+    {
+      "id": "Sztermen_Márton",
+      "kategoria": "A",
+      "napi_munkaido": 1.84,
+      "kulsos_gyakorlat_erintett": false,
+      "nev": "Sztermen Márton",
+      "tipus": "Szakorvos",
+      "havi_oraszam": null,
+      "sorszam": 14,
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám"
+    },
+    {
+      "id": "Szász_Kornélia",
+      "napi_munkaido": 2.3,
+      "kulsos_gyakorlat_erintett": false,
+      "havi_oraszam": 72,
+      "szerzodes_tipus": "Részmunkaidő - havi órakeret",
+      "tipus": "Szakorvos",
+      "sorszam": 13,
+      "kategoria": "A",
+      "nev": "Szász Kornélia"
+    },
+    {
+      "id": "Zöldréti_Anikó",
+      "nev": "Zöldréti Anikó",
+      "kulsos_gyakorlat_erintett": false,
+      "havi_oraszam": null,
+      "szerzodes_tipus": "Részmunkaidő - napi óraszám",
+      "kategoria": "I",
+      "sorszam": 15,
+      "napi_munkaido": 6.4,
+      "tipus": "Szakorvos"
+    }
+  ]
+}
