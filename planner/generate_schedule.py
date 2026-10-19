@@ -298,6 +298,9 @@ def fel_allas_tullepne(name, req=None, extra=1):
     """Fél állású (napi 4 órás) dolgozónál havonta alapból max. FEL_ALLAS_MAX_UGYELET
     ügyelet lehet - ez a korlát csak akkor hágható át, ha ő maga kifejezetten többet
     kért (kért ügyeletszám) - ilyenkor a saját kérése lesz az érvényes felső korlát."""
+    kert_kemeny = KIV.get("kert_ugyeletszam", {}).get(name)
+    if kert_kemeny and (assigned_count[name] + extra) > kert_kemeny:
+        return True  # kifejezetten kért ügyeletszám KEMÉNY felső korlát mindenkinél
     if name not in FEL_ALLAS_NEVEK:
         return False
     hatarertek = max(FEL_ALLAS_MAX_UGYELET, req) if req else FEL_ALLAS_MAX_UGYELET
@@ -401,6 +404,8 @@ def kivetel_jeloltet_keres(duty, day_date, today_assigned):
             continue  # páros-tiltás (pl. Kelemen+Katona) sosem hágható át
         if fel_allas_tullepne(name, req):
             continue  # fél állásúaknál a havi 3 ügyelet kemény felső korlát, sosem hágható át
+        if req and assigned_count[name] >= req:
+            continue  # kifejezetten kért ügyeletszám kemény felső korlát, kivételként sem hágható át
         day_nap_kiv = (day_date - first_day).days + 1
         if day_nap_kiv in NYOLC_ORA_NAPPAL.get(name, []) and day_nap_kiv not in kivansagok.get(name, {}).get("szeret", []):
             continue  # "8 órára alkalmas" nap csak rendes napi munkára vonatkozik, nem ügyeletre
@@ -601,6 +606,8 @@ for d in range(num_days):
             jitter = (rng.random() - 0.5) * 0.06
             tetel = (ratio + bonus + szoras_bonus + hetvegi_bonus + jitter, assigned_count[name], name)
             if kertet_mar_tulteljesitette and not regi_szarazsag:
+                if req:
+                    continue  # kifejezetten kért ügyeletszám KEMÉNY felső korlát - nem lépjük túl
                 tullepok_candidates.append(tetel)
             elif pref == "Szeretne" or regi_szarazsag:
                 candidates.append(tetel)
