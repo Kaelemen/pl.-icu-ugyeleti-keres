@@ -276,10 +276,41 @@ def jelenlet_tiltott(name, day_date):
     day_nap = (day_date - first_day).days + 1
     return not nap_engedelyezett(name, day_nap, "jelenlet")
 
+# Osztályvezetői lefedettség: a két vezető (Kelemen József, Katona József) közül hétköznap
+# minimum az egyiknek jelen kell lennie. Nem baj, ha mindketten, de olyan nap nem lehet, amikor
+# egyikük sincs. (Hétvégére nem vonatkozik.)
+OSZTALYVEZETOK = ("Kelemen József", "Katona József")
+
+def vezeto_jelen_koran(v, day_date):
+    """Jelen lenne-e 'v' vezető az adott (hétköznapi) napon - a már rögzített ügyeletek alapján
+    (duty_dates), szabadság, lelépés és egyéb távollét figyelembevételével."""
+    if v in KULSOS_GYAKORLATON or is_szabadsag(v, day_date):
+        return False
+    if jelenlet_tiltott(v, day_date) or nem_dolgozik_hetente_ma(v, day_date):
+        return False
+    if (day_date - datetime.timedelta(days=1)) in duty_dates[v]:
+        return False  # lelépő
+    if day_date == first_day and v in ELOZO_HONAP_LELEPOK:
+        return False
+    return True
+
+def vezeto_lefedettseg_serulne(name, day_date):
+    """Igaz, ha 'name' ügyeletbe osztása (lelépő a következő napon) azt eredményezné, hogy a
+    következő hétköznapon egyik osztályvezető sem lenne jelen."""
+    if name not in OSZTALYVEZETOK:
+        return False
+    kovetkezo = day_date + datetime.timedelta(days=1)
+    if kovetkezo.weekday() >= 5 or kovetkezo >= first_day + datetime.timedelta(days=num_days):
+        return False
+    masik = OSZTALYVEZETOK[1] if name == OSZTALYVEZETOK[0] else OSZTALYVEZETOK[0]
+    return not vezeto_jelen_koran(masik, kovetkezo)
+
 def ugyelet_tiltott(name, day_date):
     day_nap = (day_date - first_day).days + 1
     if jelenlet_tiltott(name, day_date):
         return True  # ha nincs jelen (pl. "csak ettől a naptól" korlát), ügyeletre sem osztható be
+    if vezeto_lefedettseg_serulne(name, day_date):
+        return True  # különben a következő hétköznapon nem lenne osztályvezető jelen
     return not nap_engedelyezett(name, day_nap, "ugyelet")
 
 def parban_tiltott_utkozik(name, day_date, today_assigned):
@@ -1393,6 +1424,8 @@ for d in range(num_days):
         if nm_ures is None and not (duty_nev_ures == "Stroke" and day_date.weekday() == 5 and SZOMBAT_NINCS_STROKE):
             _ures_pozicio.append(duty_nev_ures)
             uzenetek.append(f"Nincs betöltve: {duty_nev_ures}! ")
+    if day_date.weekday() < 5 and not any(vezeto_jelen_koran(_v, day_date) for _v in OSZTALYVEZETOK):
+        uzenetek.append("‼️ NINCS OSZTÁLYVEZETŐ JELEN (Kelemen/Katona)! ")
     _elvart_pozicio_szam = 2 if (day_date.weekday() == 5 and SZOMBAT_NINCS_STROKE) else 3
     if len(_ures_pozicio) >= _elvart_pozicio_szam:
         uzenetek.insert(0, "‼️ FIGYELEM: EZEN A NAPON SENKI SINCS ÜGYELETBEN! ")
