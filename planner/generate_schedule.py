@@ -305,12 +305,50 @@ def vezeto_lefedettseg_serulne(name, day_date):
     masik = OSZTALYVEZETOK[1] if name == OSZTALYVEZETOK[0] else OSZTALYVEZETOK[0]
     return not vezeto_jelen_koran(masik, kovetkezo)
 
+# Havi egy szabad hétvége mindenkinek: szabad hétvége az, amikor a beosztott otthon ébred szombaton
+# (péntek éjjel nincs ügyeletben), szombaton és vasárnap nincs ügyeletben, így legközelebb hétfőn
+# van beosztva. Egy hétvége a szombatja szerinti hónaphoz tartozik.
+SZ_HETVEGE_AKTIV = True
+
+def szabad_hetvegek(name, plusz=None):
+    utolso_nap = first_day + datetime.timedelta(days=num_days - 1)
+    szam = 0
+    nap = first_day
+    while nap <= utolso_nap:
+        if nap.weekday() == 5:
+            pentek = nap - datetime.timedelta(days=1)
+            vasarnap = nap + datetime.timedelta(days=1)
+            foglalt = False
+            for x in (pentek, nap, vasarnap):
+                if x in duty_dates[name] or x == plusz:
+                    foglalt = True
+            if pentek < first_day and name in ELOZO_HONAP_LELEPOK:
+                foglalt = True
+            if not foglalt:
+                szam += 1
+        nap += datetime.timedelta(days=1)
+    return szam
+
+def szabad_hetvege_serulne(name, day_date):
+    """Igaz, ha az ügyelet beosztása a személy UTOLSÓ szabad hétvégéjét venné el.
+    (Aki már most sem rendelkezik szabad hétvégével, annál nem blokkolunk - ott a jelzés dolga.)"""
+    if not SZ_HETVEGE_AKTIV or day_date.weekday() not in (4, 5, 6):
+        return False
+    if name in HAVI_KERETESEK or name in T_KATEGORIA_NEVEK:
+        return False
+    if ((day_date - first_day).days + 1) in MINDENKEPPEN_SZERETNE.get(name, []):
+        return False  # kifejezett "mindenképp" kérés - ezt nem írjuk felül (jelzés lesz)
+    elotte = szabad_hetvegek(name)
+    return elotte > 0 and szabad_hetvegek(name, day_date) == 0
+
 def ugyelet_tiltott(name, day_date):
     day_nap = (day_date - first_day).days + 1
     if jelenlet_tiltott(name, day_date):
         return True  # ha nincs jelen (pl. "csak ettől a naptól" korlát), ügyeletre sem osztható be
     if vezeto_lefedettseg_serulne(name, day_date):
         return True  # különben a következő hétköznapon nem lenne osztályvezető jelen
+    if szabad_hetvege_serulne(name, day_date):
+        return True  # mindenkinek jár havonta egy szabad hétvége
     return not nap_engedelyezett(name, day_nap, "ugyelet")
 
 def parban_tiltott_utkozik(name, day_date, today_assigned):
@@ -1153,6 +1191,45 @@ for name, cat, hrs, req, tipus in staff:
 # ---------------------------------------------------------------------------
 # lelépő nap: bármelyik duty utáni nap MINDENKINÉL (napi és havi keretesnél is)
 # ---------------------------------------------------------------------------
+# Üres pozíciók utólagos betöltése: a "havi egy szabad hétvége" szabály NEM mehet a pozíció
+# betöltése elé (arra kell törekedni, hogy mindig legyen ügyeletes minden pozícióban) - ha egy
+# pozíció csak azzal tölthető be, hogy valaki elveszíti a szabad hétvégéjét, akkor azt
+# választjuk, és a generálás végén jelezzük. Minden más kemény szabály továbbra is érvényes.
+SZ_HETVEGE_AKTIV = False
+for _d in range(num_days):
+    _dd = first_day + datetime.timedelta(days=_d)
+    for _duty in duty_types:
+        if _duty == "Stroke" and _dd.weekday() == 5 and SZOMBAT_NINCS_STROKE:
+            continue
+        if schedule[_d].get(_duty) is not None:
+            continue
+        _jel = []
+        for _nm, _cat, _hrs, _req, _tipus in staff:
+            if not eligible(_cat, _duty) or _nm in today_assigned_by_day[_d]:
+                continue
+            _pref = prefs.get((_nm, _dd))
+            if _pref in ("Szabadság", "Nem szeretne"):
+                continue
+            if (_d + 1) in NYOLC_ORA_NAPPAL.get(_nm, []) and (_d + 1) not in kivansagok.get(_nm, {}).get("szeret", []):
+                continue
+            if piheno_utkozik(_nm, _dd) or would_exceed_havi_kvota(_nm) or foglalt_kapacitas_serulne(_nm, _pref):
+                continue
+            if ugyelet_tiltott(_nm, _dd) or parban_tiltott_utkozik(_nm, _dd, today_assigned_by_day[_d]):
+                continue
+            if fel_allas_tullepne(_nm, _req) or would_exceed_resz_kapacitas(_nm, _dd):
+                continue
+            _jel.append((assigned_count[_nm] / target_weight[_nm], _nm))
+        if not _jel:
+            continue
+        _nm = min(_jel)[1]
+        schedule[_d][_duty] = _nm
+        today_assigned_by_day[_d].add(_nm)
+        assigned_count[_nm] += 1
+        duty_dates[_nm].add(_dd)
+        if _nm in RESZ_NAPI_ORASZAMOS:
+            kotelezo_ora_used[_nm] += kotelezo_delta_ha_ma_ugyel(_nm, _dd)
+SZ_HETVEGE_AKTIV = True
+
 worked_days = {name: set() for name, *_ in staff}
 for d in range(num_days):
     day_date = first_day + datetime.timedelta(days=d)
@@ -1667,6 +1744,17 @@ for _kor in range(_MAX_KOR):
                 break
     if not _valtozott:
         break  # ebben a körben egyetlen javító csere sem történt - konvergált
+
+# Szabad hétvége-ellenőrzés: kinek nincs havonta egy szabad hétvégéje (jelzés, nem szabályváltoztatás)
+_nincs_szabad_hetvege = [nm for nm, *_ in staff
+                         if nm not in T_KATEGORIA_NEVEK and duty_dates[nm] and szabad_hetvegek(nm) == 0]
+if _nincs_szabad_hetvege:
+    _utolso_sor = 5 + num_days
+    _regi = ws.cell(row=_utolso_sor, column=8).value or ""
+    ws.cell(row=_utolso_sor, column=8,
+            value=(_regi + " ‼️ Nincs szabad hétvégéje (péntek-vasárnap ügyelet nélkül): "
+                   + ", ".join(_nincs_szabad_hetvege) + "! ").strip())
+    print(f"\n‼️  NINCS SZABAD HÉTVÉGÉJE: {_nincs_szabad_hetvege}")
 
 raw_present_count_by_day = {}  # d (0-alapú) -> jelenlévők száma aznap, a fő ciklusból
 
