@@ -305,6 +305,45 @@ def vezeto_lefedettseg_serulne(name, day_date):
     masik = OSZTALYVEZETOK[1] if name == OSZTALYVEZETOK[0] else OSZTALYVEZETOK[0]
     return not vezeto_jelen_koran(masik, kovetkezo)
 
+# Ünnepi blokkok: ha egy hónapban két (vagy több) külön ünnep van, ugyanaz a személy nem
+# ügyelhet mindkettőn. Egy "blokk" az egymáshoz közeli ünnepnapok csoportja (pl. dec. 24-26.;
+# húsvét péntek-vasárnap-hétfő); a dec. 31. (Szilveszter) külön blokknak számít.
+def _husvet_vasarnap(ev):
+    a = ev % 19; b = ev // 100; c = ev % 100
+    d = b // 4; e = b % 4; f = (b + 8) // 25; g = (b - f + 1) // 3
+    h = (19 * a + b - d - g + 15) % 30; i = c // 4; k = c % 4
+    l = (32 + 2 * e + 2 * i - h - k) % 7; m = (a + 11 * h + 22 * l) // 451
+    honap = (h + l - 7 * m + 114) // 31; nap = (h + l - 7 * m + 114) % 31 + 1
+    return datetime.date(ev, honap, nap)
+
+def unnep_blokkok_a_honapban():
+    ev = first_day.year
+    husvet = _husvet_vasarnap(ev)
+    nap_lista = {datetime.date(ev, m, d) for m, d in
+                 ((1, 1), (3, 15), (5, 1), (8, 20), (10, 23), (11, 1), (12, 24), (12, 25), (12, 26), (12, 31))}
+    for delta in (-2, 0, 1, 49, 50):  # nagypéntek, húsvét vasárnap/hétfő, pünkösd vasárnap/hétfő
+        nap_lista.add(husvet + datetime.timedelta(days=delta))
+    honapi = sorted(n for n in nap_lista if n.year == first_day.year and n.month == first_day.month)
+    blokkok, akt = [], []
+    for n in honapi:
+        if akt and (n - akt[-1]).days > 2:
+            blokkok.append(akt); akt = []
+        akt.append(n)
+    if akt:
+        blokkok.append(akt)
+    return blokkok
+
+UNNEP_BLOKKOK = unnep_blokkok_a_honapban()
+
+def unnep_blokk_serulne(name, day_date):
+    """Igaz, ha 'name' egy ünnepi blokkban már ügyel, és most egy MÁSIK blokkban is ügyelne."""
+    if len(UNNEP_BLOKKOK) < 2:
+        return False
+    sajat = next((i for i, b in enumerate(UNNEP_BLOKKOK) if day_date in b), None)
+    if sajat is None:
+        return False
+    return any(x in duty_dates[name] for i, b in enumerate(UNNEP_BLOKKOK) if i != sajat for x in b)
+
 # Havi egy szabad hétvége mindenkinek: szabad hétvége az, amikor a beosztott otthon ébred szombaton
 # (péntek éjjel nincs ügyeletben), szombaton és vasárnap nincs ügyeletben, így legközelebb hétfőn
 # van beosztva. Egy hétvége a szombatja szerinti hónaphoz tartozik.
@@ -349,6 +388,8 @@ def ugyelet_tiltott(name, day_date):
         return True  # különben a következő hétköznapon nem lenne osztályvezető jelen
     if szabad_hetvege_serulne(name, day_date):
         return True  # mindenkinek jár havonta egy szabad hétvége
+    if unnep_blokk_serulne(name, day_date):
+        return True  # két külön ünnepen nem ügyelhet ugyanaz a személy
     return not nap_engedelyezett(name, day_nap, "ugyelet")
 
 def parban_tiltott_utkozik(name, day_date, today_assigned):
@@ -1501,6 +1542,10 @@ for d in range(num_days):
         if nm_ures is None and not (duty_nev_ures == "Stroke" and day_date.weekday() == 5 and SZOMBAT_NINCS_STROKE):
             _ures_pozicio.append(duty_nev_ures)
             uzenetek.append(f"Nincs betöltve: {duty_nev_ures}! ")
+    if len(UNNEP_BLOKKOK) >= 2 and any(day_date in _b for _b in UNNEP_BLOKKOK):
+        for _nm_u in {duty_col_nev.get(x) for x in duty_col_nev} - {None}:
+            if unnep_blokk_serulne(_nm_u, day_date):
+                uzenetek.append(f"‼️ {_nm_u} két különböző ünnepen is ügyel! ")
     if day_date.weekday() < 5 and not any(vezeto_jelen_koran(_v, day_date) for _v in OSZTALYVEZETOK):
         uzenetek.append("‼️ NINCS OSZTÁLYVEZETŐ JELEN (Kelemen/Katona)! ")
     _elvart_pozicio_szam = 2 if (day_date.weekday() == 5 and SZOMBAT_NINCS_STROKE) else 3
